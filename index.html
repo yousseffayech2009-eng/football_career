@@ -62,3 +62,34 @@
         "الدوري البلجيكي": ["كلوب بروج", "أندرلخت", "جينك", "رويال أنتويرب"],
         "دوري أبطال إفريقيا": ["الأهلي المصري", "صنداونز", "الوداد الرياضي", "الرجاء الرياضي"],
         "الدوري الإنجليزي الممتاز": ["مانشستر سيتي", "أرسنال", "ليفربول", "تشيلسي", "مانشستر يونايتد"],
+        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "إشبيلية"],
+        "الدوري الإيطالي": ["إنتر ميلان", "يوفنتوس", "إيه سي ميلان", "نابولي"]
+    };
+
+    function startGame() {
+        const playerName = document.getElementById("player-name").value.trim();
+        const playerPos = document.getElementById("player-pos").value;
+        const selectedLeague = document.getElementById("league-select").value;
+
+        if (playerName === "") {
+            alert("الرجاء إدخال اسم اللاعب أولاً!");
+            return;
+        }
+
+        document.getElementById("setup-screen").style.display = "none";
+        document.getElementById("game-screen").style.display = "block";
+
+        const teams = leaguesData[selectedLeague] || ["نادي محلي"];
+        const randomTeam = teams[Math.floor(Math.random() * teams.length)];
+
+        document.getElementById("status-bar").innerText = `اللاعب: ${playerName} | المركز: ${playerPos} | النادي: ${randomTeam}`;
+        
+        const gameLog = document.getElementById("game-log");
+        gameLog.innerHTML = `<p>مرحباً بك يا ${playerName}! لقد وقعت عقداً رسمياً للعب في صفوف نادي <strong>${randomTeam}</strong> (${selectedLeague}) في مركز <strong>${playerPos}</strong>.</p>` +
+                            `<p>تبدأ الآن رحلتك نحو النجومية، استعد للموسم الجديد وخض التمارين بقوة لتثبت مكانتك في التشكيلة الأساسية!</p>`;
+    }
+</script>
+
+</body>
+</html>
+
