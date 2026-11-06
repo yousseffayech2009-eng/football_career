@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>football_career by youssef v6</title>
+    <title>football_career by youssef v7</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -89,7 +89,6 @@
     };
 
     const africanLeagues = ["الدوري التونسي", "الدوري المصري", "الدوري الجزائري", "الدوري المغربي"];
-
     let player = {
         name: "",
         pos: "",
@@ -107,14 +106,13 @@
     const TOTAL_SEASONS = 22;
     const TOTAL_MATCHES = 34;
 
-    // نظام تقييم قوة النادي بناءً على ترتيبه التاريخي في القائمة (الأولى هي الأقوى)
     function getTeamTier(teamName, leagueName) {
         let teams = database[leagueName];
         if (!teams) return 2;
         let index = teams.indexOf(teamName);
-        if (index <= 3) return 3; // فريق قمة قوي جداً
-        if (index <= 9) return 2; // فريق متوسط
-        return 1; // فريق متواضع
+        if (index <= 3) return 3; // أندية قوية جداً
+        if (index <= 10) return 2; // أندية متوسطة
+        return 1; // أندية صراع تفادي الهبوط
     }
 
     function startGame() {
@@ -180,7 +178,7 @@
             trainBtn.innerText = "تدريب (+الطاقة) 🏋️‍♂️ (متاح الآن!)";
         } else {
             trainBtn.disabled = true;
-            trainBtn.innerText = `تدريب (+الطاقة) 🏋️‍♂️ (يلزم كريم ${3 - player.matchesSinceLastTrain} مباراة أخرى)`;
+            trainBtn.innerText = `تدريب (+الطاقة) 🏋️‍♂️ (يلزم ${3 - player.matchesSinceLastTrain} مباراة أخرى)`;
         }
     }
 
@@ -196,35 +194,55 @@
         let homeTeam = match.home;
         let awayTeam = match.away;
 
+        // 1. محاكاة نتائج باقي أندية الدوري في هذه الجولة ليتغير جدول الترتيب ديناميكياً
+        let teams = database[player.league];
+        let activeSimulatedTeams = new Set([homeTeam, awayTeam]);
+        
+        teams.forEach(t => {
+            if (!activeSimulatedTeams.has(t)) {
+                // اختيار خصم عشوائي لمحاكاة مباراته
+                let opponentsList = teams.filter(x => x !== t && !activeSimulatedTeams.has(x));
+                if (opponentsList.length > 0) {
+                    let opp = opponentsList[Math.floor(Math.random() * opponentsList.length)];
+                    activeSimulatedTeams.add(t);
+                    activeSimulatedTeams.add(opp);
+
+                    let tTier = getTeamTier(t, player.league);
+                    let oppTier = getTeamTier(opp, player.league);
+                    let tG = Math.floor(Math.random() * (tTier + 1));
+                    let oG = Math.floor(Math.random() * (oppTier + 1));
+
+                    if (tG > oG) leagueTable[t] = (leagueTable[t] || 0) + 3;
+                    else if (oG > tG) leagueTable[opp] = (leagueTable[opp] || 0) + 3;
+                    else {
+                        leagueTable[t] = (leagueTable[t] || 0) + 1;
+                        leagueTable[opp] = (leagueTable[opp] || 0) + 1;
+                    }
+                }
+            }
+        });
+
+        // 2. مباراة فريق اللاعب الواقعية
         let homeTier = getTeamTier(homeTeam, player.league);
         let awayTier = getTeamTier(awayTeam, player.league);
-
-        // تعديل القوة بناءً على ما إذا كان فريق اللاعب هو أحد الطرفين
         let playerTeamTier = getTeamTier(player.team, player.league);
-        // عامل أداء اللاعب بناءً على طاقته (الـ Overall)
-        let playerFactor = (player.overall - 50) / 20; 
 
-        let homePower = homeTier + (homeTeam === player.team ? playerFactor : 0);
-        let awayPower = awayTier + (awayTeam === player.team ? playerFactor : 0);
-
-        // حساب الأهداف بواقعية تمنع المبالغة وتجعل النتائج منطقية
-        let homeGoals = Math.max(0, Math.floor(Math.random() * 2) + (homePower > awayPower ? Math.floor(Math.random() * 2) : 0));
-        let awayGoals = Math.max(0, Math.floor(Math.random() * 2) + (awayPower > homePower ? Math.floor(Math.random() * 2) : 0));
-        
-        homeGoals = Math.min(homeGoals, 3);
-        awayGoals = Math.min(awayGoals, 3);
+        // بناء صعوبة واقعية: الأندية الكبرى تفوز غالباً، والأندية المتواضعة تعاني
+        let powerDiff = homeTier - awayTier;
+        let homeGoals = Math.max(0, Math.floor(Math.random() * 2) + (powerDiff > 0 ? 1 : 0));
+        let awayGoals = Math.max(0, Math.floor(Math.random() * 2) + (powerDiff < 0 ? 1 : 0));
 
         let scored = 0;
         let isMyMatch = (homeTeam === player.team || awayTeam === player.team);
 
         if (isMyMatch) {
-            // نسبة صعبة للتهديف لكي تكون واقعية (المهاجم يسجل أحياناً وليس دائماً)
+            // نسبة تسجيل واقعية تعتمد على قوة فريقك وطاقتك
             let chance = Math.random();
-            let scoringProbability = 0.55 - (player.overall * 0.003); // كلما زادت طاقتك تسهل الأمور قليلاً بقاع واقعي
+            let difficultyThreshold = playerTeamTier === 3 ? 0.45 : (playerTeamTier === 2 ? 0.60 : 0.75);
 
-            if (chance > scoringProbability) {
+            if (chance > difficultyThreshold) {
                 if (player.pos === "مهاجم") scored = Math.random() > 0.8 ? 2 : 1;
-                else if (player.pos === "وسط" && Math.random() > 0.6) scored = 1;
+                else if (player.pos === "وسط" && Math.random() > 0.65) scored = 1;
                 else if (player.pos === "دفاع" && Math.random() > 0.85) scored = 1;
             }
 
@@ -237,7 +255,7 @@
             updateTrainButton();
         }
 
-        // تحديث جدول الترتيب والنقاط
+        // تحديث نقاط مباراة فريق اللاعب
         if (homeGoals > awayGoals) {
             leagueTable[homeTeam] = (leagueTable[homeTeam] || 0) + 3;
         } else if (awayGoals > homeGoals) {
