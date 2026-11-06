@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>football_career by youssef</title>
+    <title>football_career by youssef v3</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -51,8 +51,8 @@
         <h3 id="status-bar"></h3>
         
         <div id="stats-panel">
-            <div>الموسم: <span id="stat-season">1</span></div>
-            <div>الجولة: <span id="stat-match">1</span>/<span id="stat-total-matches">0</span></div>
+            <div>الموسم: <span id="stat-season">1</span>/22</div>
+            <div>الجولة: <span id="stat-match">1</span>/34</div>
             <div>الأهداف: <span id="stat-goals">0</span></div>
             <div>الطاقة: <span id="stat-overall">65</span></div>
             <div>الترتيب: <span id="stat-rank">1</span></div>
@@ -66,10 +66,10 @@
         </div>
 
         <div id="offers-area" style="display:none;">
-            <h3>📝 نتائج الموسم وسوق الانتقالات (جميع الدوريات)</h3>
+            <h3>📝 نتائج الموسم وسوق الانتقالات</h3>
             <div id="season-summary" style="margin-bottom:15px; font-weight:bold; color:#28a745;"></div>
             <div id="offers-list" style="max-height: 250px; overflow-y: auto;"></div>
-            <button onclick="startNewSeason()" style="background-color: #6c757d;">البقاء مع الفريق الحالي لـ موسم آخر</button>
+            <button id="next-season-btn" onclick="startNewSeason()" style="background-color: #6c757d;">البقاء مع الفريق الحالي لـ موسم آخر</button>
         </div>
     </div>
 </div>
@@ -139,7 +139,6 @@
     };
 
     const africanLeagues = ["الدوري التونسي", "الدوري المصري", "الدوري الجزائري", "الدوري المغربي"];
-
     let player = {
         name: "",
         pos: "",
@@ -154,6 +153,8 @@
 
     let fixtures = [];
     let leagueTable = {};
+    const TOTAL_SEASONS = 22;
+    const TOTAL_MATCHES = 34;
 
     function startGame() {
         const nameInput = document.getElementById("player-name").value.trim();
@@ -184,16 +185,17 @@
         teams.forEach(t => leagueTable[t] = 0);
 
         fixtures = [];
-        for (let i = 0; i < teams.length; i++) {
-            for (let j = 0; j < teams.length; j++) {
-                if (i !== j) {
-                    fixtures.push({ home: teams[i], away: teams[j] });
-                }
+        let opponents = teams.filter(t => t !== player.team);
+        
+        for (let m = 0; m < TOTAL_MATCHES; m++) {
+            let opponent = opponents[m % opponents.length];
+            if (m < 17) {
+                fixtures.push({ home: player.team, away: opponent });
+            } else {
+                fixtures.push({ home: opponent, away: player.team });
             }
         }
-        fixtures.sort(() => Math.random() - 0.5);
 
-        document.getElementById("stat-total-matches").innerText = fixtures.length;
         updateTrainButton();
         updateUI();
     }
@@ -207,7 +209,7 @@
 
         let sortedTeams = Object.keys(leagueTable).sort((a,b) => leagueTable[b] - leagueTable[a]);
         let rank = sortedTeams.indexOf(player.team) + 1;
-        document.getElementById("stat-rank").innerText = rank;
+        document.getElementById("stat-rank").innerText = rank > 0 ? rank : 1;
     }
 
     function updateTrainButton() {
@@ -227,52 +229,46 @@
     }
 
     function playMatch() {
-        if (player.matchIndex >= fixtures.length) return;
+        if (player.matchIndex >= TOTAL_MATCHES) return;
 
         let match = fixtures[player.matchIndex];
-        let isMyMatch = (match.home === player.team || match.away === player.team);
 
         let homeGoals = Math.floor(Math.random() * 3);
         let awayGoals = Math.floor(Math.random() * 3);
         let scored = 0;
 
-        if (isMyMatch) {
-            let chance = Math.random();
-            if (player.pos === "مهاجم" && chance > 0.4) scored = Math.floor(Math.random() * 2) + 1;
-            else if (player.pos === "وسط" && chance > 0.6) scored = 1;
-            else if (player.pos === "دفاع" && chance > 0.85) scored = 1;
+        let chance = Math.random();
+        if (player.pos === "مهاجم" && chance > 0.4) scored = Math.floor(Math.random() * 2) + 1;
+        else if (player.pos === "وسط" && chance > 0.6) scored = 1;
+        else if (player.pos === "دفاع" && chance > 0.85) scored = 1;
 
-            player.goals += scored;
+        player.goals += scored;
 
-            if (match.home === player.team) homeGoals += scored;
-            else awayGoals += scored;
+        if (match.home === player.team) homeGoals += scored;
+        else awayGoals += scored;
 
-            player.matchesSinceLastTrain++;
-            updateTrainButton();
-        }
+        player.matchesSinceLastTrain++;
+        updateTrainButton();
 
-        if (homeGoals > awayGoals) leagueTable[match.home] += 3;
-        else if (awayGoals > homeGoals) leagueTable[match.away] += 3;
+        if (homeGoals > awayGoals) leagueTable[match.home] = (leagueTable[match.home] || 0) + 3;
+        else if (awayGoals > homeGoals) leagueTable[match.away] = (leagueTable[match.away] || 0) + 3;
         else {
-            leagueTable[match.home] += 1;
-            leagueTable[match.away] += 1;
+            leagueTable[match.home] = (leagueTable[match.home] || 0) + 1;
+            leagueTable[match.away] = (leagueTable[match.away] || 0) + 1;
         }
 
-        // إظهار جميع المباريات التي تلعبها (سواء سجلت فيها أهدافاً أم لم تسجل)
-        if (isMyMatch) {
-            let opponent = match.home === player.team ? match.away : match.home;
-            let myGoals = match.home === player.team ? homeGoals : awayGoals;
-            let oppGoals = match.home === player.team ? awayGoals : homeGoals;
-            let resText = myGoals > oppGoals ? "فوز 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "خسارة 💔");
-            let goalText = scored > 0 ? `- ⚽ سجلت ${scored} هدف!` : `- صيام عن التهديف 🛑`;
-            
-            log(`الجولة ${player.matchIndex + 1}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}) ${goalText}`);
-        }
+        let opponent = match.home === player.team ? match.away : match.home;
+        let myGoals = match.home === player.team ? homeGoals : awayGoals;
+        let oppGoals = match.home === player.team ? awayGoals : homeGoals;
+        let resText = myGoals > oppGoals ? "فوز 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "خسارة 💔");
+        let goalStatus = scored > 0 ? `⚽ سجلت ${scored} هدف` : `🛑 صيام عن التهديف`;
+        
+        log(`الجولة ${player.matchIndex + 1}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}) - ${goalStatus}`);
 
         player.matchIndex++;
         updateUI();
 
-        if (player.matchIndex >= fixtures.length) {
+        if (player.matchIndex >= TOTAL_MATCHES) {
             endSeason();
         }
     }
@@ -291,7 +287,7 @@
         document.getElementById("actions-area").style.display = "none";
         document.getElementById("offers-area").style.display = "block";
 
-        let sortedTeams = Object.keys(leagueTable).sort((a,b) => leagueTable[b] - leagueTable[a]);
+        let sortedTeams = Object.keys(leagueTable).sort((a,b) => (leagueTable[b] || 0) - (leagueTable[a] || 0));
         let rank = sortedTeams.indexOf(player.team) + 1;
 
         let qualificationText = "";
@@ -306,8 +302,19 @@
             else qualificationText = "لم تتأهل لدوري الأبطال هذا الموسم.";
         }
 
+        if (player.season >= TOTAL_SEASONS) {
+            document.getElementById("season-summary").innerHTML = `
+                🏁 <strong>انتهت مسيرتك الاحترافية بنجاح بعد الوصول إلى الحد الأقصى (22 موسماً)!</strong><br>
+                أهلاً بك في اعتزال اللعب بسجل حافل من الأهداف.
+            `;
+            document.getElementById("offers-list").innerHTML = "";
+            document.getElementById("next-season-btn").style.display = "none";
+            log(`🌟 <strong>اعتزال اللاعب:</strong> وصلت إلى نهاية مسيرتك الكروية بعد 22 موسماً رائعاً.`);
+            return;
+        }
+
         document.getElementById("season-summary").innerHTML = `
-            إنهاء الدوري بالمركز <strong>#${rank}</strong> برصيد ${leagueTable[player.team]} نقطة.<br>
+            إنهاء الموسم ${player.season} بالمركز <strong>#${rank}</strong> برصيد ${leagueTable[player.team] || 0} نقطة.<br>
             ${qualificationText}
         `;
 
@@ -339,6 +346,7 @@
     }
 
     function startNewSeason() {
+        if (player.season >= TOTAL_SEASONS) return;
         player.season++;
         document.getElementById("offers-area").style.display = "none";
         document.getElementById("actions-area").style.display = "block";
