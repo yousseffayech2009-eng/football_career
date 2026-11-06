@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>football_career by youssef v16</title>
+    <title>football_career by youssef v17</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -84,7 +84,13 @@
         "الدوري الفرنسي": ["باريس سان جيرمان", "مارسيليا", "موناكو", "ليون", "ليل", "نيس", "ستراسبورغ", "لانس", "رين", "تولوز", "بريست", "مونبلييه", "ستاد ريمس", "لوهافر", "نانت", "أنجيه", "سنت إتيان", "ميتز"],
         "الدوري الألماني": ["بايرن ميونخ", "بوروسيا دورتموند", "باير ليفركوزن", "لايبزيغ", "آنتراخت فرانكفورت", "شتوتغارت", "فولفسبورغ", "فرايبورغ", "هوفنهايم", "أوغسبورغ", "فيردر بريمن", "ماينز 05", "بروسيا مونشنغلادباخ", "بوخوم", "هايدنهايم", "سانت باولي", "كولن", "يونيون برلين"],
         "الدوري الإيطالي": ["إنتر ميلان", "يوفنتوس", "إيه سي ميلان", "نابولي", "أتالانتا", "لاتسيو", "روما", "فيورنتينا", "بولونيا", "تورينو", "مونزا", "جنوى", "ليتشي", "كالياري", "إمبولي", "هيلاس فيرونا", "بارما", "أودينيزي"],
-        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "أتلتيك بلباو", "ريال سوسيداد", "فياريال", "ريال بيتيس
+        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "أتلتيك بلباو", "ريال سوسيداد", "فياريال", "ريال بيتيس", "إشبيلية", "فالنسيا", "سيلتا فيغو", "أوساسونا", "جيرونا", "مايوركا", "رايو فايكانو", "خيتافي", "ألافيس", "لاس بالماس", "بلد الوليد"],
+        "الدوري الإنجليزي الممتاز": ["مانشستر سيتي", "ليفربول", "أرسنال", "تشيلسي", "مانشستر يونايتد", "توتنهام هوتسبير", "نيوكاسل يونايتد", "أستون فيلا", "برايتون", "وست هام يونايتد", "كريستال بالاس", "فولهام", "برينتفورد", "إيفرتون", "وولفرهامبتون", "بورنموث", "نوتنغهام فورست", "ليستر سيتي"]
+    };
+
+    const africanLeagues = ["الدوري التونسي", "الدوري المصري", "الدوري الجزائري", "الدوري المغربي"];
+    const asianLeagues = ["الدوري السعودي"];
+    const topEuropeanLeagues = ["الدوري الإنجليزي الممتاز", "الدوري الإسباني", "الدوري الإيطالي", "الدوري الألماني", "الدوري الفرنسي"];
     let player = {
         name: "",
         pos: "",
@@ -116,21 +122,39 @@
     }
 
     function startGame() {
-        const nameInput = document.getElementById("player-name").value.trim();
-        if (!nameInput) {
-            alert("الرجاء إدخال اسم اللاعب!");
+        const nameInput = document.getElementById("player-name");
+        const posSelect = document.getElementById("player-pos");
+        const leagueSelect = document.getElementById("league-select");
+
+        if (!nameInput || !posSelect || !leagueSelect) {
+            alert("عذراً، هناك مشكلة في تحميل عناصر الواجهة.");
             return;
         }
 
-        player.name = nameInput;
-        player.pos = document.getElementById("player-pos").value;
-        player.league = document.getElementById("league-select").value;
+        const nameValue = nameInput.value.trim();
+        if (!nameValue) {
+            alert("الرجاء إدخال اسم اللاعب!");
+            nameInput.focus();
+            return;
+        }
+
+        player.name = nameValue;
+        player.pos = posSelect.value;
+        player.league = leagueSelect.value;
 
         const teams = database[player.league];
+        if (!teams || teams.length === 0) {
+            alert("حدث خطأ في تحميل فرق الدوري المختار.");
+            return;
+        }
+
         player.team = teams[Math.floor(Math.random() * teams.length)];
 
-        document.getElementById("setup-screen").style.display = "none";
-        document.getElementById("game-screen").style.display = "block";
+        const setupScreen = document.getElementById("setup-screen");
+        const gameScreen = document.getElementById("game-screen");
+
+        if (setupScreen) setupScreen.style.display = "none";
+        if (gameScreen) gameScreen.style.display = "block";
 
         initSeason();
         log(`مرحباً بك يا <strong>${player.name}</strong>! انطلقت مسيرتك مع نادي <strong>${player.team}</strong> في <strong>${player.league}</strong>.`);
