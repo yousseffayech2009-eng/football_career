@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>football_career by youssef v13</title>
+    <title>football_career by youssef v16</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -55,7 +55,7 @@
             <div>المرحلة: <span id="stat-phase">الدوري المحلي</span></div>
             <div>الأهداف: <span id="stat-goals">0</span></div>
             <div>الطاقة: <span id="stat-overall">65</span></div>
-            <div>الترتيب/المباراة: <span id="stat-rank">1</span></div>
+            <div>الترتيب: <span id="stat-rank">1</span></div>
         </div>
 
         <div id="game-log"></div>
@@ -84,20 +84,14 @@
         "الدوري الفرنسي": ["باريس سان جيرمان", "مارسيليا", "موناكو", "ليون", "ليل", "نيس", "ستراسبورغ", "لانس", "رين", "تولوز", "بريست", "مونبلييه", "ستاد ريمس", "لوهافر", "نانت", "أنجيه", "سنت إتيان", "ميتز"],
         "الدوري الألماني": ["بايرن ميونخ", "بوروسيا دورتموند", "باير ليفركوزن", "لايبزيغ", "آنتراخت فرانكفورت", "شتوتغارت", "فولفسبورغ", "فرايبورغ", "هوفنهايم", "أوغسبورغ", "فيردر بريمن", "ماينز 05", "بروسيا مونشنغلادباخ", "بوخوم", "هايدنهايم", "سانت باولي", "كولن", "يونيون برلين"],
         "الدوري الإيطالي": ["إنتر ميلان", "يوفنتوس", "إيه سي ميلان", "نابولي", "أتالانتا", "لاتسيو", "روما", "فيورنتينا", "بولونيا", "تورينو", "مونزا", "جنوى", "ليتشي", "كالياري", "إمبولي", "هيلاس فيرونا", "بارما", "أودينيزي"],
-        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "أتلتيك بلباو", "ريال سوسيداد", "فياريال", "ريال بيتيس", "إشبيلية", "فالنسيا", "سيلتا فيغو", "أوساسونا", "جيرونا", "مايوركا", "رايو فايكانو", "خيتافي", "ألافيس", "لاس بالماس", "بلد الوليد"],
-        "الدوري الإنجليزي الممتاز": ["مانشستر سيتي", "ليفربول", "أرسنال", "تشيلسي", "مانشستر يونايتد", "توتنهام هوتسبير", "نيوكاسل يونايتد", "أستون فيلا", "برايتون", "وست هام يونايتد", "كريستال بالاس", "فولهام", "برينتفورد", "إيفرتون", "وولفرهامبتون", "بورنموث", "نوتنغهام فورست", "ليستر سيتي"]
-    };
-
-    const africanLeagues = ["الدوري التونسي", "الدوري المصري", "الدوري الجزائري", "الدوري المغربي"];
-    const asianLeagues = ["الدوري السعودي"];
-    const topEuropeanLeagues = ["الدوري الإنجليزي الممتاز", "الدوري الإسباني", "الدوري الإيطالي", "الدوري الألماني", "الدوري الفرنسي"];
+        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "أتلتيك بلباو", "ريال سوسيداد", "فياريال", "ريال بيتيس
     let player = {
         name: "",
         pos: "",
         league: "",
         team: "",
         season: 1,
-        phase: "league", // league, continental, ended
+        phase: "league",
         matchIndex: 0,
         goals: 0,
         overall: 65,
@@ -116,9 +110,9 @@
         let teams = database[leagueName];
         if (!teams) return 2;
         let index = teams.indexOf(teamName);
-        if (index <= 2) return 3; // أندية قمة قوية (مرشحة دائماً للمنافسة)
-        if (index <= 10) return 2; // أندية وسط الترتيب
-        return 1; // أندية القاع (صراع الهبوط والضعف الفني)
+        if (index <= 2) return 3;
+        if (index <= 10) return 2;
+        return 1;
     }
 
     function startGame() {
@@ -170,6 +164,7 @@
         document.getElementById("status-bar").innerText = `${player.name} | ${player.pos} | ${player.team}`;
         document.getElementById("stat-season").innerText = player.season;
         document.getElementById("stat-overall").innerText = player.overall;
+        document.getElementById("stat-goals").innerText = player.goals;
 
         if (player.phase === "league") {
             document.getElementById("stat-phase").innerText = "الدوري المحلي";
@@ -180,7 +175,7 @@
         } else if (player.phase === "continental") {
             document.getElementById("stat-phase").innerText = continentalName;
             document.getElementById("stat-match").innerText = `${continentalMatchIndex + 1}/${continentalMatches.length}`;
-            document.getElementById("stat-rank").innerText = "بطولة قارية";
+            document.getElementById("stat-rank").innerText = "قاري";
         }
     }
 
@@ -209,13 +204,15 @@
     }
 
     function playLeagueMatch() {
-        if (player.matchIndex >= TOTAL_MATCHES) return;
+        if (player.matchIndex >= TOTAL_MATCHES) {
+            checkLeagueEnd();
+            return;
+        }
 
         let match = fixtures[player.matchIndex];
         let homeTeam = match.home;
         let awayTeam = match.away;
 
-        // محاكاة واقعية لبقية أندية الدوري لضمان تغير المراكز وعدم بقاء فريقك بطلاً طوال الوقت
         let teams = database[player.league];
         let processedTeams = new Set([homeTeam, awayTeam]);
 
@@ -254,7 +251,6 @@
 
         if (isMyMatch) {
             let chance = Math.random();
-            // نسبة تسجيل واقعية تراعي قوة الخصم وصعوبة المباريات لمنع الهيمنة المطلقة
             let successRate = 0.68 - (player.overall * 0.0025) - (teamTier * 0.035);
 
             if (chance > successRate) {
@@ -278,14 +274,14 @@
             leagueTable[awayTeam] = (leagueTable[awayTeam] || 0) + 3;
         } else {
             leagueTable[homeTeam] = (leagueTable[homeTeam] || 0) + 1;
-            leagueTable[awayTeam] = (leagueTeam[awayTeam] || 0) + 1;
+            leagueTable[awayTeam] = (leagueTable[awayTeam] || 0) + 1;
         }
 
         if (isMyMatch) {
             let opponent = homeTeam === player.team ? awayTeam : homeTeam;
             let myGoals = homeTeam === player.team ? homeGoals : awayGoals;
             let oppGoals = homeTeam === player.team ? awayGoals : homeGoals;
-            let resText = myGoals > oppGoals ? "فوز مستحق 🎉" : (myGoals === oppGoals ? "تعادل سلبي أو إيجابي 🤝" : "هزيمة أو تعثر قاسي 💔");
+            let resText = myGoals > oppGoals ? "فوز مستحق 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "هزيمة قاسية 💔");
             let goalStatus = scored > 0 ? `⚽ سجلت ${scored} هدف` : `🛑 صيام تهديفي`;
             
             log(`الجولة ${player.matchIndex + 1}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}) - ${goalStatus}`);
@@ -307,7 +303,6 @@
         let isAfrican = africanLeagues.includes(player.league);
         let isAsian = asianLeagues.includes(player.league);
 
-        // التحقق من التأهل القاري الواقعي حسب كل دوري
         if (isTopEuro && rank <= 4) {
             continentalName = "دوري أبطال أوروبا 🏆⭐";
             setupContinentalTournament();
@@ -332,7 +327,7 @@
             { stage: "نصف النهائي القاري", opponent: "كبار القارة (نصف النهائي)" },
             { stage: "نهائي البطولات الكبرى ⭐", opponent: "نهائي الحلم القاري المنتظر" }
         ];
-        log(`🌟 <strong>إنجاز قاري كبير!</strong> تأهلت إلى مباريات ${continentalName}. استعد لمعارك كروية ضارية مع عمالقة القارة!`);
+        log(`🌟 <strong>تأهل قاري رسمي!</strong> انتقلت إلى مباريات ${continentalName}. استعد لمعارك قوية مع عمالقة القارة!`);
         updateUI();
     }
 
@@ -342,7 +337,6 @@
         let currentMatch = continentalMatches[continentalMatchIndex];
         let opponent = currentMatch.opponent;
 
-        // مباريات قارية صعبة ومتقاربة تتطلب أداءً شاقاً
         let myGoals = Math.floor(Math.random() * 2);
         let oppGoals = Math.floor(Math.random() * 3);
 
@@ -371,7 +365,7 @@
         updateUI();
 
         if (continentalMatchIndex >= continentalMatches.length) {
-            log(`🏆 اختتمت مشوار المنافسة في ${continentalName} لهذا الموسم.`);
+            log(`🏆 اختتمت مشوار المنافسة في ${continentalName} بنجاح.`);
             endSeason();
         }
     }
@@ -419,7 +413,6 @@
         offersList.innerHTML = "";
 
         let availableLeagues = Object.keys(database);
-        // منع الانتقال المبكر للدوريات الأوروبية الكبرى إلا بعد الموسم 4 أو وصول الطاقة إلى 78
         if (player.season < 4 && player.overall < 78) {
             availableLeagues = availableLeagues.filter(l => !topEuropeanLeagues.includes(l));
         }
