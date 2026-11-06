@@ -66,9 +66,9 @@
         </div>
 
         <div id="offers-area" style="display:none;">
-            <h3>📝 نتائج الموسم وسوق الانتقالات</h3>
+            <h3>📝 نتائج الموسم وسوق الانتقالات (جميع الدوريات)</h3>
             <div id="season-summary" style="margin-bottom:15px; font-weight:bold; color:#28a745;"></div>
-            <div id="offers-list"></div>
+            <div id="offers-list" style="max-height: 250px; overflow-y: auto;"></div>
             <button onclick="startNewSeason()" style="background-color: #6c757d;">البقاء مع الفريق الحالي لـ موسم آخر</button>
         </div>
     </div>
@@ -139,7 +139,6 @@
     };
 
     const africanLeagues = ["الدوري التونسي", "الدوري المصري", "الدوري الجزائري", "الدوري المغربي"];
-
     let player = {
         name: "",
         pos: "",
@@ -258,13 +257,13 @@
             leagueTable[match.away] += 1;
         }
 
-        if (isMyMatch) {
+        if (isMyMatch && scored === 0) {
             let opponent = match.home === player.team ? match.away : match.home;
             let myGoals = match.home === player.team ? homeGoals : awayGoals;
             let oppGoals = match.home === player.team ? awayGoals : homeGoals;
             let resText = myGoals > oppGoals ? "فوز 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "خسارة 💔");
             
-            log(`الجولة ${player.matchIndex + 1}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}). ${scored > 0 ? `⚽ سجلت ${scored} هدف!` : ''}`);
+            log(`الجولة ${player.matchIndex + 1}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}) - صيام عن التهديف 🛑`);
         }
 
         player.matchIndex++;
@@ -317,10 +316,9 @@
         const offersList = document.getElementById("offers-list");
         offersList.innerHTML = "";
 
-        let availableLeagues = Object.keys(database);
-        let selectedLeagues = availableLeagues.sort(() => 0.5 - Math.random()).slice(0, 3);
-
-        selectedLeagues.forEach(l => {
+        // جلب عروض من جميع الدوريات المتاحة في قاعدة البيانات
+        Object.keys(database).forEach(l => {
+            // اختيار فريق عشوائي من كل دوري
             let randomTeam = database[l][Math.floor(Math.random() * database[l].length)];
             let div = document.createElement("div");
             div.className = "offer-card";
