@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>football_career by youssef v20</title>
+    <title>football_career by youssef v23</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -62,14 +62,19 @@
 
         <div id="actions-area">
             <button class="btn-action" onclick="playMatch()">خوض المباراة القادمة ⚽</button>
-            <button id="train-btn" class="btn-action" style="background-color: #e0a800;" onclick="trainPlayer()" disabled>تدريب (+الطاقة) 🏋️‍♂️ (يلزم 3 مباريات)</button>
         </div>
 
         <div id="offers-area" style="display:none;">
-            <h3>📝 نهاية الموسم وسوق الانتقالات</h3>
+            <h3>📝 نهاية الموسم وتطوير اللاعب وسوق الانتقالات</h3>
             <div id="season-summary" style="margin-bottom:15px; font-weight:bold; color:#28a745;"></div>
-            <div id="offers-list" style="max-height: 250px; overflow-y: auto;"></div>
-            <button id="next-season-btn" onclick="startNewSeason()" style="background-color: #6c757d;">البقاء مع الفريق الحالي لـ موسم آخر</button>
+            
+            <div style="background: #252525; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                <p>🏋️‍♂️ معسكر التدريب والتطوير الصيفي (رفع الطاقة):</p>
+                <button onclick="trainPlayerSeason()" style="background-color: #e0a800; color: #000;">تطوير الطاقة (+2) 🚀</button>
+            </div>
+
+            <div id="offers-list" style="max-height: 200px; overflow-y: auto;"></div>
+            <button id="next-season-btn" onclick="startNewSeason()" style="background-color: #6c757d; margin-top: 10px;">البقاء مع الفريق الحالي لـ موسم آخر</button>
         </div>
     </div>
 </div>
@@ -89,7 +94,12 @@
     };
 
     const continentalOpponentsData = {
-        "دوري أبطال أفريقيا 🏆🌍": ["الأهلي المصري", "الترجي التونسي", "ماميلودي صنداونز الجنوب أفريقي", "الزمالك المصري", "بيراميدز المصري", "الوداد المغربي", "بترو أتلتيكو الأغولي", "مازيمبي الكونغولي"],
+        "دوري أبطال أفريقيا 🏆🌍": [
+            "Petro", "Esperance Tunis", "Nouadhibou", "Wiliete", 
+            "Zamalek", "Club Africain", "Young Africans", "MC Alger", 
+            "Orlando", "Simba", "Berkane", "Colombe", 
+            "Al-Hilal Omdurman", "Maghreb Fez", "Horoya", "Pyramids"
+        ],
         "دوري أبطال آسيا 🏆🌏": ["الهلال السعودي", "النصر السعودي", "العين الإماراتي", "السد القطري", "الاستقلال الإيراني", "أولسان هيونداي الكوري", "كاواساكي فرونتال الياباني", "الاتحاد السعودي"],
         "دوري أبطال أوروبا 🏆⭐": ["ريال مدريد الإسباني", "مانشستر سيتي الإنجليزي", "بايرن ميونخ الألماني", "باريس سان جيرمان الفرنسي", "إنتر ميلان الإيطالي", "برشلونة الإسباني", "أرسنال الإنجليزي", "بوروسيا دورتموند الألماني"]
     };
@@ -107,7 +117,7 @@
         matchIndex: 0,
         goals: 0,
         overall: 65,
-        matchesSinceLastTrain: 0
+        hasTrainedThisOffseason: false
     };
 
     let fixtures = [];
@@ -158,7 +168,7 @@
     function initSeason() {
         player.phase = "league";
         player.matchIndex = 0;
-        player.matchesSinceLastTrain = 0;
+        player.hasTrainedThisOffseason = false;
         const teams = database[player.league];
         leagueTable = {};
         teams.forEach(t => leagueTable[t] = 0);
@@ -175,7 +185,6 @@
             }
         }
 
-        updateTrainButton();
         updateUI();
     }
 
@@ -195,17 +204,6 @@
             document.getElementById("stat-phase").innerText = continentalName;
             document.getElementById("stat-match").innerText = `${continentalMatchIndex + 1}/${continentalMatches.length}`;
             document.getElementById("stat-rank").innerText = "قاري";
-        }
-    }
-
-    function updateTrainButton() {
-        const trainBtn = document.getElementById("train-btn");
-        if (player.matchesSinceLastTrain >= 3) {
-            trainBtn.disabled = false;
-            trainBtn.innerText = "تدريب (+الطاقة) 🏋️‍♂️ (متاح الآن!)";
-        } else {
-            trainBtn.disabled = true;
-            trainBtn.innerText = `تدريب (+الطاقة) 🏋️‍♂️ (يلزم ${3 - player.matchesSinceLastTrain} مباراة)`;
         }
     }
 
@@ -282,9 +280,6 @@
 
             if (homeTeam === player.team) homeGoals += scored;
             else awayGoals += scored;
-
-            player.matchesSinceLastTrain++;
-            updateTrainButton();
         }
 
         if (homeGoals > awayGoals) {
@@ -293,7 +288,7 @@
             leagueTable[awayTeam] = (leagueTable[awayTeam] || 0) + 3;
         } else {
             leagueTable[homeTeam] = (leagueTable[homeTeam] || 0) + 1;
-            leagueTable[awayTeam] = (leagueTeam[awayTeam] || 0) + 1;
+            leagueTable[awayTeam] = (leagueTable[awayTeam] || 0) + 1;
         }
 
         if (isMyMatch) {
@@ -344,7 +339,6 @@
         availableOpponents = availableOpponents.filter(t => !t.includes(player.team));
         let shuffled = availableOpponents.sort(() => 0.5 - Math.random());
 
-        // بناء جدول المباريات بدقة: دور المجموعات (6 مباريات ذهاب وإياب ضد 3 فرق في المجموعة) + الإقصائيات (ذهاب وإياب)
         continentalMatches = [
             { stage: "مرحلة المجموعات - الجولة 1 (ذهاب)", opponent: shuffled[0] },
             { stage: "مرحلة المجموعات - الجولة 2 (ذهاب)", opponent: shuffled[1] },
@@ -356,16 +350,19 @@
             { stage: "ربع النهائي - الإياب", opponent: shuffled[3] },
             { stage: "نصف النهائي - الذهاب", opponent: shuffled[4] || shuffled[0] },
             { stage: "نصف النهائي - الإياب", opponent: shuffled[4] || shuffled[0] },
-            { stage: "النهائي - الذهاب 🏆", opponent: shuffled[5] || "نادي عملاق (طرف النهائي)" },
-            { stage: "النهائي - الإياب 🏆", opponent: shuffled[5] || "نادي عملاق (طرف النهائي الحاسم)" }
+            { stage: "النهائي - الذهاب 🏆", opponent: shuffled[5] || shuffled[1] },
+            { stage: "النهائي - الإياب 🏆", opponent: shuffled[5] || shuffled[1] }
         ];
 
-        log(`🌟 <strong>تأهل قاري رسمي!</strong> خوض مباريات ${continentalName} (مجموعات وأدوار ذهاب وإياب).`);
+        log(`🌟 <strong>تأهل قاري رسمي!</strong> بدأت منافسات ${continentalName}.`);
         updateUI();
     }
 
     function playContinentalMatch() {
-        if (continentalMatchIndex >= continentalMatches.length) return;
+        if (continentalMatchIndex >= continentalMatches.length) {
+            endSeason();
+            return;
+        }
 
         let currentMatch = continentalMatches[continentalMatchIndex];
         let opponent = currentMatch.opponent;
@@ -391,25 +388,23 @@
 
         log(`[${currentMatch.stage}] ضد ${opponent}: ${player.team} ${myGoals} - ${oppGoals} (${resText}) - ${goalStatus}`);
 
-        player.matchesSinceLastTrain++;
-        updateTrainButton();
-
         continentalMatchIndex++;
         updateUI();
 
         if (continentalMatchIndex >= continentalMatches.length) {
-            log(`🏆 اختتمت مشوار المنافسة في ${continentalName} بالكامل وننتقل الآن لملخص الموسم.`);
+            log(`🏆 اختتمت مشوار المنافسة في ${continentalName} بنجاح تام.`);
             endSeason();
         }
     }
 
-    function trainPlayer() {
-        if (player.matchesSinceLastTrain >= 3 && player.overall < 99) {
-            player.overall += 1;
-            player.matchesSinceLastTrain = 0;
-            updateTrainButton();
-            log(`🏋️‍♂️ خضت تدريبات مكثفة! ارتفعت طاقتك وأصبحت <strong>${player.overall}</strong>.`);
+    function trainPlayerSeason() {
+        if (!player.hasTrainedThisOffseason && player.overall < 99) {
+            player.overall += 2;
+            player.hasTrainedThisOffseason = true;
+            log(`🏋️‍♂️ خضت المعسكر التدريبي الصيفي بنجاح! ارتفعت طاقتك وأصبحت <strong>${player.overall}</strong>.`);
             updateUI();
+            event.target.disabled = true;
+            event.target.innerText = "تم إتمام التدريب الصيفي ✔️";
         }
     }
 
@@ -434,10 +429,10 @@
 
         document.getElementById("season-summary").innerHTML = `
             إنهاء الموسم ${player.season} في الدوري المحلي بالمركز <strong>#${rank}</strong> برصيد ${leagueTable[player.team] || 0} نقطة.<br>
-            وخوض منافسات البطولة القارية بنظام المجموعات والإقصائيات بنجاح.
+            وخوض منافسات البطولة القارية بنجاح.
         `;
 
-        log(`🏁 <strong>انتهاء الموسم ${player.season}!</strong> انتقل الآن إلى سوق الانتقالات لبدء الموسم التالي.`);
+        log(`🏁 <strong>انتهاء الموسم ${player.season}!</strong> يمكنك الآن تطوير طاقتك واختيار نادٍ جديد.`);
         generateOffers();
     }
 
@@ -477,6 +472,14 @@
         player.season++;
         document.getElementById("offers-area").style.display = "none";
         document.getElementById("actions-area").style.display = "block";
+        
+        // إعادة تفعيل زر التدريب الصيفي للموسم الجديد
+        const trainBtn = document.querySelector("button[onclick='trainPlayerSeason()']");
+        if(trainBtn) {
+            trainBtn.disabled = false;
+            trainBtn.innerText = "تطوير الطاقة (+2) 🚀";
+        }
+
         initSeason();
         log(`🚀 **بداية الموسم الجديد ${player.season}** مع فريق ${player.team}. بالتوفيق!`);
     }
