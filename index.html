@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة محاكاة مسيرة اللاعب والتدريب</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
+        .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        button, input, select { padding: 10px; margin: 10px 0; width: 100%; font-size: 16px; border-radius: 5px; border: none; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        input, select { background: #333; color: white; text-align: center; }
+        #game-log { text-align: right; background: #252525; padding: 15px; border-radius: 5px; height: 300px; overflow-y: auto; margin-top: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>⚽ محاكاة مسيرة الاحتراف والتدريب ⚽</h2>
+    <div id="setup-screen">
+        <input type="text" id="player-name" placeholder="أدخل اسم اللاعب"><br>
+        <select id="player-pos">
+            <option value="مهاجم">مهاجم</option>
+            <option value="وسط">وسط</option>
+            <option value="دفاع">دفاع</option>
+            <option value="حارس">حارس</option>
+        </select><br>
+        <select id="league-select">
+            <option value="الدوري التونسي">الدوري التونسي</option>
+            <option value="الدوري المصري">الدوري المصري</option>
+            <option value="الدوري الجزائري">الدوري الجزائري</option>
+            <option value="الدوري المغربي">الدوري المغربي</option>
+            <option value="الدوري الليبي">الدوري الليبي</option>
+            <option value="الدوري الفرنسي">الدوري الفرنسي</option>
+            <option value="الدوري البرتغالي">الدوري البرتغالي</option>
+            <option value="الدوري البلجيكي">الدوري البلجيكي</option>
+            <option value="دوري أبطال إفريقيا">دوري أبطال إفريقيا</option>
+            <option value="الدوري الإنجليزي الممتاز">الدوري الإنجليزي الممتاز</option>
+            <option value="الدوري الإسباني">الدوري الإسباني</option>
+            <option value="الدوري الإيطالي">الدوري الإيطالي</option>
+        </select><br>
+        <button onclick="startGame()">بدء المسيرة</button>
+    </div>
+
+    <div id="game-screen" style="display:none;">
+        <h3 id="status-bar"></h3>
+        <div id="game-log"></div>
+        <div id="choices-area"></div>
+    </div>
+</div>
+
+<script>
+    const leaguesData = {
+        "الدوري التونسي": ["الترجي الرياضي", "النادي الإفريقي", "النجم الساحلي", "الصفاقسي", "الاتحاد المنستيري", "الملعب التونسي"],
+        "الدوري المصري": ["الأهلي", "الزمالك", "بيراميدز", "المصري البورسعيدي", "سيراميكا كليوباترا"],
+        "الدوري الجزائري": ["مولودية الجزائر", "شباب بلوزداد", "اتحاد الجزائر", "شبيبة القبائل", "نادي بارادو"],
+        "الدوري المغربي": ["الوداد الرياضي", "الرجاء الرياضي", "نهضة بركان", "الجيش الملكي", "اتحاد طنجة"],
+        "الدوري الليبي": ["الاتحاد", "الأهلي طرابلس", "الأهلي بنغازي", "النصر", "السويحلي"],
+        "الدوري الفرنسي": ["باريس سان جيرمان", "مارسيليا", "ليون", "موناكو", "ليل"],
+        "الدوري البرتغالي": ["بنفيكا", "بورتو", "سبورتنج لشبونة", "براغا"],
+        "الدوري البلجيكي": ["كلوب بروج", "أندرلخت", "جينك", "رويال أنتويرب"],
+        "دوري أبطال إفريقيا": ["الأهلي المصري", "صنداونز", "الوداد الرياضي", "الرجاء الرياضي"],
+        "الدوري الإنجليزي الممتاز": ["مانشستر سيتي", "أرسنال", "ليفربول", "تشيلسي", "مانشستر يونايتد"],
