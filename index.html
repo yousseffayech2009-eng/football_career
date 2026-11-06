@@ -3,93 +3,452 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة محاكاة مسيرة اللاعب والتدريب</title>
+    <title>football_career by youssef</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-        button, input, select { padding: 10px; margin: 10px 0; width: 100%; font-size: 16px; border-radius: 5px; border: none; box-sizing: border-box; }
-        button { background-color: #28a745; color: white; cursor: pointer; }
+        button, input, select { padding: 12px; margin: 8px 0; width: 100%; font-size: 16px; border-radius: 5px; border: none; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; cursor: pointer; font-weight: bold; }
         button:hover { background-color: #218838; }
         input, select { background: #333; color: white; text-align: center; }
-        #game-log { text-align: right; background: #252525; padding: 15px; border-radius: 5px; height: 300px; overflow-y: auto; margin-top: 15px; font-size: 14px; }
+        .btn-action { background-color: #007bff; margin-top: 10px; }
+        .btn-action:hover { background-color: #0056b3; }
+        #stats-panel { display: flex; justify-content: space-around; background: #2a2a2a; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+        #game-log { text-align: right; background: #252525; padding: 15px; border-radius: 5px; height: 220px; overflow-y: auto; margin-top: 15px; font-size: 14px; border: 1px solid #444; }
+        .offer-card { background: #333; border: 1px solid #28a745; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: right; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>⚽ محاكاة مسيرة الاحتراف والتدريب ⚽</h2>
+    <h2>⚽ football_career by youssef ⚽</h2>
+
     <div id="setup-screen">
-        <input type="text" id="player-name" placeholder="أدخل اسم اللاعب"><br>
+        <input type="text" id="player-name" placeholder="أدخل اسم اللاعب">
         <select id="player-pos">
             <option value="مهاجم">مهاجم</option>
             <option value="وسط">وسط</option>
             <option value="دفاع">دفاع</option>
             <option value="حارس">حارس</option>
-        </select><br>
+        </select>
         <select id="league-select">
             <option value="الدوري التونسي">الدوري التونسي</option>
             <option value="الدوري المصري">الدوري المصري</option>
             <option value="الدوري الجزائري">الدوري الجزائري</option>
             <option value="الدوري المغربي">الدوري المغربي</option>
-            <option value="الدوري الليبي">الدوري الليبي</option>
-            <option value="الدوري الفرنسي">الدوري الفرنسي</option>
-            <option value="الدوري البرتغالي">الدوري البرتغالي</option>
-            <option value="الدوري البلجيكي">الدوري البلجيكي</option>
-            <option value="دوري أبطال إفريقيا">دوري أبطال إفريقيا</option>
-            <option value="الدوري الإنجليزي الممتاز">الدوري الإنجليزي الممتاز</option>
+            <option value="الدوري الإنجليزي">الدوري الإنجليزي الممتاز</option>
             <option value="الدوري الإسباني">الدوري الإسباني</option>
             <option value="الدوري الإيطالي">الدوري الإيطالي</option>
-        </select><br>
+            <option value="الدوري الألماني">الدوري الألماني</option>
+            <option value="الدوري الفرنسي">الدوري الفرنسي</option>
+            <option value="الدوري السعودي">الدوري السعودي</option>
+            <option value="الدوري البرازيلي">الدوري البرازيلي</option>
+            <option value="الدوري الأرجنتيني">الدوري الأرجنتيني</option>
+        </select>
         <button onclick="startGame()">بدء المسيرة</button>
     </div>
 
     <div id="game-screen" style="display:none;">
         <h3 id="status-bar"></h3>
+        
+        <div id="stats-panel">
+            <div>الموسم: <span id="stat-season">1</span></div>
+            <div>المباراة: <span id="stat-match">1</span>/38</div>
+            <div>الأهداف: <span id="stat-goals">0</span></div>
+            <div>الطاقة: <span id="stat-overall">65</span></div>
+        </div>
+
         <div id="game-log"></div>
-        <div id="choices-area"></div>
+
+        <div id="actions-area">
+            <button class="btn-action" onclick="playMatch()">خوض المباراة القادمة ⚽</button>
+            <button class="btn-action" style="background-color: #e0a800;" onclick="trainPlayer()">تدريب (+الطاقة) 🏋️‍♂️</button>
+        </div>
+
+        <div id="offers-area" style="display:none;">
+            <h3>📝 عروض سوق الانتقالات</h3>
+            <div id="offers-list"></div>
+            <button onclick="startNewSeason()" style="background-color: #6c757d;">البقاء مع الفريق الحالي لـ موسم آخر</button>
+        </div>
     </div>
 </div>
 
 <script>
-    const leaguesData = {
-        "الدوري التونسي": ["الترجي الرياضي", "النادي الإفريقي", "النجم الساحلي", "الصفاقسي", "الاتحاد المنستيري", "الملعب التونسي"],
-        "الدوري المصري": ["الأهلي", "الزمالك", "بيراميدز", "المصري البورسعيدي", "سيراميكا كليوباترا"],
-        "الدوري الجزائري": ["مولودية الجزائر", "شباب بلوزداد", "اتحاد الجزائر", "شبيبة القبائل", "نادي بارادو"],
-        "الدوري المغربي": ["الوداد الرياضي", "الرجاء الرياضي", "نهضة بركان", "الجيش الملكي", "اتحاد طنجة"],
-        "الدوري الليبي": ["الاتحاد", "الأهلي طرابلس", "الأهلي بنغازي", "النصر", "السويحلي"],
-        "الدوري الفرنسي": ["باريس سان جيرمان", "مارسيليا", "ليون", "موناكو", "ليل"],
-        "الدوري البرتغالي": ["بنفيكا", "بورتو", "سبورتنج لشبونة", "براغا"],
-        "الدوري البلجيكي": ["كلوب بروج", "أندرلخت", "جينك", "رويال أنتويرب"],
-        "دوري أبطال إفريقيا": ["الأهلي المصري", "صنداونز", "الوداد الرياضي", "الرجاء الرياضي"],
-        "الدوري الإنجليزي الممتاز": ["مانشستر سيتي", "أرسنال", "ليفربول", "تشيلسي", "مانشستر يونايتد"],
-        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "إشبيلية"],
-        "الدوري الإيطالي": ["إنتر ميلان", "يوفنتوس", "إيه سي ميلان", "نابولي"]
+    const database = {
+        "الدوري التونسي": ["النادي الإفريقي", "الترجي الرياضي", "النجم الساحلي", "الصفاقسي", "الملعب التونسي"],
+        "الدوري المصري": ["الأهلي", "الزمالك", "بيراميدز", "المصري"],
+        "الدوري الجزائري": ["مولودية الجزائر", "شباب بلوزداد", "اتحاد الجزائر", "شبيبة القبائل"],
+        "الدوري المغربي": ["الوداد الرياضي", "الرجاء الرياضي", "نهضة بركان", "الجيش الملكي"],
+        "الدوري الإنجليزي": ["مانشستر سيتي", "ليفربول", "أرسنال", "ريال مدريد (دعوة)", "تشيلسي", "مانشستر يونايتد"],
+        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "فياريال"],
+        "الدوري الإيطالي": ["إنتر ميلان", "يوفنتوس", "إيه سي ميلان", "نابولي"],
+        "الدوري الألماني": ["بايرن ميونخ", "بوروسيا دورتموند", "باير ليفركوزن"],
+        "الدوري الفرنسي": ["باريس سان جيرمان", "مارسيليا", "موناكو", "ليون"],
+        "الدوري السعودي": ["الهلال", "النصر", "الاتحاد", "الأهلي"],
+        "الدوري البرازيلي": ["فلامينغو", "بالميراس", "سانتوس", "ساو باولو"],
+        "الدوري الأرجنتيني": ["بوكا جونيورز", "ريفر بليت", "راسينغ"]
+    };
+
+    let player = {
+        name: "",
+        pos: "",
+        league: "",
+        team: "",
+        season: 1,
+        match: 1,
+        goals: 0,
+        overall: 65
     };
 
     function startGame() {
-        const playerName = document.getElementById("player-name").value.trim();
-        const playerPos = document.getElementById("player-pos").value;
-        const selectedLeague = document.getElementById("league-select").value;
-
-        if (playerName === "") {
-            alert("الرجاء إدخال اسم اللاعب أولاً!");
+        const nameInput = document.getElementById("player-name").value.trim();
+        if (!nameInput) {
+            alert("الرجاء إدخال اسم اللاعب!");
             return;
         }
+
+        player.name = nameInput;
+        player.pos = document.getElementById("player-pos").value;
+        player.league = document.getElementById("league-select").value;
+
+        const teams = database[player.league];
+        player.team = teams[Math.floor(Math.random() * teams.length)];
 
         document.getElementById("setup-screen").style.display = "none";
         document.getElementById("game-screen").style.display = "block";
 
-        const teams = leaguesData[selectedLeague] || ["نادي محلي"];
-        const randomTeam = teams[Math.floor(Math.random() * teams.length)];
+        updateUI();
+        log(`مرحباً بك يا <strong>${player.name}</strong>! انطلقت مسيرتك الاحترافية مع نادي <strong>${player.team}</strong> في <strong>${player.league}</strong>.`);
+    }
 
-        document.getElementById("status-bar").innerText = `اللاعب: ${playerName} | المركز: ${playerPos} | النادي: ${randomTeam}`;
+    function updateUI() {
+        document.getElementById("status-bar").innerText = `${player.name} | ${player.pos} | ${player.team}`;
+        document.getElementById("stat-season").innerText = player.season;
+        document.getElementById("stat-match").innerText = player.match;
+        document.getElementById("stat-goals").innerText = player.goals;
+        document.getElementById("stat-overall").innerText = player.overall;
+    }
+
+    function log(message) {
+        const logBox = document.getElementById("game-log");
+        logBox.innerHTML = `<p style="margin: 5px 0;">- ${message}</p>` + logBox.innerHTML;
+    }
+
+    function playMatch() {
+        if (player.match > 38) return;
+
+        const teams = database[player.league].filter(t => t !== player.team);
+        const opponent = teams[Math.floor(Math.random() * teams.length)] || "خصم محلي";
         
-        const gameLog = document.getElementById("game-log");
-        gameLog.innerHTML = `<p>مرحباً بك يا ${playerName}! لقد وقعت عقداً رسمياً للعب في صفوف نادي <strong>${randomTeam}</strong> (${selectedLeague}) في مركز <strong>${playerPos}</strong>.</p>` +
-                            `<p>تبدأ الآن رحلتك نحو النجومية، استعد للموسم الجديد وخض التمارين بقوة لتثبت مكانتك في التشكيلة الأساسية!</p>`;
+        // حساب الأهداف بناءً على المركز والطاقة
+        let chance = Math.random();
+        let scored = 0;
+        
+        if (player.pos === "مهاجم" && chance > 0.4) scored = Math.floor(Math.random() * 2) + 1;
+        else if (player.pos === "وسط" && chance > 0.6) scored = 1;
+        else if (player.pos === "دفاع" && chance > 0.85) scored = 1;
+
+        player.goals += scored;
+        
+        let myGoals = Math.floor(Math.random() * 3) + scored;
+        let oppGoals = Math.floor(Math.random() * 3);
+
+        let resultText = myGoals > oppGoals ? "فوز 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "خسارة 💔");
+
+        log(`المباراة ${player.match}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resultText}). ${scored > 0 ? `⚽ سجلت ${scored} هدف!` : ''}`);
+
+        player.match++;
+        updateUI();
+
+        if (player.match > 38) {
+            endSeason();
+        }
+    }
+
+    function trainPlayer() {
+        if (player.overall < 99) {
+            player.overall += 1;
+            log(`🏋️‍♂️ خضت تدريبات مكثفة! ارتفعت طاقتك وأصبحت <strong>${player.overall}</strong>.`);
+            updateUI();
+        } else {
+            log(`💪 أنت في قمة التطور والجاهزية البدنية (99)!`);
+        }
+    }
+
+    function endSeason() {
+        document.getElementById("actions-area").style.display = "none";
+        document.getElementById("offers-area").style.display = "block";
+
+        log(`🏁 <strong>انتهاء الموسم ${player.season}!</strong> سجلت ${player.goals} هدفاً هذا الموسم وتقييمك الحالي ${player.overall}.`);
+
+        generateOffers();
+    }
+
+    function generateOffers() {
+        const offersList = document.getElementById("offers-list");
+        offersList.innerHTML = "";
+
+        // اختيار دوريات عشوائية للعروض
+        let availableLeagues = Object.keys(database);
+        let selectedLeagues = availableLeagues.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+        selectedLeagues.forEach(l => {
+            let randomTeam = database[l][Math.floor(Math.random() * database[l].length)];
+            let div = document.createElement("div");
+            div.className = "offer-card";
+            div.innerHTML = `
+                <strong>نادي: ${randomTeam}</strong> (${l})<br>
+                <button onclick="acceptOffer('${randomTeam}', '${l}')" style="margin-top:5px; padding:5px;">قبول العرض والانتقال ✈️</button>
+            `;
+            offersList.appendChild(div);
+        });
+    }
+
+    function acceptOffer(newTeam, newLeague) {
+        player.team = newTeam;
+        player.league = newLeague;
+        log(`✍️ وقعت رسمياً مع نادي <strong>${player.team}</strong> في <strong>${player.league}</strong>!`);
+        startNewSeason();
+    }
+
+    function startNewSeason() {
+        player.season++;
+        player.match = 1;
+        
+        document.getElementById("offers-area").style.display = "none";
+        document.getElementById("actions-area").style.display = "block";
+        
+        updateUI();
+        log(`🚀 **بداية الموسم الجديد ${player.season}** مع فريق ${player.team}. بالتوفيق!`);
     }
 </script>
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>football_career by youssef</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
+        .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        button, input, select { padding: 12px; margin: 8px 0; width: 100%; font-size: 16px; border-radius: 5px; border: none; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #218838; }
+        input, select { background: #333; color: white; text-align: center; }
+        .btn-action { background-color: #007bff; margin-top: 10px; }
+        .btn-action:hover { background-color: #0056b3; }
+        #stats-panel { display: flex; justify-content: space-around; background: #2a2a2a; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+        #game-log { text-align: right; background: #252525; padding: 15px; border-radius: 5px; height: 220px; overflow-y: auto; margin-top: 15px; font-size: 14px; border: 1px solid #444; }
+        .offer-card { background: #333; border: 1px solid #28a745; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: right; }
+    </style>
+</head>
+<body>
 
+<div class="container">
+    <h2>⚽ football_career by youssef ⚽</h2>
+
+    <div id="setup-screen">
+        <input type="text" id="player-name" placeholder="أدخل اسم اللاعب">
+        <select id="player-pos">
+            <option value="مهاجم">مهاجم</option>
+            <option value="وسط">وسط</option>
+            <option value="دفاع">دفاع</option>
+            <option value="حارس">حارس</option>
+        </select>
+        <select id="league-select">
+            <option value="الدوري التونسي">الدوري التونسي</option>
+            <option value="الدوري المصري">الدوري المصري</option>
+            <option value="الدوري الجزائري">الدوري الجزائري</option>
+            <option value="الدوري المغربي">الدوري المغربي</option>
+            <option value="الدوري الإنجليزي">الدوري الإنجليزي الممتاز</option>
+            <option value="الدوري الإسباني">الدوري الإسباني</option>
+            <option value="الدوري الإيطالي">الدوري الإيطالي</option>
+            <option value="الدوري الألماني">الدوري الألماني</option>
+            <option value="الدوري الفرنسي">الدوري الفرنسي</option>
+            <option value="الدوري السعودي">الدوري السعودي</option>
+            <option value="الدوري البرازيلي">الدوري البرازيلي</option>
+            <option value="الدوري الأرجنتيني">الدوري الأرجنتيني</option>
+        </select>
+        <button onclick="startGame()">بدء المسيرة</button>
+    </div>
+
+    <div id="game-screen" style="display:none;">
+        <h3 id="status-bar"></h3>
+        
+        <div id="stats-panel">
+            <div>الموسم: <span id="stat-season">1</span></div>
+            <div>المباراة: <span id="stat-match">1</span>/38</div>
+            <div>الأهداف: <span id="stat-goals">0</span></div>
+            <div>الطاقة: <span id="stat-overall">65</span></div>
+        </div>
+
+        <div id="game-log"></div>
+
+        <div id="actions-area">
+            <button class="btn-action" onclick="playMatch()">خوض المباراة القادمة ⚽</button>
+            <button class="btn-action" style="background-color: #e0a800;" onclick="trainPlayer()">تدريب (+الطاقة) 🏋️‍♂️</button>
+        </div>
+
+        <div id="offers-area" style="display:none;">
+            <h3>📝 عروض سوق الانتقالات</h3>
+            <div id="offers-list"></div>
+            <button onclick="startNewSeason()" style="background-color: #6c757d;">البقاء مع الفريق الحالي لـ موسم آخر</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const database = {
+        "الدوري التونسي": ["النادي الإفريقي", "الترجي الرياضي", "النجم الساحلي", "الصفاقسي", "الملعب التونسي"],
+        "الدوري المصري": ["الأهلي", "الزمالك", "بيراميدز", "المصري"],
+        "الدوري الجزائري": ["مولودية الجزائر", "شباب بلوزداد", "اتحاد الجزائر", "شبيبة القبائل"],
+        "الدوري المغربي": ["الوداد الرياضي", "الرجاء الرياضي", "نهضة بركان", "الجيش الملكي"],
+        "الدوري الإنجليزي": ["مانشستر سيتي", "ليفربول", "أرسنال", "ريال مدريد (دعوة)", "تشيلسي", "مانشستر يونايتد"],
+        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "فياريال"],
+        "الدوري الإيطالي": ["إنتر ميلان", "يوفنتوس", "إيه سي ميلان", "نابولي"],
+        "الدوري الألماني": ["بايرن ميونخ", "بوروسيا دورتموند", "باير ليفركوزن"],
+        "الدوري الفرنسي": ["باريس سان جيرمان", "مارسيليا", "موناكو", "ليون"],
+        "الدوري السعودي": ["الهلال", "النصر", "الاتحاد", "الأهلي"],
+        "الدوري البرازيلي": ["فلامينغو", "بالميراس", "سانتوس", "ساو باولو"],
+        "الدوري الأرجنتيني": ["بوكا جونيورز", "ريفر بليت", "راسينغ"]
+    };
+
+    let player = {
+        name: "",
+        pos: "",
+        league: "",
+        team: "",
+        season: 1,
+        match: 1,
+        goals: 0,
+        overall: 65
+    };
+
+    function startGame() {
+        const nameInput = document.getElementById("player-name").value.trim();
+        if (!nameInput) {
+            alert("الرجاء إدخال اسم اللاعب!");
+            return;
+        }
+
+        player.name = nameInput;
+        player.pos = document.getElementById("player-pos").value;
+        player.league = document.getElementById("league-select").value;
+
+        const teams = database[player.league];
+        player.team = teams[Math.floor(Math.random() * teams.length)];
+
+        document.getElementById("setup-screen").style.display = "none";
+        document.getElementById("game-screen").style.display = "block";
+
+        updateUI();
+        log(`مرحباً بك يا <strong>${player.name}</strong>! انطلقت مسيرتك الاحترافية مع نادي <strong>${player.team}</strong> في <strong>${player.league}</strong>.`);
+    }
+
+    function updateUI() {
+        document.getElementById("status-bar").innerText = `${player.name} | ${player.pos} | ${player.team}`;
+        document.getElementById("stat-season").innerText = player.season;
+        document.getElementById("stat-match").innerText = player.match;
+        document.getElementById("stat-goals").innerText = player.goals;
+        document.getElementById("stat-overall").innerText = player.overall;
+    }
+
+    function log(message) {
+        const logBox = document.getElementById("game-log");
+        logBox.innerHTML = `<p style="margin: 5px 0;">- ${message}</p>` + logBox.innerHTML;
+    }
+
+    function playMatch() {
+        if (player.match > 38) return;
+
+        const teams = database[player.league].filter(t => t !== player.team);
+        const opponent = teams[Math.floor(Math.random() * teams.length)] || "خصم محلي";
+        
+        // حساب الأهداف بناءً على المركز والطاقة
+        let chance = Math.random();
+        let scored = 0;
+        
+        if (player.pos === "مهاجم" && chance > 0.4) scored = Math.floor(Math.random() * 2) + 1;
+        else if (player.pos === "وسط" && chance > 0.6) scored = 1;
+        else if (player.pos === "دفاع" && chance > 0.85) scored = 1;
+
+        player.goals += scored;
+        
+        let myGoals = Math.floor(Math.random() * 3) + scored;
+        let oppGoals = Math.floor(Math.random() * 3);
+
+        let resultText = myGoals > oppGoals ? "فوز 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "خسارة 💔");
+
+        log(`المباراة ${player.match}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resultText}). ${scored > 0 ? `⚽ سجلت ${scored} هدف!` : ''}`);
+
+        player.match++;
+        updateUI();
+
+        if (player.match > 38) {
+            endSeason();
+        }
+    }
+
+    function trainPlayer() {
+        if (player.overall < 99) {
+            player.overall += 1;
+            log(`🏋️‍♂️ خضت تدريبات مكثفة! ارتفعت طاقتك وأصبحت <strong>${player.overall}</strong>.`);
+            updateUI();
+        } else {
+            log(`💪 أنت في قمة التطور والجاهزية البدنية (99)!`);
+        }
+    }
+
+    function endSeason() {
+        document.getElementById("actions-area").style.display = "none";
+        document.getElementById("offers-area").style.display = "block";
+
+        log(`🏁 <strong>انتهاء الموسم ${player.season}!</strong> سجلت ${player.goals} هدفاً هذا الموسم وتقييمك الحالي ${player.overall}.`);
+
+        generateOffers();
+    }
+
+    function generateOffers() {
+        const offersList = document.getElementById("offers-list");
+        offersList.innerHTML = "";
+
+        // اختيار دوريات عشوائية للعروض
+        let availableLeagues = Object.keys(database);
+        let selectedLeagues = availableLeagues.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+        selectedLeagues.forEach(l => {
+            let randomTeam = database[l][Math.floor(Math.random() * database[l].length)];
+            let div = document.createElement("div");
+            div.className = "offer-card";
+            div.innerHTML = `
+                <strong>نادي: ${randomTeam}</strong> (${l})<br>
+                <button onclick="acceptOffer('${randomTeam}', '${l}')" style="margin-top:5px; padding:5px;">قبول العرض والانتقال ✈️</button>
+            `;
+            offersList.appendChild(div);
+        });
+    }
+
+    function acceptOffer(newTeam, newLeague) {
+        player.team = newTeam;
+        player.league = newLeague;
+        log(`✍️ وقعت رسمياً مع نادي <strong>${player.team}</strong> في <strong>${player.league}</strong>!`);
+        startNewSeason();
+    }
+
+    function startNewSeason() {
+        player.season++;
+        player.match = 1;
+        
+        document.getElementById("offers-area").style.display = "none";
+        document.getElementById("actions-area").style.display = "block";
+        
+        updateUI();
+        log(`🚀 **بداية الموسم الجديد ${player.season}** مع فريق ${player.team}. بالتوفيق!`);
+    }
+</script>
+
+</body>
+</html>
