@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>football_career by youssef v8</title>
+    <title>football_career by youssef v9</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -111,9 +111,9 @@
         let teams = database[leagueName];
         if (!teams) return 2;
         let index = teams.indexOf(teamName);
-        if (index <= 2) return 3; // فرق القمة القوية جداً
-        if (index <= 10) return 2; // فرق الوسط
-        return 1; // فرق الصفوف الأخيرة المهددة
+        if (index <= 2) return 3;
+        if (index <= 10) return 2;
+        return 1;
     }
 
     function startGame() {
@@ -128,7 +128,6 @@
         player.league = document.getElementById("league-select").value;
 
         const teams = database[player.league];
-        // لتشجيع الواقعية، إذا اخترت دوري قوي، تبدأ غالباً بفريق وسط أو متواضع إلا إذا كانت العشوائية لصالحك
         player.team = teams[Math.floor(Math.random() * teams.length)];
 
         document.getElementById("setup-screen").style.display = "none";
@@ -196,7 +195,6 @@
         let homeTeam = match.home;
         let awayTeam = match.away;
 
-        // محاكاة بقية مباريات الدوري للجولة الحالية ليتغير الترتيب باستمرار
         let teams = database[player.league];
         let processedTeams = new Set([homeTeam, awayTeam]);
 
@@ -223,7 +221,6 @@
             }
         });
 
-        // حساب واقعي لمباراة فريقك بناءً على قوة النادي وطاقة اللاعب
         let homeTier = getTeamTier(homeTeam, player.league);
         let awayTier = getTeamTier(awayTeam, player.league);
         let teamTier = getTeamTier(player.team, player.league);
@@ -235,7 +232,6 @@
         let isMyMatch = (homeTeam === player.team || awayTeam === player.team);
 
         if (isMyMatch) {
-            // نسبة تسجيل تعتمد على قوة فريقك وطاقتك (لن تسجل في كل مباراة بسهولة)
             let chance = Math.random();
             let successRate = 0.60 - (player.overall * 0.003) - (teamTier * 0.05);
 
@@ -257,10 +253,10 @@
         if (homeGoals > awayGoals) {
             leagueTable[homeTeam] = (leagueTable[homeTeam] || 0) + 3;
         } else if (awayGoals > homeGoals) {
-            leagueTable[awayTeam] = (leagueTeam[awayTeam] || 0) + 3;
+            leagueTable[awayTeam] = (leagueTable[awayTeam] || 0) + 3;
         } else {
             leagueTable[homeTeam] = (leagueTable[homeTeam] || 0) + 1;
-            leagueTable[awayTeam] = (leagueTeam[awayTeam] || 0) + 1;
+            leagueTable[awayTeam] = (leagueTable[awayTeam] || 0) + 1;
         }
 
         if (isMyMatch) {
@@ -299,14 +295,21 @@
         let rank = sortedTeams.indexOf(player.team) + 1;
 
         let qualificationText = "";
+        let isTopEuro = topEuropeanLeagues.includes(player.league);
         let isAfricanArab = africanArabLeagues.includes(player.league);
 
-        if (isAfricanArab) {
-            if (rank <= 2) qualificationText = "🏆 تأهلت إلى المنافسات القارية المتقدمة!";
-            else qualificationText = "لم تتأهل لمسابقة قارية هذا الموسم.";
-        } else {
-            if (rank <= 4) qualificationText = "⭐ تأهلت إلىدوري أبطال أوروبا!";
-            else qualificationText = "لم تتأهل لدوري الأبطال هذا الموسم.";
+        if (isTopEuro) {
+            if (rank <= 4) {
+                qualificationText = "⭐🏆 مبروك! تأهلت رسمياً إلى دوري أبطال أوروبا (UEFA Champions League)!";
+            } else {
+                qualificationText = "لم تتأهل لدوري أبطال أوروبا هذا الموسم (يجب إنهاء الدوري في المراكز الأربعة الأولى).";
+            }
+        } else if (isAfricanArab) {
+            if (rank <= 2) {
+                qualificationText = "🏆 تأهلت إلى المنافسات القارية المتقدمة!";
+            } else {
+                qualificationText = "لم تتأهل لمسابقة قارية هذا الموسم.";
+            }
         }
 
         if (player.season >= TOTAL_SEASONS) {
@@ -333,14 +336,11 @@
         const offersList = document.getElementById("offers-list");
         offersList.innerHTML = "";
 
-        // قاعدة واقعية للانتقالات: في المواسم الأولى (أقل من الموسم 4 أو إذا كانت طاقتك أقل من 78)، 
-        // لا تظهر عروض الدوريات الأوروبية الكبرى، وتقتصر على الدوريات العربية/المحلية أو الأندية المتوسطة.
         let availableLeagues = Object.keys(database);
         if (player.season < 4 && player.overall < 78) {
             availableLeagues = availableLeagues.filter(l => !topEuropeanLeagues.includes(l));
         }
 
-        // اختيار 3 إلى 4 عروض واقعية عشوائية
         for (let i = 0; i < 4; i++) {
             let randomLeague = availableLeagues[Math.floor(Math.random() * availableLeagues.length)];
             let teamList = database[randomLeague];
