@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>football_career by youssef v12</title>
+    <title>football_career by youssef v13</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -38,7 +38,59 @@
             <option value="الدوري الجزائري">الدوري الجزائري</option>
             <option value="الدوري المغربي">الدوري المغربي</option>
             <option value="الدوري السعودي">الدوري السعودي</option>
-            <option value="الدوري الفرنسي">
+            <option value="الدوري الفرنسي">الدوري الفرنسي</option>
+            <option value="الدوري الألماني">الدوري الألماني</option>
+            <option value="الدوري الإيطالي">الدوري الإيطالي</option>
+            <option value="الدوري الإسباني">الدوري الإسباني</option>
+            <option value="الدوري الإنجليزي الممتاز">الدوري الإنجليزي الممتاز</option>
+        </select>
+        <button onclick="startGame()">بدء المسيرة</button>
+    </div>
+
+    <div id="game-screen" style="display:none;">
+        <h3 id="status-bar"></h3>
+        
+        <div id="stats-panel">
+            <div>الموسم: <span id="stat-season">1</span>/22</div>
+            <div>المرحلة: <span id="stat-phase">الدوري المحلي</span></div>
+            <div>الأهداف: <span id="stat-goals">0</span></div>
+            <div>الطاقة: <span id="stat-overall">65</span></div>
+            <div>الترتيب/المباراة: <span id="stat-rank">1</span></div>
+        </div>
+
+        <div id="game-log"></div>
+
+        <div id="actions-area">
+            <button class="btn-action" onclick="playMatch()">خوض المباراة القادمة ⚽</button>
+            <button id="train-btn" class="btn-action" style="background-color: #e0a800;" onclick="trainPlayer()" disabled>تدريب (+الطاقة) 🏋️‍♂️ (يلزم 3 مباريات)</button>
+        </div>
+
+        <div id="offers-area" style="display:none;">
+            <h3>📝 نهاية الموسم وسوق الانتقالات</h3>
+            <div id="season-summary" style="margin-bottom:15px; font-weight:bold; color:#28a745;"></div>
+            <div id="offers-list" style="max-height: 250px; overflow-y: auto;"></div>
+            <button id="next-season-btn" onclick="startNewSeason()" style="background-color: #6c757d;">البقاء مع الفريق الحالي لـ موسم آخر</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const database = {
+        "الدوري التونسي": ["الترجي الرياضي", "النادي الإفريقي", "النجم الساحلي", "الصفاقسي", "الملعب التونسي", "الاتحاد المنستيري", "اتحاد بن قردان", "الأولمبي الباجي", "مستقبل سليمان", "اتحاد تطاوين", "قوافل قفصة", "نجم المتلوي", "مستقبل قابس", "الشبيبة القيروانية", "أمل حمام سوسة", "هلال الشابة", "النادي البنزرتي", "مكارم مهدية"],
+        "الدوري المصري": ["الأهلي", "الزمالك", "بيراميدز", "المصري البورسعيدي", "سيراميكا كليوباترا", "البنك الأهلي", "فاركو", "الاتحاد السكندري", "سموحة", "الإسماعيلي", "طلائع الجيش", "إنبي", "زد إف سي", "غزل المحلة", "حرس الحدود", "بتروجت", "المقاولون العرب", "سموحة الرياضي"],
+        "الدوري الجزائري": ["مولودية الجزائر", "شباب بلوزداد", "اتحاد الجزائر", "شبيبة القبائل", "وفاق سطيف", "شبيبة الساورة", "نادي بارادو", "اتحاد خنشلة", "أولمبي الشلف", "نجم مقرة", "اتحاد بسكرة", "اتحاد العاصمة", "مولودية وجدة", "شبيبة بجاية", "ترجي مستغانم", "اتحاد سوف", "نصر حسين داي", "رائد القبة"],
+        "الدوري المغربي": ["الوداد الرياضي", "الرجاء الرياضي", "نهضة بركان", "الجيش الملكي", "الفتح الرياضي", "المغرب الفاسي", "حسنية أكادير", "اتحاد طنجة", "نهضة الزمامرة", "أولمبيك آسفي", "شباب السوالم", "اتحاد تواركة", "المغرب التطواني", "الدفاع الحسني الجديدي", "سريع واد زم", "الشباب الرياضي السالمي", "الرجاء البلالي", "نهضة سطات"],
+        "الدوري السعودي": ["الهلال", "النصر", "الاتحاد", "الأهلي", "الشباب", "التعاون", "الاتفاق", "الفتح", "الرياض", "الخليج", "ضمك", "الرائد", "الوحدة", "الأخدود", "الخلود", "العروبة", "نيوم", "الفيصلي"],
+        "الدوري الفرنسي": ["باريس سان جيرمان", "مارسيليا", "موناكو", "ليون", "ليل", "نيس", "ستراسبورغ", "لانس", "رين", "تولوز", "بريست", "مونبلييه", "ستاد ريمس", "لوهافر", "نانت", "أنجيه", "سنت إتيان", "ميتز"],
+        "الدوري الألماني": ["بايرن ميونخ", "بوروسيا دورتموند", "باير ليفركوزن", "لايبزيغ", "آنتراخت فرانكفورت", "شتوتغارت", "فولفسبورغ", "فرايبورغ", "هوفنهايم", "أوغسبورغ", "فيردر بريمن", "ماينز 05", "بروسيا مونشنغلادباخ", "بوخوم", "هايدنهايم", "سانت باولي", "كولن", "يونيون برلين"],
+        "الدوري الإيطالي": ["إنتر ميلان", "يوفنتوس", "إيه سي ميلان", "نابولي", "أتالانتا", "لاتسيو", "روما", "فيورنتينا", "بولونيا", "تورينو", "مونزا", "جنوى", "ليتشي", "كالياري", "إمبولي", "هيلاس فيرونا", "بارما", "أودينيزي"],
+        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "أتلتيك بلباو", "ريال سوسيداد", "فياريال", "ريال بيتيس", "إشبيلية", "فالنسيا", "سيلتا فيغو", "أوساسونا", "جيرونا", "مايوركا", "رايو فايكانو", "خيتافي", "ألافيس", "لاس بالماس", "بلد الوليد"],
+        "الدوري الإنجليزي الممتاز": ["مانشستر سيتي", "ليفربول", "أرسنال", "تشيلسي", "مانشستر يونايتد", "توتنهام هوتسبير", "نيوكاسل يونايتد", "أستون فيلا", "برايتون", "وست هام يونايتد", "كريستال بالاس", "فولهام", "برينتفورد", "إيفرتون", "وولفرهامبتون", "بورنموث", "نوتنغهام فورست", "ليستر سيتي"]
+    };
+
+    const africanLeagues = ["الدوري التونسي", "الدوري المصري", "الدوري الجزائري", "الدوري المغربي"];
+    const asianLeagues = ["الدوري السعودي"];
+    const topEuropeanLeagues = ["الدوري الإنجليزي الممتاز", "الدوري الإسباني", "الدوري الإيطالي", "الدوري الألماني", "الدوري الفرنسي"];
     let player = {
         name: "",
         pos: "",
@@ -64,9 +116,9 @@
         let teams = database[leagueName];
         if (!teams) return 2;
         let index = teams.indexOf(teamName);
-        if (index <= 2) return 3; // أندية قوية جداً (مستوحاة من كبرى الفرق)
-        if (index <= 10) return 2; // أندية الوسط
-        return 1; // أندية القاع وصراع الهبوط
+        if (index <= 2) return 3; // أندية قمة قوية (مرشحة دائماً للمنافسة)
+        if (index <= 10) return 2; // أندية وسط الترتيب
+        return 1; // أندية القاع (صراع الهبوط والضعف الفني)
     }
 
     function startGame() {
@@ -87,7 +139,7 @@
         document.getElementById("game-screen").style.display = "block";
 
         initSeason();
-        log(`مرحباً بك يا <strong>${player.name}</strong>! انطلقت مسيرتك الاحترافية مع نادي <strong>${player.team}</strong> في <strong>${player.league}</strong>.`);
+        log(`مرحباً بك يا <strong>${player.name}</strong>! انطلقت مسيرتك مع نادي <strong>${player.team}</strong> في <strong>${player.league}</strong>.`);
     }
 
     function initSeason() {
@@ -163,7 +215,7 @@
         let homeTeam = match.home;
         let awayTeam = match.away;
 
-        // محاكاة واقعية لبقية مباريات الدوري لتتغير المراكز باستمرار ولا يبقى فريقك في الصدارة دائماً
+        // محاكاة واقعية لبقية أندية الدوري لضمان تغير المراكز وعدم بقاء فريقك بطلاً طوال الوقت
         let teams = database[player.league];
         let processedTeams = new Set([homeTeam, awayTeam]);
 
@@ -194,7 +246,6 @@
         let awayTier = getTeamTier(awayTeam, player.league);
         let teamTier = getTeamTier(player.team, player.league);
 
-        // محاكاة أهداف الفريقين بناءً على مستواهما الواقعي
         let homeGoals = Math.floor(Math.random() * (homeTier + 1));
         let awayGoals = Math.floor(Math.random() * (awayTier + 1));
 
@@ -203,13 +254,13 @@
 
         if (isMyMatch) {
             let chance = Math.random();
-            // نسبة واقعية تعتمد على قوة النادي وطاقة اللاعب لمنع الهيمنة المطلقة
-            let successRate = 0.65 - (player.overall * 0.0025) - (teamTier * 0.04);
+            // نسبة تسجيل واقعية تراعي قوة الخصم وصعوبة المباريات لمنع الهيمنة المطلقة
+            let successRate = 0.68 - (player.overall * 0.0025) - (teamTier * 0.035);
 
             if (chance > successRate) {
-                if (player.pos === "مهاجم") scored = Math.random() > 0.85 ? 2 : 1;
-                else if (player.pos === "وسط" && Math.random() > 0.75) scored = 1;
-                else if (player.pos === "دفاع" && Math.random() > 0.92) scored = 1;
+                if (player.pos === "مهاجم") scored = Math.random() > 0.82 ? 2 : 1;
+                else if (player.pos === "وسط" && Math.random() > 0.7) scored = 1;
+                else if (player.pos === "دفاع" && Math.random() > 0.9) scored = 1;
             }
 
             player.goals += scored;
@@ -234,8 +285,8 @@
             let opponent = homeTeam === player.team ? awayTeam : homeTeam;
             let myGoals = homeTeam === player.team ? homeGoals : awayGoals;
             let oppGoals = homeTeam === player.team ? awayGoals : homeGoals;
-            let resText = myGoals > oppGoals ? "فوز مستحق 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "هزيمة أو تعثر 💔");
-            let goalStatus = scored > 0 ? `⚽ سجلت ${scored} هدف` : `🛑 صيام عن التهديف`;
+            let resText = myGoals > oppGoals ? "فوز مستحق 🎉" : (myGoals === oppGoals ? "تعادل سلبي أو إيجابي 🤝" : "هزيمة أو تعثر قاسي 💔");
+            let goalStatus = scored > 0 ? `⚽ سجلت ${scored} هدف` : `🛑 صيام تهديفي`;
             
             log(`الجولة ${player.matchIndex + 1}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}) - ${goalStatus}`);
         }
@@ -254,12 +305,17 @@
 
         let isTopEuro = topEuropeanLeagues.includes(player.league);
         let isAfrican = africanLeagues.includes(player.league);
+        let isAsian = asianLeagues.includes(player.league);
 
+        // التحقق من التأهل القاري الواقعي حسب كل دوري
         if (isTopEuro && rank <= 4) {
             continentalName = "دوري أبطال أوروبا 🏆⭐";
             setupContinentalTournament();
         } else if (isAfrican && rank === 1) {
             continentalName = "دوري أبطال أفريقيا 🏆🌍";
+            setupContinentalTournament();
+        } else if (isAsian && rank <= 3) {
+            continentalName = "دوري أبطال آسيا 🏆🌏";
             setupContinentalTournament();
         } else {
             endSeason();
@@ -270,13 +326,13 @@
         player.phase = "continental";
         continentalMatchIndex = 0;
         continentalMatches = [
-            { stage: "مرحلة المجموعات - الجولة الأولى", opponent: "خصم قاري قوي (افتتاحي)" },
-            { test: "مرحلة المجموعات - الجولة الثانية", opponent: "خصم قاري قوي (خارج الديار)" },
+            { stage: "مرحلة المجموعات - الجولة 1", opponent: "خصم قاري قوي (افتتاحي)" },
+            { stage: "مرحلة المجموعات - الجولة 2", opponent: "خصم قاري قوي (خارج الديار)" },
             { stage: "ربع النهائي القاري", opponent: "عملاق الدور ربع النهائي" },
             { stage: "نصف النهائي القاري", opponent: "كبار القارة (نصف النهائي)" },
-            { stage: "نهائي البطولة الكبرى ⭐", opponent: "نهائي الحلم القاري" }
+            { stage: "نهائي البطولات الكبرى ⭐", opponent: "نهائي الحلم القاري المنتظر" }
         ];
-        log(`🌟 <strong>تأهل قاري رسمي!</strong> انتقلت الآن لخوض مباريات ${continentalName}. استعد لمواجهة أقوى أندية القارة!`);
+        log(`🌟 <strong>إنجاز قاري كبير!</strong> تأهلت إلى مباريات ${continentalName}. استعد لمعارك كروية ضارية مع عمالقة القارة!`);
         updateUI();
     }
 
@@ -286,24 +342,24 @@
         let currentMatch = continentalMatches[continentalMatchIndex];
         let opponent = currentMatch.opponent;
 
-        // مباريات قارية تتطلب أداءً قوياً وتتسم بالندية العالية
+        // مباريات قارية صعبة ومتقاربة تتطلب أداءً شاقاً
         let myGoals = Math.floor(Math.random() * 2);
         let oppGoals = Math.floor(Math.random() * 3);
 
         let scored = 0;
         let chance = Math.random();
-        let successRate = 0.58 - (player.overall * 0.003);
+        let successRate = 0.60 - (player.overall * 0.003);
 
         if (chance > successRate) {
-            if (player.pos === "مهاجم") scored = Math.random() > 0.82 ? 2 : 1;
-            else if (player.pos === "وسط" && Math.random() > 0.7) scored = 1;
+            if (player.pos === "مهاجم") scored = Math.random() > 0.8 ? 2 : 1;
+            else if (player.pos === "وسط" && Math.random() > 0.65) scored = 1;
             else if (player.pos === "دفاع" && Math.random() > 0.9) scored = 1;
         }
 
         player.goals += scored;
         myGoals += scored;
 
-        let resText = myGoals > oppGoals ? "انتصار قاري ثمين 🎉" : (myGoals === oppGoals ? "تعادل في معركة قارية 🤝" : "تعثر قاري صعب 💔");
+        let resText = myGoals > oppGoals ? "انتصار قاري بطولي 🎉" : (myGoals === oppGoals ? "تعادل في قمة قارية 🤝" : "هزيمة قارية صعبة 💔");
         let goalStatus = scored > 0 ? `⚽ سجلت ${scored} هدف` : `🛑 صيام عن التهديف`;
 
         log(`[${currentMatch.stage}] ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}) - ${goalStatus}`);
@@ -315,7 +371,7 @@
         updateUI();
 
         if (continentalMatchIndex >= continentalMatches.length) {
-            log(`🏆 اختتمت مشوار ${continentalName} لهذا الموسم بكثير من الخبرة والتحدي.`);
+            log(`🏆 اختتمت مشوار المنافسة في ${continentalName} لهذا الموسم.`);
             endSeason();
         }
     }
@@ -351,10 +407,10 @@
 
         document.getElementById("season-summary").innerHTML = `
             إنهاء الموسم ${player.season} في الدوري المحلي بالمركز <strong>#${rank}</strong> برصيد ${leagueTable[player.team] || 0} نقطة.<br>
-            المباريات والبطولات الملحقة تمت بنجاح.
+            وتمت المشاركة في المحطات القارية بنجاح.
         `;
 
-        log(`🏁 <strong>انتهاء الموسم ${player.season}!</strong> انتقل الآن إلى سوق الانتقالات أو جدد عقدك.`);
+        log(`🏁 <strong>انتهاء الموسم ${player.season}!</strong> انتقل الآن إلى سوق الانتقالات.`);
         generateOffers();
     }
 
@@ -363,7 +419,7 @@
         offersList.innerHTML = "";
 
         let availableLeagues = Object.keys(database);
-        // تقييد عروض الدوريات الأوروبية الكبرى للمواسم المتقدمة أو اللاعبين ذوي التقييم العالي
+        // منع الانتقال المبكر للدوريات الأوروبية الكبرى إلا بعد الموسم 4 أو وصول الطاقة إلى 78
         if (player.season < 4 && player.overall < 78) {
             availableLeagues = availableLeagues.filter(l => !topEuropeanLeagues.includes(l));
         }
