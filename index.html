@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>football_career by youssef v4</title>
+    <title>football_career by youssef v5</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -89,7 +89,6 @@
     };
 
     const africanLeagues = ["الدوري التونسي", "الدوري المصري", "الدوري الجزائري", "الدوري المغربي"];
-
     let player = {
         name: "",
         pos: "",
@@ -106,6 +105,16 @@
     let leagueTable = {};
     const TOTAL_SEASONS = 22;
     const TOTAL_MATCHES = 34;
+
+    // تحديد قوة الأندية تاريخياً (الفرق الأربعة الأولى في كل قائمة تعتبر أندية قوية)
+    function getTeamStrength(teamName, leagueName) {
+        let teams = database[leagueName];
+        if (!teams) return 2;
+        let index = teams.indexOf(teamName);
+        if (index <= 3) return 3; // فريق قوي (منافس على اللقب)
+        if (index <= 9) return 2; // فريق متوسط
+        return 1; // فريق متواضع / صراع تفادي الهبوط
+    }
 
     function startGame() {
         const nameInput = document.getElementById("player-name").value.trim();
@@ -138,7 +147,6 @@
         fixtures = [];
         let opponents = teams.filter(t => t !== player.team);
         
-        // بناء 34 مباراة بالضبط للفريق في الموسم
         for (let m = 0; m < TOTAL_MATCHES; m++) {
             let opponent = opponents[m % opponents.length];
             if (m < 17) {
@@ -184,43 +192,76 @@
         if (player.matchIndex >= TOTAL_MATCHES) return;
 
         let match = fixtures[player.matchIndex];
+        let homeTeam = match.home;
+        let awayTeam = match.away;
 
-        let homeGoals = Math.floor(Math.random() * 3);
-        let awayGoals = Math.floor(Math.random() * 3);
-        let scored = 0;
+        // حساب واقعي للأهداف بناءً على قوة الفريقين وطاقة اللاعب
+        let homeStrength = getTeamStrength(homeTeam, player.league);
+        let awayStrength = getTeamStrength(awayTeam, player.league);
 
-        let chance = Math.random();
-        if (player.pos === "مهاجم" && chance > 0.4) scored = Math.floor(Math.random() * 2) + 1;
-        else if (player.pos === "وسط" && chance > 0.6) scored = 1;
-        else if (player.pos === "دفاع" && chance > 0.85) scored = 1;
-
-        player.goals += scored;
-
-        if (match.home === player.team) homeGoals += scored;
-        else awayGoals += scored;
-
-        player.matchesSinceLastTrain++;
-        updateTrainButton();
-
-        if (homeGoals > awayGoals) leagueTable[match.home] = (leagueTable[match.home] || 0) + 3;
-        else if (awayGoals > homeGoals) leagueTable[match.away] = (leagueTable[match.away] || 0) + 3;
-        else {
-            leagueTable[match.home] = (leagueTable[match.home] || 0) + 1;
-            leagueTable[match.away] = (leagueTable[match.away] || 0) + 1;
+        // إذا كان فريق اللاعب هو أحد طرفي المباراة، نأخذ طاقته بعين الاعتبار
+        if (homeTeam === player.team) {
+            homeStrength += (player.overall / 30); // أثر طاقة اللاعب
+        } else if (awayTeam === player.team) {
+            awayStrength += (player.overall / 30);
         }
 
-        let opponent = match.home === player.team ? match.away : match.home;
-        let myGoals = match.home === player.team ? homeGoals : awayGoals;
-        let oppGoals = match.home === player.team ? awayGoals : homeGoals;
-        let resText = myGoals > oppGoals ? "فوز 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "خسارة 💔");
-        let goalStatus = scored > 0 ? `⚽ سجلت ${scored} هدف` : `🛑 صيام عن التهديف`;
+        let homeGoals = Math.max(0, Math.floor(Math.random() * (homeStrength + 1) - (awayStrength * 0.2)));
+        let awayGoals = Math.max(0, Math.floor(Math.random() * (awayStrength + 1) - (homeStrength * 0.2)));
         
-        log(`الجولة ${player.matchIndex + 1}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}) - ${goalStatus}`);
+        // تعديل منطقي لئلا تكون النتائج خيالية (أغلب النتائج بين 0 إلى 3 أهداف)
+        homeGoals = Math.min(homeGoals, 4);
+        awayGoals = Math.min(awayGoals, 4);
+
+        let scored = 0;
+        let isMyMatch = (homeTeam === player.team || awayTeam === player.team);
+
+        if (isMyMatch) {
+            let chance = Math.random();
+            // نسبة تسجيل واقعية وليست مضمونة في كل مباراة لتجنب الفوز الدائم
+            let successThreshold = player.overall > 80 ? 0.45 : 0.65;
+            
+            if (chance > successThreshold) {
+                if (player.pos === "مهاجم") scored = Math.random() > 0.7 ? 2 : 1;
+                else if (player.pos === "وسط" && Math.random() > 0.4) scored = 1;
+                else if (player.pos === "دفاع" && Math.random() > 0.8) scored = 1;
+            }
+
+            player.goals += scored;
+
+            if (homeTeam === player.team) {
+                homeGoals += scored;
+            } else {
+                awayGoals += scored;
+            }
+
+            player.matchesSinceLastTrain++;
+            updateTrainButton();
+        }
+
+        // تحديث جدول الترتيب والنقاط بناءً على النتيجة الواقعية
+        if (homeGoals > awayGoals) {
+            leagueTable[homeTeam] = (leagueTable[homeTeam] || 0) + 3;
+        } else if (awayGoals > homeGoals) {
+            leagueTable[awayTeam] = (leagueTable[awayTeam] || 0) + 3;
+        } else {
+            leagueTable[homeTeam] = (leagueTable[homeTeam] || 0) + 1;
+            leagueTable[awayTeam] = (leagueTable[awayTeam] || 0) + 1;
+        }
+
+        if (isMyMatch) {
+            let opponent = homeTeam === player.team ? awayTeam : homeTeam;
+            let myGoals = homeTeam === player.team ? homeGoals : awayGoals;
+            let oppGoals = homeTeam === player.team ? awayGoals : homeGoals;
+            let resText = myGoals > oppGoals ? "فوز 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "خسارة 💔");
+            let goalStatus = scored > 0 ? `⚽ سجلت ${scored} هدف` : `🛑 صيام عن التهديف`;
+            
+            log(`الجولة ${player.matchIndex + 1}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}) - ${goalStatus}`);
+        }
 
         player.matchIndex++;
         updateUI();
 
-        // عند الوصول تماماً للجولة 34 ينتهي الموسم وتظهر العروض
         if (player.matchIndex >= TOTAL_MATCHES) {
             endSeason();
         }
