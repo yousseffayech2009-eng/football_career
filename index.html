@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>football_career by youssef v19</title>
+    <title>football_career by youssef v20</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -89,7 +89,7 @@
     };
 
     const continentalOpponentsData = {
-        "دوري أبطال أفريقيا 🏆🌍": ["الأهلي المصري", "الترجي التونسي", "ماميلودي صنداونز الجنوب أفريقي", "الزمالك المصري", "البيج أمم الكونغولي", "بيراميدز المصري", "الوداد المغربي", "نادي بترو أتلتيكو الأغولي"],
+        "دوري أبطال أفريقيا 🏆🌍": ["الأهلي المصري", "الترجي التونسي", "ماميلودي صنداونز الجنوب أفريقي", "الزمالك المصري", "بيراميدز المصري", "الوداد المغربي", "بترو أتلتيكو الأغولي", "مازيمبي الكونغولي"],
         "دوري أبطال آسيا 🏆🌏": ["الهلال السعودي", "النصر السعودي", "العين الإماراتي", "السد القطري", "الاستقلال الإيراني", "أولسان هيونداي الكوري", "كاواساكي فرونتال الياباني", "الاتحاد السعودي"],
         "دوري أبطال أوروبا 🏆⭐": ["ريال مدريد الإسباني", "مانشستر سيتي الإنجليزي", "بايرن ميونخ الألماني", "باريس سان جيرمان الفرنسي", "إنتر ميلان الإيطالي", "برشلونة الإسباني", "أرسنال الإنجليزي", "بوروسيا دورتموند الألماني"]
     };
@@ -132,10 +132,7 @@
         const posSelect = document.getElementById("player-pos");
         const leagueSelect = document.getElementById("league-select");
 
-        if (!nameInput || !posSelect || !leagueSelect) {
-            alert("عذراً، هناك مشكلة في تحميل عناصر الواجهة.");
-            return;
-        }
+        if (!nameInput || !posSelect || !leagueSelect) return;
 
         const nameValue = nameInput.value.trim();
         if (!nameValue) {
@@ -149,18 +146,10 @@
         player.league = leagueSelect.value;
 
         const teams = database[player.league];
-        if (!teams || teams.length === 0) {
-            alert("حدث خطأ في تحميل فرق الدوري المختار.");
-            return;
-        }
-
         player.team = teams[Math.floor(Math.random() * teams.length)];
 
-        const setupScreen = document.getElementById("setup-screen");
-        const gameScreen = document.getElementById("game-screen");
-
-        if (setupScreen) setupScreen.style.display = "none";
-        if (gameScreen) gameScreen.style.display = "block";
+        document.getElementById("setup-screen").style.display = "none";
+        document.getElementById("game-screen").style.display = "block";
 
         initSeason();
         log(`مرحباً بك يا <strong>${player.name}</strong>! انطلقت مسيرتك مع نادي <strong>${player.team}</strong> في <strong>${player.league}</strong>.`);
@@ -304,7 +293,7 @@
             leagueTable[awayTeam] = (leagueTable[awayTeam] || 0) + 3;
         } else {
             leagueTable[homeTeam] = (leagueTable[homeTeam] || 0) + 1;
-            leagueTable[awayTeam] = (leagueTable[awayTeam] || 0) + 1;
+            leagueTable[awayTeam] = (leagueTeam[awayTeam] || 0) + 1;
         }
 
         if (isMyMatch) {
@@ -355,15 +344,23 @@
         availableOpponents = availableOpponents.filter(t => !t.includes(player.team));
         let shuffled = availableOpponents.sort(() => 0.5 - Math.random());
 
+        // بناء جدول المباريات بدقة: دور المجموعات (6 مباريات ذهاب وإياب ضد 3 فرق في المجموعة) + الإقصائيات (ذهاب وإياب)
         continentalMatches = [
-            { stage: "مرحلة المجموعات - الجولة 1", opponent: shuffled[0] || "نادي قاري منافس" },
-            { stage: "مرحلة المجموعات - الجولة 2", opponent: shuffled[1] || "نادي قاري منافس" },
-            { stage: "ربع النهائي القاري", opponent: shuffled[2] || "عملاق الدور ربع النهائي" },
-            { stage: "نصف النهائي القاري", opponent: shuffled[3] || "كبار القارة (نصف النهائي)" },
-            { stage: "نهائي البطولة الكبرى ⭐", opponent: "نهائي الحلم القاري المنتظر" }
+            { stage: "مرحلة المجموعات - الجولة 1 (ذهاب)", opponent: shuffled[0] },
+            { stage: "مرحلة المجموعات - الجولة 2 (ذهاب)", opponent: shuffled[1] },
+            { stage: "مرحلة المجموعات - الجولة 3 (ذهاب)", opponent: shuffled[2] },
+            { stage: "مرحلة المجموعات - الجولة 4 (إياب)", opponent: shuffled[0] },
+            { stage: "مرحلة المجموعات - الجولة 5 (إياب)", opponent: shuffled[1] },
+            { stage: "مرحلة المجموعات - الجولة 6 (إياب)", opponent: shuffled[2] },
+            { stage: "ربع النهائي - الذهاب", opponent: shuffled[3] },
+            { stage: "ربع النهائي - الإياب", opponent: shuffled[3] },
+            { stage: "نصف النهائي - الذهاب", opponent: shuffled[4] || shuffled[0] },
+            { stage: "نصف النهائي - الإياب", opponent: shuffled[4] || shuffled[0] },
+            { stage: "النهائي - الذهاب 🏆", opponent: shuffled[5] || "نادي عملاق (طرف النهائي)" },
+            { stage: "النهائي - الإياب 🏆", opponent: shuffled[5] || "نادي عملاق (طرف النهائي الحاسم)" }
         ];
 
-        log(`🌟 <strong>تأهل قاري رسمي!</strong> انتقلت إلى مباريات ${continentalName}. استعد لمواجهة عمالقة القارة!`);
+        log(`🌟 <strong>تأهل قاري رسمي!</strong> خوض مباريات ${continentalName} (مجموعات وأدوار ذهاب وإياب).`);
         updateUI();
     }
 
@@ -389,7 +386,7 @@
         player.goals += scored;
         myGoals += scored;
 
-        let resText = myGoals > oppGoals ? "انتصار قاري بطولي 🎉" : (myGoals === oppGoals ? "تعادل في قمة قارية 🤝" : "هزيمة قارية صعبة 💔");
+        let resText = myGoals > oppGoals ? "انتصار قاري 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "هزيمة صعبة 💔");
         let goalStatus = scored > 0 ? `⚽ سجلت ${scored} هدف` : `🛑 صيام عن التهديف`;
 
         log(`[${currentMatch.stage}] ضد ${opponent}: ${player.team} ${myGoals} - ${oppGoals} (${resText}) - ${goalStatus}`);
@@ -400,9 +397,8 @@
         continentalMatchIndex++;
         updateUI();
 
-        // بعد انتهاء نهائي البطولة القارية، ننتقل بشكل طبيعي لملخص الموسم وسوق الانتقالات
         if (continentalMatchIndex >= continentalMatches.length) {
-            log(`🏆 اختتمت مشوار المنافسة في ${continentalName} بنجاح تام.`);
+            log(`🏆 اختتمت مشوار المنافسة في ${continentalName} بالكامل وننتقل الآن لملخص الموسم.`);
             endSeason();
         }
     }
@@ -428,7 +424,7 @@
         if (player.season >= TOTAL_SEASONS) {
             document.getElementById("season-summary").innerHTML = `
                 🏁 <strong>انتهت مسيرتك الاحترافية بنجاح بعد الوصول إلى الحد الأقصى (22 موسماً)!</strong><br>
-                أهلاً بك في اعتزال اللعب بسجل حافل من الأهداف.
+                أهلاً بك في اعتزال اللعب بسجل حافل من الأهداف والألقاب.
             `;
             document.getElementById("offers-list").innerHTML = "";
             document.getElementById("next-season-btn").style.display = "none";
@@ -438,10 +434,10 @@
 
         document.getElementById("season-summary").innerHTML = `
             إنهاء الموسم ${player.season} في الدوري المحلي بالمركز <strong>#${rank}</strong> برصيد ${leagueTable[player.team] || 0} نقطة.<br>
-            وتم خوض غمار البطولات القارية بنجاح.
+            وخوض منافسات البطولة القارية بنظام المجموعات والإقصائيات بنجاح.
         `;
 
-        log(`🏁 <strong>انتهاء الموسم ${player.season}!</strong> انتقل الآن إلى سوق الانتقالات.`);
+        log(`🏁 <strong>انتهاء الموسم ${player.season}!</strong> انتقل الآن إلى سوق الانتقالات لبدء الموسم التالي.`);
         generateOffers();
     }
 
@@ -488,4 +484,3 @@
 
 </body>
 </html>
-
