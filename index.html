@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚽ Football Career - European & Local Leagues</title>
+    <title>⚽ Football Career - Tunisian League Start</title>
     <style>
         body { background-color: #0b132b; color: #fff; font-family: Tahoma, sans-serif; margin: 0; padding: 12px; direction: rtl; }
         #game-container { max-width: 500px; margin: 0 auto; }
@@ -27,12 +27,12 @@
                 🛡️ النادي: <strong id="p-club">--</strong> (<span id="p-stars">3</span> ⭐)<br>
                 🌍 الدوري: <strong id="p-league">--</strong><br>
                 📅 الموسم: <strong id="p-season">1</strong> (الجولة <strong id="p-match-round">0</strong> من 30)<br>
-                🏆 النقاط: <strong id="p-points">0</strong> | 📊 الترتيب: <strong id="p-rank">-</strong> | ⚽ الأهداف: <strong id="p-goals">0</strong>
+                🏆 النقاط: <strong id="p-points">0</strong> | 📊 الترتيب الحالي: <strong id="p-rank">-</strong> | ⚽ الأهداف: <strong id="p-goals">0</strong>
             </div>
             
             <div id="match-box" class="match-box-style">
                 <h4 style="margin: 0 0 5px 0;">🏟️ المواجهة القادمة</h4>
-                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك! تم تصحيح الأخطاء. اضغط خوض الجولة للبدء.</p>
+                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك يا player! تبدأ المسيرة من الدوري التونسي. اضغط خوض الجولة للبدء.</p>
             </div>
 
             <!-- سوق الانتقالات عند نهاية الموسم -->
@@ -208,13 +208,13 @@
         });
 
         function initNewCareer() {
-            let leagueKeys = Object.keys(leaguesData);
-            let randomLeagueKey = leagueKeys[Math.floor(Math.random() * leagueKeys.length)];
-            let teamsList = leaguesData[randomLeagueKey];
+            // البدء حصرياً من الدوري التونسي
+            let defaultLeagueKey = "الدوري التونسي 🇹🇳";
+            let teamsList = leaguesData[defaultLeagueKey];
             let randTeam = teamsList[Math.floor(Math.random() * teamsList.length)];
 
             currentLeagueTeams = JSON.parse(JSON.stringify(teamsList));
-            player = { name: "player", league: randomLeagueKey, club: randTeam.name, clubStars: randTeam.stars, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10 };
+            player = { name: "player", league: defaultLeagueKey, club: randTeam.name, clubStars: randTeam.stars, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10 };
             currentLeagueTeams.forEach(t => t.points = 0);
             saveData();
         }
@@ -224,7 +224,7 @@
         }
 
         function resetCareer() {
-            if (confirm("هل تريد مسح المسيرة والبدء بدوري ونادي عشوائي جديد؟")) {
+            if (confirm("هل تريد مسح المسيرة والبدء من جديد في الدوري التونسي؟")) {
                 localStorage.removeItem('separated_fc_save');
                 location.reload();
             }
@@ -265,6 +265,7 @@
             if (player.matchesPlayed >= 30) return;
             player.matchesPlayed++;
 
+            // محاكاة النقاط لباقي فرق الدوري
             currentLeagueTeams.forEach(team => {
                 if (team.name === player.club) team.points = player.points;
                 else team.points += (Math.random() > 0.5 ? 3 : (Math.random() > 0.4 ? 1 : 0));
@@ -295,6 +296,7 @@
             let pTeam = currentLeagueTeams.find(t => t.name === player.club);
             if (pTeam) pTeam.points = player.points;
 
+            // تحديث الترتيب فوراً بعد الجولة
             currentLeagueTeams.sort((a, b) => b.points - a.points);
             player.rank = currentLeagueTeams.findIndex(t => t.name === player.club) + 1;
 
@@ -371,3 +373,4 @@
     </script>
 </body>
 </html>
+
