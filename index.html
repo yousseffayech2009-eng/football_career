@@ -3,78 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Football Career - محاكي مسيرة لاعب كرة القدم</title>
+    <title>⚽ Football Career - مسيرة الاحتراف</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="game-container">
-        <!-- شاشة إدخال اسم اللاعب وبداية المسيرة -->
+        <!-- شاشة البداية وإنشاء اللاعب -->
         <div id="setup-screen" class="card">
-            <h1>⚽ Football Career</h1>
-            <p>مرحباً بك! أدخل اسمك لبدء مسيرتك الاحترافية وتحديد ناديك الأول عشوائياً:</p>
-            <input type="text" id="player-input-name" placeholder="أدخل اسمك هنا..." value="يوسف">
-            <button onclick="startCareer()">بدء المسيرة واختيار النادي 🚀</button>
+            <h1>⭐ Football Career ⭐</h1>
+            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (34 جولة):</p>
+            <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف">
+            <button onclick="startCareer()">انطلق نحو النجومية 🚀</button>
         </div>
 
-        <!-- الشاشة الرئيسية للعبة -->
+        <!-- واجهة اللعب الرئيسية -->
         <div id="game-main-interface" style="display:none;">
             <header>
               <h1>⚽ Football Career</h1>
               <div id="player-stats-bar">
                 <span>اللاعب: <strong id="p-name">--</strong></span>
-                <span>النادي: <strong id="p-club">--</strong></span>
+                <span>النادي: <strong id="p-club">--</strong> (<span id="p-stars">3</span> ⭐)</span>
                 <span>الموسم: <strong id="p-season">1</strong></span>
               </div>
             </header>
 
             <main id="main-screen" class="card">
-              <h2>لوحة القيادة والمباريات</h2>
-              <p>مرحلة الدوري التونسي (18 فريقاً - الجولة <span id="p-match-round">0</span> من 34)</p>
+              <h2>لوحة القيادة والمنافسة</h2>
+              <div class="league-info-badge">
+                📅 الجولة: <strong id="p-match-round">0</strong> / 34 | 🏆 النقاط: <strong id="p-points">0</strong>
+              </div>
               
-              <!-- صندوق عرض نتيجة وأجواء المباراة الحالية -->
-              <div id="match-container" style="background: #0b132b; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #5bc0be;">
-                <h3>⚽ حالة المباريات</h3>
-                <p id="match-log-text">اضغط على زر لعب الجولة القادمة لبدء المنافسة.</p>
+              <!-- صندوق المباراة والحماس -->
+              <div id="match-box" class="match-box-style">
+                <h3>🏟️ المواجهة القادمة</h3>
+                <p id="match-announcement">اضغط على زر خوض المباراة للبدء ضد الخصم القادم.</p>
               </div>
 
-              <!-- صندوق العروض الاحترافية نهاية الموسم -->
-              <div id="transfer-offer-box" style="display:none; background: #2b1b0b; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #ffb703;">
-                <h3>🌟 عروض الانتقالات (نهاية الموسم)</h3>
-                <p id="offer-text">لقد تلقيت عروضاً احترافية بفضل مستواك الرائع!</p>
-                <button onclick="acceptOffer()" style="background-color: #2a9d8f;">قبول الانتقال للنادي الجديد ✍️</button>
-                <button onclick="rejectOffer()" style="background-color: #e76f51;">البقاء في ناديك الحالي 🛡️</button>
+              <!-- صندوق عروض الانتقالات نهاية الموسم -->
+              <div id="transfer-offer-box" style="display:none; background: #3a1c0b; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #ffb703;">
+                <h3>🌟 سوق الانتقالات الكبرى (نهاية الموسم)</h3>
+                <p id="offer-text">تلقيت عروضاً من أندية كبرى!</p>
+                <button onclick="acceptOffer()" style="background-color: #2a9d8f;">قبول الانتقال القاري/الأوروبي ✍️</button>
+                <button onclick="rejectOffer()" style="background-color: #e76f51;">الاستمرار وتجديد العقد 🛡️</button>
               </div>
 
               <div class="menu-buttons" id="action-buttons-div">
-                <button onclick="playMatch()" id="play-btn">لعب الجولة القادمة 🏟️</button>
-                <button onclick="showSection('teams-screen')">ترتيب الفرق التونسية والأندية 📊</button>
-                <button onclick="showSection('competitions-screen')">نظام البطولات القارية والعالمية 🏆</button>
+                <button onclick="playMatch()" id="play-btn" class="btn-primary">خوض الجولة الحالية ⚽</button>
+                <button onclick="showSection('teams-screen')" class="btn-secondary">ترتيب الأندية والنجوم 📊</button>
+                <button onclick="showSection('competitions-screen')" class="btn-secondary">البطولات الإفريقية والأوروبية 🏆</button>
               </div>
             </main>
 
             <!-- شاشة الفرق -->
             <div id="teams-screen" class="card" style="display:none;">
-              <h3>قائمة الأندية التونسية وتصنيفاتها</h3>
+              <h3>قوة الأندية وتصنيفاتها</h3>
               <ul class="teams-list">
-                <li>الترجي الرياضي: <strong>4.5 نجوم</strong></li>
-                <li>النادي الإفريقي: <strong>4 نجوم</strong></li>
-                <li>النجم الساحلي: <strong>4 نجوم</strong></li>
-                <li>النادي الصفاقسي: <strong>4 نجوم</strong></li>
-                <li>الاتحاد المنستيري: <strong>3.5 نجوم</strong></li>
-                <li>الملعب التونسي: <strong>3.5 نجوم</strong></li>
-                <li>بن قردان / الأولمبي الباجي / تطاوين: <strong>3 نجوم</strong></li>
-                <li>باقي أندية الرابطة الأولى (18 نادياً): <strong>2 إلى 2.5 نجوم</strong></li>
+                <li>الترجي الرياضي: <strong>4.5 نجوم ⭐</strong></li>
+                <li>النادي الإفريقي: <strong>4 نجوم ⭐</strong></li>
+                <li>النجم الساحلي: <strong>4 نجوم ⭐</strong></li>
+                <li>النادي الصفاقسي: <strong>4 نجوم ⭐</strong></li>
+                <li>الاتحاد المنستيري: <strong>3.5 نجوم ⭐</strong></li>
+                <li>الملعب التونسي: <strong>3.5 نجوم ⭐</strong></li>
+                <li>بن قردان / الباجي / تطاوين: <strong>3 نجوم ⭐</strong></li>
+                <li>باقي أندية الرابطة الأولى (18 فريقاً): <strong>2 إلى 2.5 نجوم ⭐</strong></li>
               </ul>
-              <button onclick="returnToMain()">رجوع للوحة القيادة</button>
+              <button onclick="returnToMain()" class="btn-secondary">العودة للملعب</button>
             </div>
 
             <!-- شاشة البطولات -->
             <div id="competitions-screen" class="card" style="display:none;">
-              <h3>المسابقات الإفريقية والأوروبية</h3>
-              <p><strong>دوري أبطال إفريقيا:</strong> 4 مجموعات (الأهلي، الترجي، صن داونز، الزمالك)، يتأهل الأول والثاني لربع النهائي.</p>
-              <p><strong>دوري أبطال أوروبا:</strong> نظام مجموعات قوي يضم أقوى الأندية الأوروبية من Flashscore و Transfermarkt.</p>
-              <button onclick="returnToMain()">رجوع للوحة القيادة</button>
+              <h3>طريقك نحو المجد العالمي</h3>
+              <p><strong>دوري أبطال إفريقيا:</strong> مجموعات نارية تضم كبار القارة (الأهلي، صن داونز، الزمالك، الوداد).</p>
+              <p><strong>دوري أبطال أوروبا:</strong> تتأهل لها بعد التألق في أوروبا لتلعب ضد عمالقة العالم.</p>
+              <button onclick="returnToMain()" class="btn-secondary">العودة للملعب</button>
             </div>
         </div>
     </div>
@@ -83,42 +85,66 @@
         let player = {
             name: "",
             club: "",
+            clubStars: 3, // عدد نجوم فريق اللاعب الحالي
             season: 1,
             goals: 0,
-            matchesPlayed: 0
+            matchesPlayed: 0,
+            points: 0
         };
 
-        let pendingNewClub = "";
-
-        const tunisianTeamsList = [
-            "الترجي الرياضي التونسي", "النادي الإفريقي", "النجم الرياضي الساحلي",
-            "النادي الرياضي الصفاقسي", "الاتحاد الرياضي المنستيري", "الملعب التونسي",
-            "اتحاد بن قردان", "الأولمبي الباجي", "اتحاد تطاوين", "مستقبل قابس",
-            "مستقبل سليمان", "شبيبة العمران", "نادي محيط قرقنة", "اتحاد ڤفصة",
-            "الملعب الإفريقي لمنزل بورقيبة", "الملعب السوسي", "جمعية جربة", "الأمل الرياضي حمام سوسة"
+        // قائمة الفرق التونسية مع نجومها الافتراضية
+        const tunisianTeamsData = [
+            { name: "الترجي الرياضي التونسي", stars: 4.5 },
+            { name: "النادي الإفريقي", stars: 4.0 },
+            { name: "النجم الرياضي الساحلي", stars: 4.0 },
+            { name: "النادي الرياضي الصفاقسي", stars: 4.0 },
+            { name: "الاتحاد الرياضي المنستيري", stars: 3.5 },
+            { name: "الملعب التونسي", stars: 3.5 },
+            { name: "اتحاد بن قردان", stars: 3.0 },
+            { name: "الأولمبي الباجي", stars: 3.0 },
+            { name: "اتحاد تطاوين", stars: 3.0 },
+            { name: "مستقبل قابس", stars: 2.5 },
+            { name: "مستقبل سليمان", stars: 2.5 },
+            { name: "شبيبة العمران", stars: 2.5 },
+            { name: "نادي محيط قرقنة", stars: 2.0 },
+            { name: "اتحاد ڤفصة", stars: 2.0 },
+            { name: "الملعب الإفريقي لمنزل بورقيبة", stars: 2.0 },
+            { name: "الملعب السوسي", stars: 2.0 },
+            { name: "جمعية جربة", stars: 2.0 },
+            { name: "الأمل الرياضي حمام سوسة", stars: 2.0 }
         ];
 
         const europeanAndAfricanBigTeams = [
-            "النادي الأهلي المصري 🦅", "الزمالك المصري 🏹", "ماميلودي صن داونز الجنوب إفريقي 💛",
-            "الرجاء الرياضي المغربي 💚", "الوداد الرياضي المغربي 🔴", "ريال مدريد الإسباني 👑",
-            "برشلونة الإسباني 🔵🔴", "مانشستر سيتي الإنجليزي 💙", "بايرن ميونخ الألماني 🔴"
+            { name: "النادي الأهلي المصري 🦅", stars: 4.5 },
+            { name: "الزمالك المصري 🏹", stars: 4.0 },
+            { name: "ماميلودي صن داونز 💛", stars: 4.5 },
+            { name: "الرجاء الرياضي 💚", stars: 4.0 },
+            { name: "ريال مدريد الإسباني 👑", stars: 5.0 },
+            { name: "برشلونة الإسباني 🔵🔴", stars: 5.0 },
+            { name: "مانشستر سيتي الإنجليزي 💙", stars: 5.0 }
         ];
+
+        let pendingNewTeamObj = null;
 
         function startCareer() {
             let inputName = document.getElementById('player-input-name').value.trim();
             if(inputName === "") {
-                alert("الرجاء إدخال اسم صحيح للاعب!");
+                alert("الرجاء إدخال اسم صحيح!");
                 return;
             }
-            
             player.name = inputName;
-            let randomIndex = Math.floor(Math.random() * tunisianTeamsList.length);
-            player.club = tunisianTeamsList[randomIndex];
+            
+            // اختيار نادي عشوائي من الدوري التونسي
+            let randomTeam = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)];
+            player.club = randomTeam.name;
+            player.clubStars = randomTeam.stars;
 
             document.getElementById('p-name').innerText = player.name;
             document.getElementById('p-club').innerText = player.club;
+            document.getElementById('p-stars').innerText = player.clubStars;
             document.getElementById('p-season').innerText = player.season;
             document.getElementById('p-match-round').innerText = player.matchesPlayed;
+            document.getElementById('p-points').innerText = player.points;
             
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('game-main-interface').style.display = 'block';
@@ -128,12 +154,7 @@
             document.getElementById('main-screen').style.display = 'none';
             document.getElementById('teams-screen').style.display = 'none';
             document.getElementById('competitions-screen').style.display = 'none';
-            document.getElementById('main-screen').style.display = 'block'; // الحفاظ على ظهور اللوحة الأساسية
-            document.getElementById(sectionId).style.display = (sectionId === 'main-screen') ? 'block' : 'none';
-            if(sectionId !== 'main-screen') {
-                document.getElementById('main-screen').style.display = 'none';
-                document.getElementById(sectionId).style.display = 'block';
-            }
+            document.getElementById(sectionId).style.display = 'block';
         }
 
         function returnToMain() {
@@ -143,63 +164,102 @@
         }
 
         function playMatch() {
+            if (player.matchesPlayed >= 34) return; // نهاية 34 جولة
+
             player.matchesPlayed++;
             document.getElementById('p-match-round').innerText = player.matchesPlayed;
 
-            let opponent;
+            // اختيار خصم عشوائي
+            let opponentObj;
             do {
-                let oppIndex = Math.floor(Math.random() * tunisianTeamsList.length);
-                opponent = tunisianTeamsList[oppIndex];
-            } while (opponent === player.club);
+                opponentObj = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)];
+            } while (opponentObj.name === player.club);
 
-            let matchGoals = Math.floor(Math.random() * 3);
-            player.goals += matchGoals;
+            // حساب النتيجة بناءً على مقارنة النجوم (القوة) لضمان عدم الفوز الدائم
+            let starDiff = player.clubStars - opponentObj.stars; 
+            // starDiff قد تكون موجبة (فريقك أقوى)، صفر (متقاربون)، أو سالبة (الخصم أقوى)
+            
+            let randomFactor = (Math.random() * 2) - 1; // رقم عشوائي بين -1 و 1
+            let performanceScore = starDiff + randomFactor;
 
-            let text = `<strong>الجولة ${player.matchesPlayed}:</strong> ضد فريق <em>${opponent}</em><br>` +
-                       `⚽ أهدافك في اللقاء: <strong>${matchGoals}</strong> | مجموع أهداف الموسم: <strong>${player.goals}</strong>`;
+            let matchResultText = "";
+            let myGoals = 0;
+            let oppGoals = 0;
 
-            document.getElementById('match-log-text').innerHTML = text;
+            if (performanceScore > 0.8) {
+                // فوز مستحق لفريقك
+                myGoals = Math.floor(Math.random() * 3) + 1; // 1 إلى 3
+                oppGoals = Math.floor(Math.random() * myGoals);
+                matchResultText = `🎉 <strong>انتصار رائع!</strong> تفوق فريقك وهزم <em>${opponentObj.name} (${opponentObj.stars} ⭐)</em> بنتيجة (${myGoals}-${oppGoals}).`;
+                player.points += 3;
+            } else if (performanceScore < -0.8) {
+                // خسارة قاسية لأن الخصم أقوى بكثير أو يوم سيء
+                oppGoals = Math.floor(Math.random() * 3) + 1;
+                myGoals = Math.floor(Math.random() * oppGoals);
+                matchResultText = `💔 <strong>هزيمة صعبة أمام ${opponentObj.name} (${opponentObj.stars} ⭐)</strong> بنتيجة (${myGoals}-${oppGoals}). القادم أفضل!`;
+                // 0 نقاط
+            } else {
+                // تعادل مثير
+                myGoals = Math.floor(Math.random() * 2);
+                oppGoals = myGoals;
+                matchResultText = `🤝 <strong>تعادل مثير</strong> ضد <em>${opponentObj.name} (${opponentObj.stars} ⭐)</em> بنتيجة (${myGoals}-${oppGoals}). مباراة قوية جداً!`;
+                player.points += 1;
+            }
 
-            // التحقق من نهاية الموسم (بعد 5 جولات تجريبية أو جعلها موسماً كاملاً) لتلقي العروض
-            if (player.matchesPlayed >= 5) {
+            // أهداف اللاعب الشخصية
+            let playerGoalsInMatch = (myGoals > 0 && Math.random() > 0.4) ? 1 : 0;
+            player.goals += playerGoalsInMatch;
+            if(playerGoalsInMatch > 0) {
+                matchResultText += `<br>⚽ <em>بصماتك:</em> لقد سجلت هدفاً رائعاً في هذه اللقاء! (أهدافك الموسمية: ${player.goals})`;
+            }
+
+            document.getElementById('match-announcement').innerHTML = matchResultText;
+            document.getElementById('p-points').innerText = player.points;
+
+            // التحقق من نهاية الـ 34 جولة
+            if (player.matchesPlayed >= 34) {
                 triggerEndOfSeasonOffers();
             }
         }
 
         function triggerEndOfSeasonOffers() {
-            // اختيار نادي كبير عشوائي للعرض
-            let randomBigTeamIndex = Math.floor(Math.random() * europeanAndAfricanBigTeams.length);
-            pendingNewClub = europeanAndAfricanBigTeams[randomBigTeamIndex];
+            pendingNewTeamObj = europeanAndAfricanBigTeams[Math.floor(Math.random() * europeanAndAfricanBigTeams.length)];
 
-            document.getElementById('offer-text​').innerHTML = `انتهى الموسم رقم ${player.season}! بفضل أدائك وتألقك بتسجيل ${player.goals} أهداف، تلقيت عرضاً رسمياً من نادي: <strong>${pendingNewClub}</strong>. فهل توافق على الانتقال إليه؟`;
+            document.getElementById('offer-text').innerHTML = `انقضى موسم الملاحقة (34 جولة)! برصيد ${player.points} نقطة و ${player.goals} هدفاً. تلقيت عرضاً نارياً من: <strong>${pendingNewTeamObj.name} (${pendingNewTeamObj.stars} نجوم)</strong>!`;
             
-            // إظهار صندوق العروض وإخفاء زر لعب المباراة مؤقتاً لحين اتخاذ القرار
             document.getElementById('transfer-offer-box').style.display = 'block';
             document.getElementById('play-btn').style.display = 'none';
         }
 
         function acceptOffer() {
-            player.club = pendingNewClub;
-            document.getElementById('p-club').innerText = player.club;
-            finishSeasonTransition("تم قبول العرض بنجاح! انتقلت إلى ناديك الجديد وتبدأ تحدياً قاريأ/عالمياً جديداً.");
+            player.club = pendingNewTeamObj.name;
+            player.clubStars = pendingNewTeamObj.stars;
+            updateClubUIAfterTransfer();
+            finishSeasonTransition("خطوة تاريخية! وافقت على الانتقال وخوض التحديات الكبرى.");
         }
 
         function rejectOffer() {
-            finishSeasonTransition("فضلت الاستمرار مع ناديك الحالي وتجديد العقد لموسم إضافي.");
+            finishSeasonTransition("اخترت الوفاء ورفض العروض لتطوير ناديك الحالي لموسم إضافي.");
         }
 
         function finishSeasonTransition(msg) {
             player.season++;
             player.matchesPlayed = 0;
+            player.points = 0;
             player.goals = 0;
             
             document.getElementById('p-season').innerText = player.season;
             document.getElementById('p-match-round').innerText = player.matchesPlayed;
-            document.getElementById('match-log-text').innerHTML = `<strong>نهاية الانتقالات:</strong> ${msg}<br>بدأت منافسات الموسم الجديد رقم ${player.season}!`;
+            document.getElementById('p-points').innerText = player.points;
+            document.getElementById('match-announcement').innerHTML = `<strong>نهاية الموسم:</strong> ${msg}<br>انطلق موسم جديد كلياً رقم ${player.season}!`;
             
-            // إخفاء صندوق العروض وإعادة زر اللعب
             document.getElementById('transfer-offer-box').style.display = 'none';
             document.getElementById('play-btn').style.display = 'block';
+        }
+
+        function updateClubUIAfterTransfer() {
+            document.getElementById('p-club').innerText = player.club;
+            document.getElementById('p-stars').innerText = player.clubStars;
         }
     </script>
 </body>
