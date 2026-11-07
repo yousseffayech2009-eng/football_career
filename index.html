@@ -20,12 +20,12 @@
         <div id="game-main-interface" class="card" style="text-align: right;">
             <h2 style="text-align: center; margin-top: 0;">⚽ Football Career</h2>
             <h3>لوحة القيادة والمباريات</h3>
-            <p>اللاعب: <strong id="p-name">player</strong> | النادي: <strong id="p-club">--</strong> (<span id="p-stars">3</span> ⭐)</p>
+            <p>اللاعب: <strong id="p-name">player</strong> | النادي العشوائي: <strong id="p-club">--</strong> (<span id="p-stars">3</span> ⭐)</p>
             <p>📅 الجولة: <strong id="p-match-round">0</strong> من 30 | 🏆 النقاط: <strong id="p-points">0</strong> | 📊 الترتيب: <strong id="p-rank">-</strong> | ⚽ أهدافك: <strong id="p-goals">0</strong></p>
             
             <div class="match-box-style">
                 <h4>🏟️ المواجهة القادمة</h4>
-                <p id="match-announcement">أهلاً بك يا player! اضغط على زر خوض الجولة للبدء.</p>
+                <p id="match-announcement">أهلاً بك يا player! تم اختيار ناديك العشوائي، اضغط على زر خوض الجولة للبدء.</p>
             </div>
 
             <!-- شاشة الفرق -->
@@ -104,7 +104,7 @@
             if (saved) {
                 let data = JSON.parse(saved);
                 player = data.player;
-                player.name = "player"; // ضمان ثبات الاسم
+                player.name = "player";
                 if(data.teams) {
                     data.teams.forEach(st => {
                         let t = tunisianTeamsData.find(item => item.name === st.name);
@@ -238,3 +238,4 @@
     </script>
 </body>
 </html>
+
