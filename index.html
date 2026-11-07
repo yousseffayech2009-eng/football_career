@@ -29,9 +29,9 @@
             </header>
 
             <main id="main-screen" class="card">
-              <h2>لوحة القيادة والمنافسة</h2>
+              <h2>لوحة القيادة والمباريات</h2>
               <div class="league-info-badge">
-                📅 الجولة: <strong id="p-match-round">0</strong> / 34 | 🏆 النقاط: <strong id="p-points">0</strong>
+                📅 الجولة: <strong id="p-match-round">0</strong> من 34 | 🏆 النقاط: <strong id="p-points">0</strong>
               </div>
               
               <!-- صندوق المباراة والحماس -->
@@ -44,8 +44,8 @@
               <div id="transfer-offer-box" style="display:none; background: #3a1c0b; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #ffb703;">
                 <h3>🌟 سوق الانتقالات الكبرى (نهاية الموسم)</h3>
                 <p id="offer-text">تلقيت عروضاً من أندية كبرى!</p>
-                <button onclick="acceptOffer()" style="background-color: #2a9d8f;">قبول الانتقال القاري/الأوروبي ✍️</button>
-                <button onclick="rejectOffer()" style="background-color: #e76f51;">الاستمرار وتجديد العقد 🛡️</button>
+                <button onclick="acceptOffer()" class="btn-primary" style="background-color: #2a9d8f;">قبول الانتقال القاري/الأوروبي ✍️</button>
+                <button onclick="rejectOffer()" class="btn-secondary" style="background-color: #e76f51;">الاستمرار وتجديد العقد 🛡️</button>
               </div>
 
               <div class="menu-buttons" id="action-buttons-div">
@@ -85,14 +85,13 @@
         let player = {
             name: "",
             club: "",
-            clubStars: 3, // عدد نجوم فريق اللاعب الحالي
+            clubStars: 3,
             season: 1,
             goals: 0,
             matchesPlayed: 0,
             points: 0
         };
 
-        // قائمة الفرق التونسية مع نجومها الافتراضية
         const tunisianTeamsData = [
             { name: "الترجي الرياضي التونسي", stars: 4.5 },
             { name: "النادي الإفريقي", stars: 4.0 },
@@ -134,7 +133,6 @@
             }
             player.name = inputName;
             
-            // اختيار نادي عشوائي من الدوري التونسي
             let randomTeam = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)];
             player.club = randomTeam.name;
             player.clubStars = randomTeam.stars;
@@ -164,22 +162,21 @@
         }
 
         function playMatch() {
-            if (player.matchesPlayed >= 34) return; // نهاية 34 جولة
+            // منع اللعب إذا تجاوزت الجولات 34
+            if (player.matchesPlayed >= 34) {
+                return;
+            }
 
             player.matchesPlayed++;
             document.getElementById('p-match-round').innerText = player.matchesPlayed;
 
-            // اختيار خصم عشوائي
             let opponentObj;
             do {
                 opponentObj = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)];
             } while (opponentObj.name === player.club);
 
-            // حساب النتيجة بناءً على مقارنة النجوم (القوة) لضمان عدم الفوز الدائم
             let starDiff = player.clubStars - opponentObj.stars; 
-            // starDiff قد تكون موجبة (فريقك أقوى)، صفر (متقاربون)، أو سالبة (الخصم أقوى)
-            
-            let randomFactor = (Math.random() * 2) - 1; // رقم عشوائي بين -1 و 1
+            let randomFactor = (Math.random() * 2) - 1; 
             let performanceScore = starDiff + randomFactor;
 
             let matchResultText = "";
@@ -187,36 +184,31 @@
             let oppGoals = 0;
 
             if (performanceScore > 0.8) {
-                // فوز مستحق لفريقك
-                myGoals = Math.floor(Math.random() * 3) + 1; // 1 إلى 3
+                myGoals = Math.floor(Math.random() * 3) + 1;
                 oppGoals = Math.floor(Math.random() * myGoals);
                 matchResultText = `🎉 <strong>انتصار رائع!</strong> تفوق فريقك وهزم <em>${opponentObj.name} (${opponentObj.stars} ⭐)</em> بنتيجة (${myGoals}-${oppGoals}).`;
                 player.points += 3;
             } else if (performanceScore < -0.8) {
-                // خسارة قاسية لأن الخصم أقوى بكثير أو يوم سيء
                 oppGoals = Math.floor(Math.random() * 3) + 1;
                 myGoals = Math.floor(Math.random() * oppGoals);
                 matchResultText = `💔 <strong>هزيمة صعبة أمام ${opponentObj.name} (${opponentObj.stars} ⭐)</strong> بنتيجة (${myGoals}-${oppGoals}). القادم أفضل!`;
-                // 0 نقاط
             } else {
-                // تعادل مثير
                 myGoals = Math.floor(Math.random() * 2);
                 oppGoals = myGoals;
-                matchResultText = `🤝 <strong>تعادل مثير</strong> ضد <em>${opponentObj.name} (${opponentObj.stars} ⭐)</em> بنتيجة (${myGoals}-${oppGoals}). مباراة قوية جداً!`;
+                matchResultText = `🤝 <strong>تعادل مثير</strong> ضد <em>${opponentObj.name} (${opponentObj.stars} ⭐)</em> بنتيجة (${myGoals}-${oppGoals}).`;
                 player.points += 1;
             }
 
-            // أهداف اللاعب الشخصية
             let playerGoalsInMatch = (myGoals > 0 && Math.random() > 0.4) ? 1 : 0;
             player.goals += playerGoalsInMatch;
             if(playerGoalsInMatch > 0) {
-                matchResultText += `<br>⚽ <em>بصماتك:</em> لقد سجلت هدفاً رائعاً في هذه اللقاء! (أهدافك الموسمية: ${player.goals})`;
+                matchResultText += `<br>⚽ <em>بصماتك:</em> لقد سجلت هدفاً رائعاً في هذا اللقاء! (أهدافك الموسمية: ${player.goals})`;
             }
 
             document.getElementById('match-announcement').innerHTML = matchResultText;
             document.getElementById('p-points').innerText = player.points;
 
-            // التحقق من نهاية الـ 34 جولة
+            // التحقق بدقة من نهاية الـ 34 جولة لعرض سوق الانتقالات
             if (player.matchesPlayed >= 34) {
                 triggerEndOfSeasonOffers();
             }
@@ -225,7 +217,7 @@
         function triggerEndOfSeasonOffers() {
             pendingNewTeamObj = europeanAndAfricanBigTeams[Math.floor(Math.random() * europeanAndAfricanBigTeams.length)];
 
-            document.getElementById('offer-text').innerHTML = `انقضى موسم الملاحقة (34 جولة)! برصيد ${player.points} نقطة و ${player.goals} هدفاً. تلقيت عرضاً نارياً من: <strong>${pendingNewTeamObj.name} (${pendingNewTeamObj.stars} نجوم)</strong>!`;
+            document.getElementById('offer-text').innerHTML = `انقضى موسم الدوري بنجاح (34 جولة)! برصيد ${player.points} نقطة و ${player.goals} هدفاً. تلقيت عرضاً نارياً من: <strong>${pendingNewTeamObj.name} (${pendingNewTeamObj.stars} نجوم)</strong>!`;
             
             document.getElementById('transfer-offer-box').style.display = 'block';
             document.getElementById('play-btn').style.display = 'none';
