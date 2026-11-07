@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>football_career by youssef v25</title>
+    <title>football_career by youssef v26</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -38,16 +38,16 @@
             <option value="صعب">المستوى: صعب 🔴</option>
         </select>
         <select id="league-select">
-            <option value="الدوري التونسي">الدوري التونسي</option>
-            <option value="الدوري المصري">الدوري المصري</option>
-            <option value="الدوري الجزائري">الدوري الجزائري</option>
-            <option value="الدوري المغربي">الدوري المغربي</option>
-            <option value="الدوري السعودي">الدوري السعودي</option>
-            <option value="الدوري الفرنسي">الدوري الفرنسي</option>
-            <option value="الدوري الألماني">الدوري الألماني</option>
-            <option value="الدوري الإيطالي">الدوري الإيطالي</option>
-            <option value="الدوري الإسباني">الدوري الإسباني</option>
-            <option value="الدوري الإنجليزي الممتاز">الدوري الإنجليزي الممتاز</option>
+            <option value="الدوري التونسي">الدوري التونسي (16 فريق)</option>
+            <option value="الدوري المصري">الدوري المصري (16 فريق)</option>
+            <option value="الدوري الجزائري">الدوري الجزائري (16 فريق)</option>
+            <option value="الدوري المغربي">الدوري المغربي (16 فريق)</option>
+            <option value="الدوري السعودي">الدوري السعودي (18 فريق)</option>
+            <option value="الدوري الفرنسي">الدوري الفرنسي (20 فريق)</option>
+            <option value="الدوري الألماني">الدوري الألماني (20 فريق)</option>
+            <option value="الدوري الإيطالي">الدوري الإيطالي (20 فريق)</option>
+            <option value="الدوري الإسباني">الدوري الإسباني (20 فريق)</option>
+            <option value="الدوري الإنجليزي الممتاز">الدوري الإنجليزي الممتاز (20 فريق)</option>
         </select>
         <button onclick="startGame()">بدء المسيرة</button>
     </div>
@@ -86,16 +86,36 @@
 
 <script>
     const database = {
-        "الدوري التونسي": ["الترجي الرياضي", "النادي الإفريقي", "النجم الساحلي", "الصفاقسي", "الملعب التونسي", "الاتحاد المنستيري", "اتحاد بن قردان", "الأولمبي الباجي", "مستقبل سليمان", "اتحاد تطاوين", "قوافل قفصة", "نجم المتلوي", "مستقبل قابس", "الشبيبة القيروانية", "أمل حمام سوسة", "هلال الشابة", "النادي البنزرتي", "مكارم مهدية"],
-        "الدوري المصري": ["الأهلي", "الزمالك", "بيراميدز", "المصري البورسعيدي", "سيراميكا كليوباترا", "البنك الأهلي", "فاركو", "الاتحاد السكندري", "سموحة", "الإسماعيلي", "طلائع الجيش", "إنبي", "زد إف سي", "غزل المحلة", "حرس الحدود", "بتروجت", "المقاولون العرب", "سموحة الرياضي"],
-        "الدوري الجزائري": ["مولودية الجزائر", "شباب بلوزداد", "اتحاد الجزائر", "شبيبة القبائل", "وفاق سطيف", "شبيبة الساورة", "نادي بارادو", "اتحاد خنشلة", "أولمبي الشلف", "نجم مقرة", "اتحاد بسكرة", "اتحاد العاصمة", "مولودية وجدة", "شبيبة بجاية", "ترجي مستغانم", "اتحاد سوف", "نصر حسين داي", "رائد القبة"],
-        "الدوري المغربي": ["الوداد الرياضي", "الرجاء الرياضي", "نهضة بركان", "الجيش الملكي", "الفتح الرياضي", "المغرب الفاسي", "حسنية أكادير", "اتحاد طنجة", "نهضة الزمامرة", "أولمبيك آسفي", "شباب السوالم", "اتحاد تواركة", "المغرب التطواني", "الدفاع الحسني الجديدي", "سريع واد زم", "الشباب الرياضي السالمي", "الرجاء البلالي", "نهضة سطات"],
+        "الدوري التونسي": [
+            "Club Africain", "Esperance Tunis", "CS Sfaxien", "Stade Tunisien", 
+            "Monastir", "Zarzis", "Etoile Sahel", "Metlaoui", 
+            "JS Omrane", "Ben Guerdane", "Marsa", "CA Bizertin", 
+            "Olympique Beja", "Kairouanaise", "Soliman", "AS Gabes"
+        ],
+        "الدوري المصري": [
+            "Zamalek", "Pyramids", "Al Ahly", "Ceramica Cleopatra", 
+            "Al Masry", "Smouha", "Enppi", "Wadi Degla", 
+            "ZED", "El Gouna", "National Bank Egypt", "Petrojet", 
+            "Modern Sport", "El Gaish", "Al Ittihad", "Ghazl El Mahallah"
+        ],
+        "الدوري الجزائري": [
+            "MC Alger", "Saoura", "Belouizdad", "Oran", 
+            "JS Kabylie", "Olympique Akbou", "Khenchela", "Ben Aknoun", 
+            "Constantine", "USM Alger", "Setif", "Rouisset", 
+            "Chlef", "Paradou", "Mostaganem", "El Bayadh"
+        ],
+        "الدوري المغربي": [
+            "Maghreb Fez", "Berkane", "Raja Casablanca", "FAR Rabat", 
+            "Wydad AC", "Difaa El Jadidi", "Tanger", "FUS Rabat", 
+            "Kawkab Marrakech", "COD Meknes", "Renaissance Zemamra", "Agadir", 
+            "Union Touarga", "Dcheira", "Yacoub El Mansour", "Safi"
+        ],
         "الدوري السعودي": ["الهلال", "النصر", "الاتحاد", "الأهلي", "الشباب", "التعاون", "الاتفاق", "الفتح", "الرياض", "الخليج", "ضمك", "الرائد", "الوحدة", "الأخدود", "الخلود", "العروبة", "نيوم", "الفيصلي"],
-        "الدوري الفرنسي": ["باريس سان جيرمان", "مارسيليا", "موناكو", "ليون", "ليل", "نيس", "ستراسبورغ", "لانس", "رين", "تولوز", "بريست", "مونبلييه", "ستاد ريمس", "لوهافر", "نانت", "أنجيه", "سنت إتيان", "ميتز"],
-        "الدوري الألماني": ["بايرن ميونخ", "بوروسيا دورتموند", "باير ليفركوزن", "لايبزيغ", "آنتراخت فرانكفورت", "شتوتغارت", "فولفسبورغ", "فرايبورغ", "هوفنهايم", "أوغسبورغ", "فيردر بريمن", "ماينز 05", "بروسيا مونشنغلادباخ", "بوخوم", "هايدنهايم", "سانت باولي", "كولن", "يونيون برلين"],
-        "الدوري الإيطالي": ["إنتر ميلان", "يوفنتوس", "إيه سي ميلان", "نابولي", "أتالانتا", "لاتسيو", "روما", "فيورنتينا", "بولونيا", "تورينو", "مونزا", "جنوى", "ليتشي", "كالياري", "إمبولي", "هيلاس فيرونا", "بارما", "أودينيزي"],
-        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "أتلتيك بلباو", "ريال سوسيداد", "فياريال", "ريال بيتيس", "إشبيلية", "فالنسيا", "سيلتا فيغو", "أوساسونا", "جيرونا", "مايوركا", "رايو فايكانو", "خيتافي", "ألافيس", "لاس بالماس", "بلد الوليد"],
-        "الدوري الإنجليزي الممتاز": ["مانشستر سيتي", "ليفربول", "أرسنال", "تشيلسي", "مانشستر يونايتد", "توتنهام هوتسبير", "نيوكاسل يونايتد", "أستون فيلا", "برايتون", "وست هام يونايتد", "كريستال بالاس", "فولهام", "برينتفورد", "إيفرتون", "وولفرهامبتون", "بورنموث", "نوتنغهام فورست", "ليستر سيتي"]
+        "الدوري الفرنسي": ["باريس سان جيرمان", "مارسيليا", "موناكو", "ليون", "ليل", "نيس", "ستراسبورغ", "لانس", "رين", "تولوز", "بريست", "مونبلييه", "ستاد ريمس", "لوهافر", "نانت", "أنجيه", "سنت إتيان", "ميتز", "ستاد بريستوا", "أوكسير"],
+        "الدوري الألماني": ["بايرن ميونخ", "بوروسيا دورتموند", "باير ليفركوزن", "لايبزيغ", "آنتراخت فرانكفورت", "شتوتغارت", "فولفسبورغ", "فرايبورغ", "هوفنهايم", "أوغسبورغ", "فيردر بريمن", "ماينز 05", "بروسيا مونشنغلادباخ", "بوخوم", "هايدنهايم", "سانت باولي", "كولن", "يونيون برلين", "هيرتا برلين", "هامبورغ"],
+        "الدوري الإيطالي": ["إنتر ميلان", "يوفنتوس", "إيه سي ميلان", "نابولي", "أتالانتا", "لاتسيو", "روما", "فيورنتينا", "بولونيا", "تورينو", "مونزا", "جنوى", "ليتشي", "كالياري", "إمبولي", "هيلاس فيرونا", "بارما", "أودينيزي", "ساسولو", "كومو"],
+        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "أتلتيك بلباو", "ريال سوسيداد", "فياريال", "ريال بيتيس", "إشبيلية", "فالنسيا", "سيلتا فيغو", "أوساسونا", "جيرونا", "مايوركا", "رايو فايكانو", "خيتافي", "ألافيس", "لاس بالماس", "بلد الوليد", "إلتشي", "أساسونا"],
+        "الدوري الإنجليزي الممتاز": ["مانشستر سيتي", "ليفربول", "أرسنال", "تشيلسي", "مانشستر يونايتد", "توتنهام هوتسبير", "نيوكاسل يونايتد", "أستون فيلا", "برايتون", "وست هام يونايتد", "كريستال بالاس", "فولهام", "برينتفورد", "إيفرتون", "وولفرهامبتون", "بورنموث", "نوتنغهام فورست", "ليستر سيتي", "إبسويتش تاون", "ساوثهامبتون"]
     };
 
     const continentalOpponentsData = {
@@ -132,7 +152,6 @@
     let continentalMatchIndex = 0;
     let continentalName = "";
     const TOTAL_SEASONS = 22;
-    const TOTAL_MATCHES = 34;
 
     function getTeamTier(teamName, leagueName) {
         let teams = database[leagueName];
@@ -186,10 +205,11 @@
 
         fixtures = [];
         let opponents = teams.filter(t => t !== player.team);
+        let totalMatches = (teams.length - 1) * 2; // نظام ذهاب وإياب كامل
         
-        for (let m = 0; m < TOTAL_MATCHES; m++) {
+        for (let m = 0; m < totalMatches; m++) {
             let opponent = opponents[m % opponents.length];
-            if (m < 17) {
+            if (m < teams.length - 1) {
                 fixtures.push({ home: player.team, away: opponent });
             } else {
                 fixtures.push({ home: opponent, away: player.team });
@@ -213,6 +233,7 @@
     }
 
     function updateUI() {
+        let totalMatches = (database[player.league].length - 1) * 2;
         document.getElementById("status-bar").innerText = `${player.name} | ${player.pos} | ${player.team} (${player.difficulty})`;
         document.getElementById("stat-season").innerText = player.season;
         document.getElementById("stat-overall").innerText = player.overall;
@@ -220,7 +241,7 @@
 
         if (player.phase === "league") {
             document.getElementById("stat-phase").innerText = "الدوري المحلي";
-            document.getElementById("stat-match").innerText = `${player.matchIndex + 1}/${TOTAL_MATCHES}`;
+            document.getElementById("stat-match").innerText = `${player.matchIndex + 1}/${totalMatches}`;
             let sortedTeams = getSortedLeagueTeams();
             let rank = sortedTeams.indexOf(player.team) + 1;
             document.getElementById("stat-rank").innerText = rank > 0 ? rank : 1;
@@ -251,7 +272,8 @@
     }
 
     function playLeagueMatch() {
-        if (player.matchIndex >= TOTAL_MATCHES) {
+        let totalMatches = (database[player.league].length - 1) * 2;
+        if (player.matchIndex >= totalMatches) {
             checkLeagueEnd();
             return;
         }
@@ -263,7 +285,6 @@
         let teams = database[player.league];
         let processedTeams = new Set([homeTeam, awayTeam]);
 
-        // محاكاة بقية مباريات الدوري ديناميكياً لكل جولة
         teams.forEach(t => {
             if (!processedTeams.has(t)) {
                 let availableOpponents = teams.filter(x => x !== t && !processedTeams.has(x));
@@ -361,13 +382,13 @@
             let sortedTeams = getSortedLeagueTeams();
             let currentRank = sortedTeams.indexOf(player.team) + 1;
 
-            log(`الجولة ${player.matchIndex + 1}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}) | ${goalStatus} | التترتيب الحالي: #${currentRank}`);
+            log(`الجولة ${player.matchIndex + 1}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}) | ${goalStatus} | الترتيب الحالي: #${currentRank}`);
         }
 
         player.matchIndex++;
         updateUI();
 
-        if (player.matchIndex >= TOTAL_MATCHES) {
+        if (player.matchIndex >= totalMatches) {
             checkLeagueEnd();
         }
     }
@@ -402,6 +423,7 @@
         availableOpponents = availableOpponents.filter(t => !t.includes(player.team));
         let shuffled = availableOpponents.sort(() => 0.5 - Math.random());
 
+        // نظام دوري أبطال أفريقيا: 3 خصوم في المجموعة (6 مباريات: ذهاب وإياب ضد كل خصم) + ربع نهائي، نصف نهائي، نهائي (ذهاب وإياب)
         continentalMatches = [
             { stage: "مرحلة المجموعات - الجولة 1 (ذهاب)", opponent: shuffled[0] },
             { stage: "مرحلة المجموعات - الجولة 2 (ذهاب)", opponent: shuffled[1] },
@@ -417,7 +439,7 @@
             { stage: "النهائي - الإياب 🏆", opponent: shuffled[5] || shuffled[1] }
         ];
 
-        log(`🌟 <strong>تأهل قاري رسمي!</strong> بدأت منافسات ${continentalName}.`);
+        log(`🌟 <strong>تأهل قاري رسمي!</strong> بدأت منافسات ${continentalName} (6 مباريات دور مجموعات ذهاب وإياب ضد 3 فرق، ثم الأدوار الإقصائية).`);
         updateUI();
     }
 
