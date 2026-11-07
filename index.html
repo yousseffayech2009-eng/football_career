@@ -10,10 +10,8 @@
             color: #fff;
             font-family: Tahoma, sans-serif;
             margin: 0;
-            padding: 10px;
+            padding: 15px;
             direction: rtl;
-            -webkit-user-select: none;
-            user-select: none;
         }
         #game-container {
             max-width: 500px;
@@ -25,16 +23,33 @@
             padding: 20px;
             margin-top: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            text-align: center;
         }
         button {
             cursor: pointer;
             font-weight: bold;
             border-radius: 8px;
             border: none;
-            touch-action: manipulation;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: 0.1s;
         }
         button:active {
-            transform: scale(0.95);
+            transform: scale(0.97);
+        }
+        input {
+            width: 90%;
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+            border: 2px solid #5bc0be;
+            background: #0b132b;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 15px;
         }
         .match-box-style {
             background: #0b132b;
@@ -42,12 +57,14 @@
             border-radius: 8px;
             margin: 10px 0;
             border: 1px solid #5bc0be;
+            text-align: right;
         }
         .teams-list {
             list-style: none;
             padding: 0;
             max-height: 250px;
             overflow-y: auto;
+            text-align: right;
         }
         .teams-list li {
             padding: 6px 0;
@@ -60,22 +77,20 @@
 
     <div id="game-container">
         <!-- شاشة البداية وإنشاء اللاعب -->
-        <div id="setup-screen" class="card" style="display: block; text-align: center; position: relative; z-index: 9999;">
+        <div id="setup-screen" class="card">
             <h1>⭐ Football Career ⭐</h1>
-            <p style="margin: 15px 0; font-size: 14px;">أدخل اسمك الشجاع للبدء أو استكمال مغامرة الرابطة التونسية (30 جولة):</p>
-            <div style="margin-bottom: 20px;">
-                <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف" style="width: 90%; padding: 12px; text-align: center; border-radius: 8px; border: 1px solid #5bc0be; background: #0b132b; color: #fff; font-size: 16px; outline: none;">
-            </div>
-            <div>
-                <button id="start-btn" style="width: 95%; padding: 14px; background-color: #5bc0be; color: #0b132b; font-size: 16px; margin-bottom: 10px;">انطلق نحو النجومية 🚀</button>
-                <button id="load-btn" style="width: 95%; padding: 12px; background-color: #f77f00; color: #fff; font-size: 15px; display: none;">استكمال المسيرة المحفوظة 📂</button>
-            </div>
+            <p style="margin: 15px 0; font-size: 14px;">أدخل اسمك الشجاع للبدء أو استكمال مغامرة الرابطة التونسية:</p>
+            
+            <input type="text" id="player-input-name" value="يوسف" placeholder="اكتب اسمك هنا...">
+            
+            <button id="start-btn" style="background-color: #5bc0be; color: #0b132b;">انطلق نحو النجومية 🚀</button>
+            <button id="load-btn" style="background-color: #f77f00; color: #fff; display: none;">استكمال المسيرة المحفوظة 📂</button>
         </div>
 
         <!-- واجهة اللعب الرئيسية -->
         <div id="game-main-interface" style="display:none;">
             <header>
-              <h2 style="text-align: center; margin: 10px 0;">⚽ Football Career</h2>
+              <h2 style="margin: 10px 0;">⚽ Football Career</h2>
               <div id="player-stats-bar" style="display: flex; justify-content: space-between; font-size: 12px; background: #1c2541; padding: 8px; border-radius: 6px; margin-bottom: 10px;">
                 <span>اللاعب: <strong id="p-name">--</strong></span>
                 <span>النادي: <strong id="p-club">--</strong> (<span id="p-stars">3</span> ⭐)</span>
@@ -83,7 +98,7 @@
               </div>
             </header>
 
-            <main id="main-screen" class="card">
+            <main id="main-screen" class="card" style="text-align: right;">
               <h3>لوحة القيادة والمباريات</h3>
               <div class="league-info-badge" style="background: #1b263b; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; line-height: 1.8;">
                 📅 الجولة: <strong id="p-match-round">0</strong> من 30 | 🏆 النقاط: <strong id="p-points">0</strong><br>
@@ -102,24 +117,23 @@
                 <p id="offer-text" style="font-size: 13px;">انتهى الموسم! لقد لفتّ الأنظار، وتلقت عدة عروض:</p>
                 <div id="continental-result-box" style="margin: 10px 0; font-weight: bold; color: #6fffe9; font-size: 13px;"></div>
                 
-                <!-- قائمة العروض المتعددة -->
                 <div id="offers-list-container" style="display: flex; flex-direction: column; gap: 8px; margin: 12px 0;"></div>
 
-                <button id="reject-btn" style="background-color: #e76f51; color: #fff; width: 100%; padding: 10px;">البقاء وتجديد العقد مع ناديك الحالي 🛡️</button>
+                <button id="reject-btn" style="background-color: #e76f51; color: #fff;">البقاء وتجديد العقد مع ناديك الحالي 🛡️</button>
               </div>
 
               <div class="menu-buttons" id="action-buttons-div">
-                <button id="play-match-btn" style="background-color: #5bc0be; color: #0b132b; width: 100%; padding: 12px; margin-bottom: 8px; font-size: 15px;">خوض الجولة الحالية ⚽</button>
-                <div style="display: flex; gap: 8px;">
-                    <button id="teams-btn" style="background-color: #3a506b; color: #fff; padding: 10px; flex: 1; font-size: 12px;">ترتيب الأندية 📊</button>
-                    <button id="comps-btn" style="background-color: #3a506b; color: #fff; padding: 10px; flex: 1; font-size: 12px;">نظام التأهل 🏆</button>
+                <button id="play-match-btn" style="background-color: #5bc0be; color: #0b132b;">خوض الجولة الحالية ⚽</button>
+                <div style="display: flex; gap: 8px; margin-top: 10px;">
+                    <button id="teams-btn" style="background-color: #3a506b; color: #fff; font-size: 13px; padding: 10px;">ترتيب الأندية 📊</button>
+                    <button id="comps-btn" style="background-color: #3a506b; color: #fff; font-size: 13px; padding: 10px;">نظام التأهل 🏆</button>
                 </div>
-                <button id="reset-game-btn" style="background-color: #d90429; color: #fff; width: 100%; padding: 8px; margin-top: 10px; font-size: 12px;">إعادة تعيين وبدء مسيرة جديدة 🔄</button>
+                <button id="reset-game-btn" style="background-color: #d90429; color: #fff; font-size: 12px; padding: 8px;">إعادة تعيين وبدء مسيرة جديدة 🔄</button>
               </div>
             </main>
 
             <!-- شاشة الفرق -->
-            <div id="teams-screen" class="card" style="display:none;">
+            <div id="teams-screen" class="card" style="display:none; text-align: right;">
               <h3>قوة الأندية وتصنيفاتها (الدوري التونسي)</h3>
               <ul class="teams-list">
                 <li>Club Africain: <strong>4.5 نجوم ⭐</strong>[span_0](start_span)[span_0](end_span)</li>
@@ -139,15 +153,15 @@
                 <li>Soliman: <strong>2.0 نجوم ⭐</strong>[span_14](start_span)[span_14](end_span)</li>
                 <li>AS Gabes: <strong>2.0 نجوم ⭐</strong>[span_15](start_span)[span_15](end_span)</li>
               </ul>
-              <button id="back-from-teams" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; width: 100%;">العودة للملعب</button>
+              <button id="back-from-teams" style="background: #3a506b; color: #fff;">العودة للملعب</button>
             </div>
 
             <!-- شاشة البطولات والتأهل -->
-            <div id="competitions-screen" class="card" style="display:none;">
+            <div id="competitions-screen" class="card" style="display:none; text-align: right;">
               <h3>نظام التأهل القاري (30 جولة)</h3>
               <p><strong>دوري أبطال إفريقيا:</strong> يتأهل إليه صاحبا المركزين <strong>الأول والثاني</strong>[span_16](start_span)[span_16](end_span).</p>
               <p><strong>كأس الكونفيدرالية:</strong> يتأهل إليه صاحبا المركزين <strong>الثالث والرابع</strong>[span_17](start_span)[span_17](end_span).</p>
-              <button id="back-from-comps" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; width: 100%;">العودة للملعب</button>
+              <button id="back-from-comps" style="background: #3a506b; color: #fff;">العودة للملعب</button>
             </div>
         </div>
     </div>
@@ -196,43 +210,37 @@
 
         let availableOffers = [];
 
-        // دالة ربط آمنة تدعم اللمس المباشر والنقر لمنع أي تعليق في الـ APK
-        function bindAction(elementId, actionFunction) {
-            let el = document.getElementById(elementId);
-            if (!el) return;
-            
-            let triggered = false;
-            el.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                triggered = true;
-                actionFunction();
-            }, {passive: false});
-
-            el.addEventListener('click', function(e) {
-                if (triggered) {
-                    triggered = false;
-                    return;
-                }
-                actionFunction();
-            });
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
+        // تفعيل استجابة الأزرار بالضغط المباشر واللمس لحل المشكلة جذرياً
+        window.addEventListener('DOMContentLoaded', () => {
             let savedGame = localStorage.getItem('football_career_save');
             if (savedGame) {
-                document.getElementById('load-btn').style.display = 'block';
+                let loadBtn = document.getElementById('load-btn');
+                if (loadBtn) loadBtn.style.display = 'block';
             }
 
-            bindAction('start-btn', startCareer);
-            bindAction('load-btn', loadCareer);
-            bindAction('play-match-btn', playMatch);
-            bindAction('teams-btn', function() { showSection('teams-screen'); });
-            bindAction('comps-btn', function() { showSection('competitions-screen'); });
-            bindAction('back-from-teams', returnToMain);
-            bindAction('back-from-comps', returnToMain);
-            bindAction('reject-btn', rejectOffers);
-            bindAction('reset-game-btn', resetGame);
+            setupListener('start-btn', startCareer);
+            setupListener('load-btn', loadCareer);
+            setupListener('play-match-btn', playMatch);
+            setupListener('teams-btn', () => showSection('teams-screen'));
+            setupListener('comps-btn', () => showSection('competitions-screen'));
+            setupListener('back-from-teams', returnToMain);
+            setupListener('back-from-comps', returnToMain);
+            setupListener('reject-btn', rejectOffers);
+            setupListener('reset-game-btn', resetGame);
         });
+
+        function setupListener(id, callback) {
+            let el = document.getElementById(id);
+            if (!el) return;
+            el.onclick = (e) => {
+                e.preventDefault();
+                callback();
+            };
+            el.ontouchend = (e) => {
+                e.preventDefault();
+                callback();
+            };
+        }
 
         function saveGame() {
             let gameState = {
@@ -419,29 +427,16 @@
                 let btn = document.createElement('button');
                 btn.style.backgroundColor = "#2a9d8f";
                 btn.style.color = "#fff";
-                btn.style.margin = "4px 0";
-                btn.style.width = "100%";
-                btn.style.padding = "10px";
-                btn.style.border = "none";
-                btn.style.borderRadius = "6px";
-                btn.style.cursor = "pointer";
-                btn.style.fontWeight = "bold";
                 btn.innerHTML = `✍️ انتقال إلى: <strong>${offer.name}</strong> (${offer.stars} ⭐)`;
                 
-                let triggeredOffer = false;
-                btn.addEventListener('touchend', function(e) {
+                btn.onclick = (e) => {
                     e.preventDefault();
-                    triggeredOffer = true;
                     acceptOffer(index);
-                }, {passive: false});
-
-                btn.addEventListener('click', function(e) {
-                    if (triggeredOffer) {
-                        triggeredOffer = false;
-                        return;
-                    }
+                };
+                btn.ontouchend = (e) => {
+                    e.preventDefault();
                     acceptOffer(index);
-                });
+                };
 
                 container.appendChild(btn);
             });
@@ -482,4 +477,3 @@
     </script>
 </body>
 </html>
-
