@@ -12,7 +12,7 @@
         <!-- شاشة البداية وإنشاء اللاعب -->
         <div id="setup-screen" class="card">
             <h1>⭐ Football Career ⭐</h1>
-            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (34 جولة وصراع المقاعد القارية):</p>
+            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (34 جولة وصراع المراكز):</p>
             <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف">
             <button onclick="startCareer()">انطلق نحو النجومية 🚀</button>
         </div>
@@ -30,8 +30,8 @@
 
             <main id="main-screen" class="card">
               <h2>لوحة القيادة والمباريات</h2>
-              <div class="league-info-badge">
-                📅 الجولة: <strong id="p-match-round">0</strong> من 34 | 🏆 النقاط: <strong id="p-points">0</strong>
+              <div class="league-info-badge" style="background: #1b263b; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+                📅 الجولة: <strong id="p-match-round">0</strong> من 34 | 🏆 النقاط: <strong id="p-points">0</strong> | 📊 الترتيب: <strong id="p-rank">-</strong>
               </div>
               
               <!-- صندوق المباراة والحماس -->
@@ -75,9 +75,8 @@
             <!-- شاشة البطولات والتأهل -->
             <div id="competitions-screen" class="card" style="display:none;">
               <h3>نظام التأهل القاري والمجموعات</h3>
-              <p><strong>دوري أبطال إفريقيا:</strong> يتأهل إليه أصحاب المركزين <strong>الأول والثاني</strong> في الدوري للمشاركة في المجموعات (مع الأهلي، صن داونز، الزمالك، الوداد).</p>
+              <p><strong>دوري أبطال إفريقيا:</strong> يتأهل إليه أصحاب المركزين <strong>الأول والثاني</strong>.</p>
               <p><strong>كأس الكونفيدرالية:</strong> يتأهل إليه صاحبا المركزين <strong>الثالث والرابع</strong>.</p>
-              <p><strong>دوري أبطال أوروبا:</strong> متاح لاحقاً عبر الانتقالات الكبرى للاحتراف في أوروبا.</p>
               <button onclick="returnToMain()" class="btn-secondary">العودة للملعب</button>
             </div>
         </div>
@@ -91,28 +90,29 @@
             season: 1,
             goals: 0,
             matchesPlayed: 0,
-            points: 0
+            points: 0,
+            rank: 10
         };
 
         const tunisianTeamsData = [
-            { name: "الترجي الرياضي التونسي", stars: 4.5 },
-            { name: "النادي الإفريقي", stars: 4.0 },
-            { name: "النجم الرياضي الساحلي", stars: 4.0 },
-            { name: "النادي الرياضي الصفاقسي", stars: 4.0 },
-            { name: "الاتحاد الرياضي المنستيري", stars: 3.5 },
-            { name: "الملعب التونسي", stars: 3.5 },
-            { name: "اتحاد بن قردان", stars: 3.0 },
-            { name: "الأولمبي الباجي", stars: 3.0 },
-            { name: "اتحاد تطاوين", stars: 3.0 },
-            { name: "مستقبل قابس", stars: 2.5 },
-            { name: "مستقبل سليمان", stars: 2.5 },
-            { name: "شبيبة العمران", stars: 2.5 },
-            { name: "نادي محيط قرقنة", stars: 2.0 },
-            { name: "اتحاد ڤفصة", stars: 2.0 },
-            { name: "الملعب الإفريقي لمنزل بورقيبة", stars: 2.0 },
-            { name: "الملعب السوسي", stars: 2.0 },
-            { name: "جمعية جربة", stars: 2.0 },
-            { name: "الأمل الرياضي حمام سوسة", stars: 2.0 }
+            { name: "الترجي الرياضي التونسي", stars: 4.5, points: 0 },
+            { name: "النادي الإفريقي", stars: 4.0, points: 0 },
+            { name: "النجم الرياضي الساحلي", stars: 4.0, points: 0 },
+            { name: "النادي الرياضي الصفاقسي", stars: 4.0, points: 0 },
+            { name: "الاتحاد الرياضي المنستيري", stars: 3.5, points: 0 },
+            { name: "الملعب التونسي", stars: 3.5, points: 0 },
+            { name: "اتحاد بن قردان", stars: 3.0, points: 0 },
+            { name: "الأولمبي الباجي", stars: 3.0, points: 0 },
+            { name: "اتحاد تطاوين", stars: 3.0, points: 0 },
+            { name: "مستقبل قابس", stars: 2.5, points: 0 },
+            { name: "مستقبل سليمان", stars: 2.5, points: 0 },
+            { name: "شبيبة العمران", stars: 2.5, points: 0 },
+            { name: "نادي محيط قرقنة", stars: 2.0, points: 0 },
+            { name: "اتحاد ڤفصة", stars: 2.0, points: 0 },
+            { name: "الملعب الإفريقي لمنزل بورقيبة", stars: 2.0, points: 0 },
+            { name: "الملعب السوسي", stars: 2.0, points: 0 },
+            { name: "جمعية جربة", stars: 2.0, points: 0 },
+            { name: "الأمل الرياضي حمام سوسة", stars: 2.0, points: 0 }
         ];
 
         const europeanAndAfricanBigTeams = [
@@ -135,19 +135,26 @@
             }
             player.name = inputName;
             
-            let randomTeam = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)];
-            player.club = randomTeam.name;
-            player.clubStars = randomTeam.stars;
+            let randomTeamObj = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)];
+            player.club = randomTeamObj.name;
+            player.clubStars = randomTeamObj.stars;
 
+            // إعادة ضبط نقاط الفرق في بداية الموسم
+            tunisianTeamsData.forEach(t => t.points = 0);
+
+            updateUI();
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('game-main-interface').style.display = 'block';
+        }
+
+        function updateUI() {
             document.getElementById('p-name').innerText = player.name;
             document.getElementById('p-club').innerText = player.club;
             document.getElementById('p-stars').innerText = player.clubStars;
             document.getElementById('p-season').innerText = player.season;
             document.getElementById('p-match-round').innerText = player.matchesPlayed;
             document.getElementById('p-points').innerText = player.points;
-            
-            document.getElementById('setup-screen').style.display = 'none';
-            document.getElementById('game-main-interface').style.display = 'block';
+            document.getElementById('p-rank').innerText = player.rank;
         }
 
         function showSection(sectionId) {
@@ -167,8 +174,20 @@
             if (player.matchesPlayed >= 34) return;
 
             player.matchesPlayed++;
-            document.getElementById('p-match-round').innerText = player.matchesPlayed;
 
+            // 1. محاكاة مباريات باقي الفرق في الدوري لهذه الجولة لتحديث الترتيب الواقعي
+            tunisianTeamsData.forEach(team => {
+                if (team.name === player.club) {
+                    team.points = player.points; // تحديث نقاط نادي اللاعب
+                } else {
+                    // إضافة نقاط عشوائية لباقي الفرق بناءً على نجومهم
+                    let rand = Math.random();
+                    if (rand > 0.5) team.points += 3; // فوز
+                    else if (rand > 0.2) team.points += 1; // تعادل
+                }
+            });
+
+            // 2. اختيار الخصم الحالي للاعب
             let opponentObj;
             do {
                 opponentObj = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)];
@@ -198,6 +217,15 @@
                 player.points += 1;
             }
 
+            // تحديث نقاط ناديك في مصفوفة الفرق
+            let playerTeamInArray = tunisianTeamsData.find(t => t.name === player.club);
+            if (playerTeamInArray) playerTeamInArray.points = player.points;
+
+            // 3. ترتيب الفرق تنازلياً حسب النقاط لمعرفة مركز فريقك الحالي بدقة
+            tunisianTeamsData.sort((a, b) => b.points - a.points);
+            let currentRank = tunisianTeamsData.findIndex(t => t.name === player.club) + 1;
+            player.rank = currentRank;
+
             let playerGoalsInMatch = (myGoals > 0 && Math.random() > 0.4) ? 1 : 0;
             player.goals += playerGoalsInMatch;
             if(playerGoalsInMatch > 0) {
@@ -205,7 +233,7 @@
             }
 
             document.getElementById('match-announcement').innerHTML = matchResultText;
-            document.getElementById('p-points').innerText = player.points;
+            updateUI();
 
             if (player.matchesPlayed >= 34) {
                 triggerEndOfSeasonOffers();
@@ -213,26 +241,21 @@
         }
 
         function triggerEndOfSeasonOffers() {
-            // محاكاة مركز الفريق في الدوري بناءً على النقاط (كلما زادت النقاط زاد احتمال الترتيب المتقدم)
-            let estimatedRank = 1;
-            if (player.points < 40) estimatedRank = 8;
-            else if (player.points < 55) estimatedRank = 5;
-            else if (player.points < 65) estimatedRank = 3; // مؤهل للكونفدرالية
-            else estimatedRank = (Math.random() > 0.5 ? 1 : 2); // مؤهل لدوري الأبطال
-
+            let finalRank = player.rank;
             let qualificationText = "";
-            if (estimatedRank <= 2) {
-                qualificationText = `🌟 مبروك! أنهى ناديك (${player.club}) الدوري في المركز <strong>(${estimatedRank})</strong> وتأهل رسمياً إلى 🏆 <strong>دوري أبطال إفريقيا</strong>!`;
-            } else if (estimatedRank <= 4) {
-                qualificationText = `👏 ممتاز! أنهى ناديك (${player.club}) الدوري في المركز <strong>(${estimatedRank})</strong> وتأهل رسمياً إلى 🥈 <strong>كأس الكونفدرالية الإفريقية</strong>!`;
+
+            if (finalRank <= 2) {
+                qualificationText = `🌟 مبروك! أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> وتأهل رسمياً إلى 🏆 <strong>دوري أبطال إفريقيا</strong>!`;
+            } else if (finalRank <= 4) {
+                qualificationText = `👏 ممتاز! أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> وتأهل رسمياً إلى 🥈 <strong>كأس الكونفدرالية الإفريقية</strong>!`;
             } else {
-                qualificationText = `⚠️ أنهى ناديك (${player.club}) الدوري في المركز <strong>(${estimatedRank})</strong> ولم يتأهل للمسابقات القارية هذا الموسم.`;
+                qualificationText = `⚠️ أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> ولم يتأهل للمسابقات القارية هذا الموسم.`;
             }
 
             pendingNewTeamObj = europeanAndAfricanBigTeams[Math.floor(Math.random() * europeanAndAfricanBigTeams.length)];
 
-            document.getElementById('continental-result-boxinnerHTML').innerHTML = qualificationText;
-            document.getElementById('offer-text').innerHTML = `برصيد ${player.points} نقطة و ${player.goals} هدفاً، تلقيت عرضاً نارياً من النادي العميل: <strong>${pendingNewTeamObj.name}</strong>!`;
+            document.getElementById('continental-result-box').innerHTML = qualificationText;
+            document.getElementById('offer-text').innerHTML = `برصيد ${player.points} نقطة و ${player.goals} هدفاً، تلقيت عرضاً نارياً من النادي الكبير: <strong>${pendingNewTeamObj.name}</strong>!`;
             
             document.getElementById('transfer-offer-box').style.display = 'block';
             document.getElementById('play-btn').style.display = 'none';
@@ -241,7 +264,6 @@
         function acceptOffer() {
             player.club = pendingNewTeamObj.name;
             player.clubStars = pendingNewTeamObj.stars;
-            updateClubUIAfterTransfer();
             finishSeasonTransition("خطوة تاريخية! وافقت على الانتقال وخوض غمار البطولات الكبرى.");
         }
 
@@ -254,19 +276,15 @@
             player.matchesPlayed = 0;
             player.points = 0;
             player.goals = 0;
+            player.rank = 10;
             
-            document.getElementById('p-season').innerText = player.season;
-            document.getElementById('p-match-round').innerText = player.matchesPlayed;
-            document.getElementById('p-points').innerText = player.points;
+            tunisianTeamsData.forEach(t => t.points = 0);
+
+            updateUI();
             document.getElementById('match-announcement').innerHTML = `<strong>نهاية الموسم:</strong> ${msg}<br>انطلق موسم جديد كلياً رقم ${player.season}!`;
             
             document.getElementById('transfer-offer-box').style.display = 'none';
             document.getElementById('play-btn').style.display = 'block';
-        }
-
-        function updateClubUIAfterTransfer() {
-            document.getElementById('p-club').innerText = player.club;
-            document.getElementById('p-stars').innerText = player.clubStars;
         }
     </script>
 </body>
