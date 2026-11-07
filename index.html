@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>⚽ Football Career - مسيرة الاحتراف</title>
     <style>
         body {
@@ -12,6 +12,8 @@
             margin: 0;
             padding: 10px;
             direction: rtl;
+            -webkit-user-select: none;
+            user-select: none;
         }
         #game-container {
             max-width: 500px;
@@ -29,10 +31,10 @@
             font-weight: bold;
             border-radius: 8px;
             border: none;
-            transition: 0.2s;
+            touch-action: manipulation;
         }
         button:active {
-            transform: scale(0.98);
+            transform: scale(0.95);
         }
         .match-box-style {
             background: #0b132b;
@@ -58,7 +60,7 @@
 
     <div id="game-container">
         <!-- شاشة البداية وإنشاء اللاعب -->
-        <div id="setup-screen" class="card" style="display: block; text-align: center; z-index: 999; position: relative;">
+        <div id="setup-screen" class="card" style="display: block; text-align: center; position: relative; z-index: 9999;">
             <h1>⭐ Football Career ⭐</h1>
             <p style="margin: 15px 0; font-size: 14px;">أدخل اسمك الشجاع للبدء أو استكمال مغامرة الرابطة التونسية (30 جولة):</p>
             <div style="margin-bottom: 20px;">
@@ -194,25 +196,44 @@
 
         let availableOffers = [];
 
-        // عند فتح اللعبة، فحص وجود مسيرة محفوظة مسبقاً
+        // دالة ربط آمنة تدعم اللمس المباشر والنقر لمنع أي تعليق في الـ APK
+        function bindAction(elementId, actionFunction) {
+            let el = document.getElementById(elementId);
+            if (!el) return;
+            
+            let triggered = false;
+            el.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                triggered = true;
+                actionFunction();
+            }, {passive: false});
+
+            el.addEventListener('click', function(e) {
+                if (triggered) {
+                    triggered = false;
+                    return;
+                }
+                actionFunction();
+            });
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             let savedGame = localStorage.getItem('football_career_save');
             if (savedGame) {
                 document.getElementById('load-btn').style.display = 'block';
             }
 
-            document.getElementById('start-btn').addEventListener('click', startCareer);
-            document.getElementById('load-btn').addEventListener('click', loadCareer);
-            document.getElementById('play-match-btn').addEventListener('click', playMatch);
-            document.getElementById('teams-btn').addEventListener('click', function() { showSection('teams-screen'); });
-            document.getElementById('comps-btn').addEventListener('click', function() { showSection('competitions-screen'); });
-            document.getElementById('back-from-teams').addEventListener('click', returnToMain);
-            document.getElementById('back-from-comps').addEventListener('click', returnToMain);
-            document.getElementById('reject-btn').addEventListener('click', rejectOffers);
-            document.getElementById('reset-game-btn').addEventListener('click', resetGame);
+            bindAction('start-btn', startCareer);
+            bindAction('load-btn', loadCareer);
+            bindAction('play-match-btn', playMatch);
+            bindAction('teams-btn', function() { showSection('teams-screen'); });
+            bindAction('comps-btn', function() { showSection('competitions-screen'); });
+            bindAction('back-from-teams', returnToMain);
+            bindAction('back-from-comps', returnToMain);
+            bindAction('reject-btn', rejectOffers);
+            bindAction('reset-game-btn', resetGame);
         });
 
-        // دالة حفظ اللعبة تلقائياً في ذاكرة المتصفح
         function saveGame() {
             let gameState = {
                 player: player,
@@ -221,7 +242,6 @@
             localStorage.setItem('football_career_save', JSON.stringify(gameState));
         }
 
-        // بدء مسيرة جديدة
         function startCareer() {
             let inputElement = document.getElementById('player-input-name');
             if (!inputElement) return;
@@ -250,7 +270,6 @@
             document.getElementById('game-main-interface').style.display = 'block';
         }
 
-        // استكمال المسيرة المحفوظة
         function loadCareer() {
             let savedGame = localStorage.getItem('football_career_save');
             if (!savedGame) {
@@ -261,7 +280,6 @@
             let gameState = JSON.parse(savedGame);
             player = gameState.player;
             
-            // استعادة نقاط الفرق
             if (gameState.teams) {
                 gameState.teams.forEach(savedTeam => {
                     let t = tunisianTeamsData.find(item => item.name === savedTeam.name);
@@ -274,7 +292,6 @@
             document.getElementById('game-main-interface').style.display = 'block';
         }
 
-        // إعادة التعيين ومسح الحفظ
         function resetGame() {
             if (confirm("هل أنت متأكد من رغبتك في مسح المسيرة الحالية والبدء من جديد؟")) {
                 localStorage.removeItem('football_career_save');
@@ -365,7 +382,7 @@
 
             document.getElementById('match-announcement').innerHTML = matchResultText;
             updateUI();
-            saveGame(); // حفظ تلقائي بعد كل مباراة
+            saveGame();
 
             if (player.matchesPlayed >= 30) {
                 triggerEndOfSeasonOffers();
@@ -410,9 +427,22 @@
                 btn.style.cursor = "pointer";
                 btn.style.fontWeight = "bold";
                 btn.innerHTML = `✍️ انتقال إلى: <strong>${offer.name}</strong> (${offer.stars} ⭐)`;
-                btn.addEventListener('click', function() {
+                
+                let triggeredOffer = false;
+                btn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    triggeredOffer = true;
+                    acceptOffer(index);
+                }, {passive: false});
+
+                btn.addEventListener('click', function(e) {
+                    if (triggeredOffer) {
+                        triggeredOffer = false;
+                        return;
+                    }
                     acceptOffer(index);
                 });
+
                 container.appendChild(btn);
             });
 
@@ -452,3 +482,4 @@
     </script>
 </body>
 </html>
+
