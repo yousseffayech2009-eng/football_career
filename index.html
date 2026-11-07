@@ -12,7 +12,7 @@
         <!-- شاشة البداية وإنشاء اللاعب -->
         <div id="setup-screen" class="card">
             <h1>⭐ Football Career ⭐</h1>
-            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (34 جولة وصراع الأهداف والمراكز):</p>
+            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (34 جولة وصراع الانتقالات):</p>
             <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف">
             <button onclick="startCareer()">انطلق نحو النجومية 🚀</button>
         </div>
@@ -41,13 +41,16 @@
                 <p id="match-announcement">اضغط على زر خوض المباراة للبدء ضد الخصم القادم.</p>
               </div>
 
-              <!-- صندوق نتائج نهاية الموسم والمقاعد القارية -->
+              <!-- صندوق عروض الانتقالات (أكثر من عرض من أندية تونسية قوية أو أوروبا الشرقية) -->
               <div id="transfer-offer-box" style="display:none; background: #3a1c0b; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #ffb703;">
-                <h3>🌟 حصاد الموسم والمقاعد القارية (نهاية الدوري)</h3>
-                <p id="offer-text">انتهى الموسم!</p>
+                <h3>🌟 سوق الانتقالات واختيار العروض (نهاية الموسم)</h3>
+                <p id="offer-text">انتهى الموسم! لقد لفتّ الأنظار، وتلقت عدة عروض:</p>
                 <div id="continental-result-box" style="margin: 10px 0; font-weight: bold; color: #6fffe9;"></div>
-                <button onclick="acceptOffer()" class="btn-primary" style="background-color: #2a9d8f;">قبول الانتقال لعرض قاري/أوروبي كبرى ✍️</button>
-                <button onclick="rejectOffer()" class="btn-secondary" style="background-color: #e76f51;">البقاء ومشاركة ناديك قارياً 🛡️</button>
+                
+                <!-- قائمة العروض المتعددة -->
+                <div id="offers-list-container" style="display: flex; flex-direction: column; gap: 8px; margin: 12px 0;"></div>
+
+                <button onclick="rejectOffers()" class="btn-secondary" style="background-color: #e76f51; width: 100%;">البقاء وتجديد العقد مع ناديك الحالي 🛡️</button>
               </div>
 
               <div class="menu-buttons" id="action-buttons-div">
@@ -116,17 +119,19 @@
             { name: "الأمل الرياضي حمام سوسة", stars: 2.0, points: 0 }
         ];
 
-        const europeanAndAfricanBigTeams = [
-            { name: "النادي الأهلي المصري 🦅 (دوري الأبطال)", stars: 4.5 },
-            { name: "الزمالك المصري 🏹 (الكونفدرالية)", stars: 4.0 },
-            { name: "ماميلودي صن داونز 💛 (دوري الأبطال)", stars: 4.5 },
-            { name: "الرجاء الرياضي 💚 (دوري الأبطال)", stars: 4.0 },
-            { name: "ريال مدريد الإسباني 👑 (أبطال أوروبا)", stars: 5.0 },
-            { name: "برشلونة الإسباني 🔵🔴 (أبطال أوروبا)", stars: 5.0 },
-            { name: "مانشستر سيتي الإنجليزي 💙 (أبطال أوروبا)", stars: 5.0 }
+        // أندية أوروبا الشرقية وأندية تونسية كبرى بديلة للعروض الواقعية
+        const easternEuropeAndStrongLocalTeams = [
+            { name: "نادي فرينكفاروش المجري 🇭🇺 (أوروبا الشرقية)", stars: 3.5 },
+            { name: "نادي دينامو زغرب الكرواتي 🇭🇷 (أوروبا الشرقية)", stars: 4.0 },
+            { name: "نادي سلافا براغ التشيكي 🇨🇿 (أوروبا الشرقية)", stars:.35 },
+            { name: "نادي لوكوموتيف موسكو الروسي 🇷🇺 (أوروبا الشرقية)", stars: 4.0 },
+            { name: "نادي ستيوا بوخارست الروماني 🇷🇴 (أوروبا الشرقية)", stars: 3.5 },
+            { name: "الترجي الرياضي التونسي 🇹🇳 (عرض محلي قوي)", stars: 4.5 },
+            { name: "النجم الرياضي الساحلي 🇹🇳 (عرض محلي قوي)", stars: 4.0 },
+            { name: "النادي الرياضي الصفاقسي 🇹🇳 (عرض محلي قوي)", stars: 4.0 }
         ];
 
-        let pendingNewTeamObj = null;
+        let availableOffers = [];
 
         function startCareer() {
             let inputName = document.getElementById('player-input-name').value.trim();
@@ -245,26 +250,50 @@
             } else if (finalRank <= 4) {
                 qualificationText = `👏 ممتاز! أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> وتأهل رسمياً إلى 🥈 <strong>كأس الكونفدرالية الإفريقية</strong>!`;
             } else {
-                qualificationText = `⚠️ أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> ولم يتأهل للمسابقات القارية هذا الموسم.`;
+                qualificationText = `⚠️ أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> ولم يتأهل للمسابقات القارية.`;
             }
 
-            pendingNewTeamObj = europeanAndAfricanBigTeams[Math.floor(Math.random() * europeanAndAfricanBigTeams.length)];
-
             document.getElementById('continental-result-box').innerHTML = qualificationText;
-            document.getElementById('offer-text').innerHTML = `برصيد ${player.points} نقطة و ${player.goals} هدفاً، تلقيت عرضاً نارياً من النادي الكبير: <strong>${pendingNewTeamObj.name}</strong>!`;
+
+            // توليد 3 عروض عشوائية مختلفة (ليست من الـ Top 5، بل من أندية أوروبا الشرقية أو أندية محلية أقوى)
+            availableOffers = [];
+            let shuffledPool = [...easternEuropeAndStrongLocalTeams].sort(() => 0.5 - Math.random());
             
+            // اختيار 3 عروض مختلفة ولا تساوي النادي الحالي
+            for (let team of shuffledPool) {
+                if (team.name !== player.club && availableOffers.length < 3) {
+                    availableOffers.push(team);
+                }
+            }
+
+            // عرض الأندية في واجهة الأزرار داخل صندوق الانتقالات
+            let container = document.getElementById('offers-list-container');
+            container.innerHTML = "";
+
+            availableOffers.forEach((offer, index) => {
+                let btn = document.createElement('button');
+                btn.className = "btn-primary";
+                btn.style.backgroundColor = "#2a9d8f";
+                btn.style.margin = "4px 0";
+                btn.innerHTML = `✍️ انتقال إلى: <strong>${offer.name}</strong> (${offer.stars} ⭐)`;
+                btn.onclick = function() { acceptOffer(index); };
+                container.appendChild(btn);
+            });
+
+            document.getElementById('offer-text').innerHTML = `برصيد ${player.points} نقطة و ${player.goals} هدفاً، تلقيت 3 عروض رسمية متاحة الآن:`;
             document.getElementById('transfer-offer-box').style.display = 'block';
             document.getElementById('play-btn').style.display = 'none';
         }
 
-        function acceptOffer() {
-            player.club = pendingNewTeamObj.name;
-            player.clubStars = pendingNewTeamObj.stars;
-            finishSeasonTransition("خطوة تاريخية! وافقت على الانتقال وخوض غمار البطولات الكبرى.");
+        function acceptOffer(index) {
+            let selectedOffer = availableOffers[index];
+            player.club = selectedOffer.name;
+            player.clubStars = selectedOffer.stars;
+            finishSeasonTransition(`خطوة موفقة! وافقت على الانتقال إلى صفوف نادي ${selectedOffer.name}.`);
         }
 
-        function rejectOffer() {
-            finishSeasonTransition("اخترت البقاء ومواصلة المغامرة مع ناديك الحالي.");
+        function rejectOffers() {
+            finishSeasonTransition("اخترت رفض كل العروض ورفض الرحيل، ومواصلة المشوار مع ناديك الحالي.");
         }
 
         function finishSeasonTransition(msg) {
