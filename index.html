@@ -10,11 +10,11 @@
 
     <div id="game-container">
         <!-- شاشة البداية وإنشاء اللاعب -->
-        <div id="setup-screen" class="card">
+        <div id="setup-screen" class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 30px;">
             <h1>⭐ Football Career ⭐</h1>
-            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (30 جولة ذهاب وإياب):</p>
-            <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف">
-            <button onclick="startCareer()">انطلق نحو النجومية 🚀</button>
+            <p style="text-align: center;">أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (30 جولة ذهاب وإياب):</p>
+            <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف" style="width: 80%; padding: 12px; text-align: center; border-radius: 8px; border: 1px solid #5bc0be; background: #0b132b; color: #fff; font-size: 16px;">
+            <button onclick="startCareer()" class="btn-primary" style="width: 80%; padding: 12px; background-color: #5bc0be; color: #0b132b; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">انطلق نحو النجومية 🚀</button>
         </div>
 
         <!-- واجهة اللعب الرئيسية -->
@@ -182,7 +182,7 @@
         }
 
         function playMatch() {
-            if (player.matchesPlayed >= 30) return; // الدوري يتكون من 30 جولة (ذهاب وإياب ضد 15 فريقاً)
+            if (player.matchesPlayed >= 30) return;
 
             player.matchesPlayed++;
 
@@ -251,11 +251,11 @@
             let qualificationText = "";
 
             if (finalRank <= 2) {
-                qualificationText = `🌟 مبروك! أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> وتأهل رسمياً إلى 🏆 <strong>دوري أبطال إفريقيا</strong>!`;
+                qualificationText = `🌟 مبروك! أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> وتأهل رسمياً إلى 🏆 <strong>دوري أبطال إفريقيا</strong>[span_37](start_span)[span_37](end_span)!`;
             } else if (finalRank <= 4) {
-                qualificationText = `👏 ممتاز! أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> وتأهل رسمياً إلى 🥈 <strong>كأس الكونفدرالية الإفريقية</strong>!`;
+                qualificationText = `👏 ممتاز! أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> وتأهل رسمياً إلى 🥈 <strong>كأس الكونفدرالية الإفريقية</strong>[span_38](start_span)[span_38](end_span)!`;
             } else {
-                qualificationText = `⚠️ أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> ولم يتأهل للمسابقات القارية.`;
+                qualificationText = `⚠️ أنهى ناديك (${player.club}) الدوري في المركز <strong>(${finalRank})</strong> ولم يتأهل للمسابقات القارية.[span_39](start_span)[span_39](end_span)`;
             }
 
             document.getElementById('continental-result-box').innerHTML = qualificationText;
@@ -277,6 +277,11 @@
                 btn.className = "btn-primary";
                 btn.style.backgroundColor = "#2a9d8f";
                 btn.style.margin = "4px 0";
+                btn.style.width = "100%";
+                btn.style.padding = "10px";
+                btn.style.border = "none";
+                btn.style.borderRadius = "6px";
+                btn.style.cursor = "pointer";
                 btn.innerHTML = `✍️ انتقال إلى: <strong>${offer.name}</strong> (${offer.stars} ⭐)`;
                 btn.onclick = function() { acceptOffer(index); };
                 container.appendChild(btn);
