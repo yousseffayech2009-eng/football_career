@@ -12,7 +12,7 @@
         <!-- شاشة البداية وإنشاء اللاعب -->
         <div id="setup-screen" class="card">
             <h1>⭐ Football Career ⭐</h1>
-            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (34 جولة وصراع المراكز):</p>
+            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (34 جولة وصراع الأهداف والمراكز):</p>
             <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف">
             <button onclick="startCareer()">انطلق نحو النجومية 🚀</button>
         </div>
@@ -30,8 +30,9 @@
 
             <main id="main-screen" class="card">
               <h2>لوحة القيادة والمباريات</h2>
-              <div class="league-info-badge" style="background: #1b263b; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
-                📅 الجولة: <strong id="p-match-round">0</strong> من 34 | 🏆 النقاط: <strong id="p-points">0</strong> | 📊 الترتيب: <strong id="p-rank">-</strong>
+              <div class="league-info-badge" style="background: #1b263b; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; line-height: 1.8;">
+                📅 الجولة: <strong id="p-match-round">0</strong> من 34 | 🏆 النقاط: <strong id="p-points">0</strong><br>
+                📊 الترتيب: <strong id="p-rank">-</strong> | ⚽ أهدافك: <strong id="p-goals">0</strong>
               </div>
               
               <!-- صندوق المباراة والحماس -->
@@ -139,7 +140,6 @@
             player.club = randomTeamObj.name;
             player.clubStars = randomTeamObj.stars;
 
-            // إعادة ضبط نقاط الفرق في بداية الموسم
             tunisianTeamsData.forEach(t => t.points = 0);
 
             updateUI();
@@ -155,6 +155,7 @@
             document.getElementById('p-match-round').innerText = player.matchesPlayed;
             document.getElementById('p-points').innerText = player.points;
             document.getElementById('p-rank').innerText = player.rank;
+            document.getElementById('p-goals').innerText = player.goals;
         }
 
         function showSection(sectionId) {
@@ -175,19 +176,16 @@
 
             player.matchesPlayed++;
 
-            // 1. محاكاة مباريات باقي الفرق في الدوري لهذه الجولة لتحديث الترتيب الواقعي
             tunisianTeamsData.forEach(team => {
                 if (team.name === player.club) {
-                    team.points = player.points; // تحديث نقاط نادي اللاعب
+                    team.points = player.points;
                 } else {
-                    // إضافة نقاط عشوائية لباقي الفرق بناءً على نجومهم
                     let rand = Math.random();
-                    if (rand > 0.5) team.points += 3; // فوز
-                    else if (rand > 0.2) team.points += 1; // تعادل
+                    if (rand > 0.5) team.points += 3;
+                    else if (rand > 0.2) team.points += 1;
                 }
             });
 
-            // 2. اختيار الخصم الحالي للاعب
             let opponentObj;
             do {
                 opponentObj = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)];
@@ -217,11 +215,9 @@
                 player.points += 1;
             }
 
-            // تحديث نقاط ناديك في مصفوفة الفرق
             let playerTeamInArray = tunisianTeamsData.find(t => t.name === player.club);
             if (playerTeamInArray) playerTeamInArray.points = player.points;
 
-            // 3. ترتيب الفرق تنازلياً حسب النقاط لمعرفة مركز فريقك الحالي بدقة
             tunisianTeamsData.sort((a, b) => b.points - a.points);
             let currentRank = tunisianTeamsData.findIndex(t => t.name === player.club) + 1;
             player.rank = currentRank;
@@ -229,7 +225,7 @@
             let playerGoalsInMatch = (myGoals > 0 && Math.random() > 0.4) ? 1 : 0;
             player.goals += playerGoalsInMatch;
             if(playerGoalsInMatch > 0) {
-                matchResultText += `<br>⚽ <em>بصماتك:</em> سجلت هدفاً في اللقاء! (أهدافك الموسمية: ${player.goals})`;
+                matchResultText += `<br>⚽ <em>بصماتك:</em> سجلت هدفاً في اللقاء! (أهدافك الموسمية أصبحت: ${player.goals})`;
             }
 
             document.getElementById('match-announcement').innerHTML = matchResultText;
