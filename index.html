@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚽ Football Career - Tunisian League</title>
+    <title>⚽ Football Career - Tunisian League (Single Round)</title>
     <style>
         body { background-color: #0b132b; color: #fff; font-family: Tahoma, sans-serif; margin: 0; padding: 12px; direction: rtl; }
         #game-container { max-width: 500px; margin: 0 auto; }
@@ -25,13 +25,13 @@
             <div class="badge">
                 👤 اللاعب: <strong id="p-name">player</strong><br>
                 🛡️ النادي: <strong id="p-club">--</strong> (<span id="p-stars">3</span> ⭐)<br>
-                📅 الموسم: <strong id="p-season">1</strong> (الجولة <strong id="p-match-round">0</strong> من 30)<br>
+                📅 الموسم: <strong id="p-season">1</strong> (الجولة <strong id="p-match-round">0</strong> من 15)<br>
                 🏆 النقاط: <strong id="p-points">0</strong> | 📊 الترتيب الحالي: <strong id="p-rank">-</strong> | ⚽ الأهداف: <strong id="p-goals">0</strong>
             </div>
             
             <div id="match-box" class="match-box-style">
                 <h4 style="margin: 0 0 5px 0;">🏟️ المواجهة القادمة</h4>
-                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك يا player! تم ضبط أندية الدوري التونسي ونظام التأهل القاري. اضغط خوض الجولة للبدء.</p>
+                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك يا player! تم ضبط الدوري التونسي (ذهاب فقط - 15 جولة). اضغط خوض الجولة للبدء.</p>
             </div>
 
             <!-- سوق الانتقالات وعروض نهاية الموسم -->
@@ -58,7 +58,6 @@
     </div>
 
     <script>
-        // أندية الدوري التونسي المطابقة تماماً لجدولك
         const tunisianTeams = [
             { name: "Club Africain", stars: 4.5, points: 0 },
             { name: "Esperance Tunis", stars: 4.5, points: 0 },
@@ -75,7 +74,7 @@
             { name: "Olympique Beja", stars: 2.0, points: 0 },
             { name: "Kairouanaise", stars: 2.0, points: 0 },
             { name: "Soliman", stars: 2.0, points: 0 },
-            { name: "AS Gabes", stars: 2.0, points: 0 }
+            { name: "AS Gabes", stars: 2.0, points: 0 ]
         ];
 
         let player = { name: "player", club: "", clubStars: 3, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10 };
@@ -89,7 +88,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', function() {
-            let saved = localStorage.getItem('tunisian_fc_save');
+            let saved = localStorage.getItem('tunisian_single_fc_save');
             if (saved) {
                 try {
                     let data = JSON.parse(saved);
@@ -124,12 +123,12 @@
         }
 
         function saveData() {
-            localStorage.setItem('tunisian_fc_save', JSON.stringify({ player: player, teams: currentTeams }));
+            localStorage.setItem('tunisian_single_fc_save', JSON.stringify({ player: player, teams: currentTeams }));
         }
 
         function resetCareer() {
             if (confirm("هل تريد مسح المسيرة والبدء بنادي عشوائي جديد في الدوري التونسي؟")) {
-                localStorage.removeItem('tunisian_fc_save');
+                localStorage.removeItem('tunisian_single_fc_save');
                 location.reload();
             }
         }
@@ -165,10 +164,9 @@
         }
 
         function playMatch() {
-            if (player.matchesPlayed >= 30) return;
+            if (player.matchesPlayed >= 15) return; // 15 جولة (ذهاب فقط ضد الـ 15 فريقاً الآخرين)
             player.matchesPlayed++;
 
-            // محاكاة مباريات باقي فرق الدوري التونسي
             currentTeams.forEach(team => {
                 if (team.name === player.club) team.points = player.points;
                 else team.points += (Math.random() > 0.5 ? 3 : (Math.random() > 0.4 ? 1 : 0));
@@ -199,7 +197,6 @@
             let pTeam = currentTeams.find(t => t.name === player.club);
             if (pTeam) pTeam.points = player.points;
 
-            // تحديث الترتيب مباشرة وعرضه فوراً
             currentTeams.sort((a, b) => b.points - a.points);
             player.rank = currentTeams.findIndex(t => t.name === player.club) + 1;
 
@@ -212,7 +209,7 @@
             updateUI();
             saveData();
 
-            if (player.matchesPlayed >= 30) triggerEndOfSeason();
+            if (player.matchesPlayed >= 15) triggerEndOfSeason();
         }
 
         function triggerEndOfSeason() {
