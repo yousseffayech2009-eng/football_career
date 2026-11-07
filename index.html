@@ -10,11 +10,15 @@
 
     <div id="game-container">
         <!-- شاشة البداية وإنشاء اللاعب -->
-        <div id="setup-screen" class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 30px;">
+        <div id="setup-screen" class="card" style="display: block; text-align: center; padding: 40px 20px;">
             <h1>⭐ Football Career ⭐</h1>
-            <p style="text-align: center;">أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (30 جولة ذهاب وإياب):</p>
-            <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف" style="width: 80%; padding: 12px; text-align: center; border-radius: 8px; border: 1px solid #5bc0be; background: #0b132b; color: #fff; font-size: 16px;">
-            <button onclick="startCareer()" class="btn-primary" style="width: 80%; padding: 12px; background-color: #5bc0be; color: #0b132b; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">انطلق نحو النجومية 🚀</button>
+            <p style="margin: 20px 0; font-size: 15px;">أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (30 جولة ذهاب وإياب):</p>
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف" style="width: 80%; padding: 12px; text-align: center; border-radius: 8px; border: 1px solid #5bc0be; background: #0b132b; color: #fff; font-size: 16px;">
+            </div>
+            <div>
+                <button id="start-btn" style="width: 80%; padding: 12px; background-color: #5bc0be; color: #0b132b; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; font-size: 16px;">انطلق نحو النجومية 🚀</button>
+            </div>
         </div>
 
         <!-- واجهة اللعب الرئيسية -->
@@ -50,13 +54,13 @@
                 <!-- قائمة العروض المتعددة -->
                 <div id="offers-list-container" style="display: flex; flex-direction: column; gap: 8px; margin: 12px 0;"></div>
 
-                <button onclick="rejectOffers()" class="btn-secondary" style="background-color: #e76f51; width: 100%;">البقاء وتجديد العقد مع ناديك الحالي 🛡️</button>
+                <button id="reject-btn" class="btn-secondary" style="background-color: #e76f51; width: 100%; padding: 10px; border-radius: 6px; border: none; color: #fff; cursor: pointer; font-weight: bold;">البقاء وتجديد العقد مع ناديك الحالي 🛡️</button>
               </div>
 
               <div class="menu-buttons" id="action-buttons-div">
-                <button onclick="playMatch()" id="play-btn" class="btn-primary">خوض الجولة الحالية ⚽</button>
-                <button onclick="showSection('teams-screen')" class="btn-secondary">ترتيب الأندية والنجوم 📊</button>
-                <button onclick="showSection('competitions-screen')" class="btn-secondary">نظام التأهل القاري 🏆</button>
+                <button id="play-btn" class="btn-primary" style="background-color: #5bc0be; color: #0b132b; padding: 12px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer;">خوض الجولة الحالية ⚽</button>
+                <button id="teams-btn" class="btn-secondary" style="background-color: #3a506b; color: #fff; padding: 10px; border-radius: 8px; border: none; cursor: pointer;">ترتيب الأندية والنجوم 📊</button>
+                <button id="comp-btn" class="btn-secondary" style="background-color: #3a506b; color: #fff; padding: 10px; border-radius: 8px; border: none; cursor: pointer;">نظام التأهل القاري 🏆</button>
               </div>
             </main>
 
@@ -81,7 +85,7 @@
                 <li>Soliman: <strong>2.0 نجوم ⭐</strong>[span_14](start_span)[span_14](end_span)</li>
                 <li>AS Gabes: <strong>2.0 نجوم ⭐</strong>[span_15](start_span)[span_15](end_span)</li>
               </ul>
-              <button onclick="returnToMain()" class="btn-secondary">العودة للملعب</button>
+              <button id="back-from-teams" class="btn-secondary" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; border: none; border-radius: 6px; cursor: pointer;">العودة للملعب</button>
             </div>
 
             <!-- شاشة البطولات والتأهل -->
@@ -89,7 +93,7 @@
               <h3>نظام التأهل القاري (30 جولة)</h3>
               <p><strong>دوري أبطال إفريقيا:</strong> يتأهل إليه صاحبا المركزين <strong>الأول والثاني</strong>[span_16](start_span)[span_16](end_span).</p>
               <p><strong>كأس الكونفيدرالية:</strong> يتأهل إليه صاحبا المركزين <strong>الثالث والرابع</strong>[span_17](start_span)[span_17](end_span).</p>
-              <button onclick="returnToMain()" class="btn-secondary">العودة للملعب</button>
+              <button id="back-from-comp" class="btn-secondary" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; border: none; border-radius: 6px; cursor: pointer;">العودة للملعب</button>
             </div>
         </div>
     </div>
@@ -137,6 +141,17 @@
         ];
 
         let availableOffers = [];
+
+        // ربط الأحداث برمجياً لضمان استجابة الأزرار بنسبة 100%
+        window.onload = function() {
+            document.getElementById('start-btn').addEventListener('click', startCareer);
+            document.getElementById('play-btn').addEventListener('click', playMatch);
+            document.getElementById('teams-btn').addEventListener('click', function() { showSection('teams-screen'); });
+            document.getElementById('comp-btn').addEventListener('click', function() { showSection('competitions-screen'); });
+            document.getElementById('back-from-teams').addEventListener('click', returnToMain);
+            document.getElementById('back-from-comp').addEventListener('click', returnToMain);
+            document.getElementById('reject-btn').addEventListener('click', rejectOffers);
+        };
 
         function startCareer() {
             let inputName = document.getElementById('player-input-name').value.trim();
@@ -274,14 +289,15 @@
 
             availableOffers.forEach((offer, index) => {
                 let btn = document.createElement('button');
-                btn.className = "btn-primary";
                 btn.style.backgroundColor = "#2a9d8f";
+                btn.style.color = "#fff";
                 btn.style.margin = "4px 0";
                 btn.style.width = "100%";
                 btn.style.padding = "10px";
                 btn.style.border = "none";
                 btn.style.borderRadius = "6px";
                 btn.style.cursor = "pointer";
+                btn.style.fontWeight = "bold";
                 btn.innerHTML = `✍️ انتقال إلى: <strong>${offer.name}</strong> (${offer.stars} ⭐)`;
                 btn.onclick = function() { acceptOffer(index); };
                 container.appendChild(btn);
