@@ -3,570 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>football_career by youssef v28</title>
-    <style>
-        body { font-family: Tahoma, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; text-align: center; }
-        .container { max-width: 600px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-        button, input, select { padding: 12px; margin: 8px 0; width: 100%; font-size: 16px; border-radius: 5px; border: none; box-sizing: border-box; }
-        button { background-color: #28a745; color: white; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #218838; }
-        button:disabled { background-color: #555 !important; cursor: not-allowed; }
-        input, select { background: #333; color: white; text-align: center; }
-        .btn-action { background-color: #007bff; margin-top: 10px; }
-        .btn-action:hover { background-color: #0056b3; }
-        #stats-panel { display: flex; justify-content: space-around; background: #2a2a2a; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 13px; }
-        #game-log { text-align: right; background: #252525; padding: 15px; border-radius: 5px; height: 220px; overflow-y: auto; margin-top: 15px; font-size: 14px; border: 1px solid #444; }
-        .offer-card { background: #333; border: 1px solid #28a745; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: right; }
-    </style>
+    <title>Football Career - محاكي مسيرة لاعب كرة القدم</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <h2>⚽ football_career by youssef ⚽</h2>
-
-    <div id="setup-screen">
-        <input type="text" id="player-name" placeholder="أدخل اسم اللاعب">
-        <select id="player-pos">
-            <option value="مهاجم">مهاجم</option>
-            <option value="وسط">وسط</option>
-            <option value="دفاع">دفاع</option>
-            <option value="حارس">حارس</option>
-        </select>
-        <select id="difficulty-select">
-            <option value="سهل">المستوى: سهل 🟢</option>
-            <option value="متوسط" selected>المستوى: متوسط 🟡</option>
-            <option value="صعب">المستوى: صعب 🔴</option>
-        </select>
-        <select id="league-select">
-            <option value="الدوري التونسي">الدوري التونسي (16 فريق)</option>
-            <option value="الدوري المصري">الدوري المصري (16 فريق)</option>
-            <option value="الدوري الجزائري">الدوري الجزائري (16 فريق)</option>
-            <option value="الدوري المغربي">الدوري المغربي (16 فريق)</option>
-            <option value="الدوري السعودي">الدوري السعودي (18 فريق)</option>
-            <option value="الدوري اليوناني">الدوري اليوناني (أوروبا الشرقية/المتوسط)</option>
-            <option value="الدوري التشيكي">الدوري التشيكي (أوروبا الشرقية)</option>
-            <option value="الدوري الكرواتي">الدوري الكرواتي (أوروبا الشرقية)</option>
-            <option value="الدوري الفرنسي">الدوري الفرنسي (Top 5)</option>
-            <option value="الدوري الألماني">الدوري الألماني (Top 5)</option>
-            <option value="الدوري الإيطالي">الدوري الإيطالي (Top 5)</option>
-            <option value="الدوري الإسباني">الدوري الإسباني (Top 5)</option>
-            <option value="الدوري الإنجليزي الممتاز">الدوري الإنجليزي الممتاز (Top 5)</option>
-        </select>
-        <button onclick="startGame()">بدء المسيرة</button>
-    </div>
-
-    <div id="game-screen" style="display:none;">
-        <h3 id="status-bar"></h3>
-        
-        <div id="stats-panel">
-            <div>الموسم: <span id="stat-season">1</span>/22</div>
-            <div>المرحلة: <span id="stat-phase">الدوري المحلي</span></div>
-            <div>الأهداف: <span id="stat-goals">0</span></div>
-            <div>الطاقة: <span id="stat-overall">65</span></div>
-            <div>الترتيب: <span id="stat-rank">1</span></div>
+    <div id="game-container">
+        <!-- شاشة إدخال اسم اللاعب وبداية المسيرة -->
+        <div id="setup-screen" class="card">
+            <h1>⚽ Football Career</h1>
+            <p>مرحباً بك! أدخل اسمك لبدء مسيرتك الاحترافية وتحديد ناديك الأول عشوائياً:</p>
+            <input type="text" id="player-input-name" placeholder="أدخل اسمك هنا..." value="يوسف">
+            <button onclick="startCareer()">بدء المسيرة واختيار النادي 🚀</button>
         </div>
 
-        <div id="game-log"></div>
+        <!-- الشاشة الرئيسية للعبة -->
+        <div id="game-main-interface" style="display:none;">
+            <header>
+              <h1>⚽ Football Career</h1>
+              <div id="player-stats-bar">
+                <span>اللاعب: <strong id="p-name">--</strong></span>
+                <span>النادي: <strong id="p-club">--</strong></span>
+                <span>التقييم: <strong id="p-rating">3 نجوم ⭐</strong></span>
+                <span>الموسم: <strong id="p-season">1</strong></span>
+              </div>
+            </header>
 
-        <div id="actions-area">
-            <button class="btn-action" onclick="playMatch()">خوض المباراة القادمة ⚽</button>
-        </div>
+            <main id="main-screen" class="card">
+              <h2>لوحة القيادة</h2>
+              <p>بدأت مسيرتك في الرابطة التونسية المحترفة الأولى (18 فريقاً). سجل الأهداف واصعد نحو البطولات الإفريقية والأوروبية!</p>
+              
+              <div class="menu-buttons">
+                <button onclick="playMatch()">لعب المباراة القادمة 🏟️</button>
+                <button onclick="showSection('teams-screen')">ترتيب الفرق التونسية والأندية 📊</button>
+                <button onclick="showSection('competitions-screen')">نظام البطولات القارية والعالمية 🏆</button>
+              </div>
+            </main>
 
-        <div id="offers-area" style="display:none;">
-            <h3>📝 نهاية الموسم وتطوير اللاعب وسوق الانتقالات</h3>
-            <div id="season-summary" style="margin-bottom:15px; font-weight:bold; color:#28a745;"></div>
-            
-            <div style="background: #252525; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
-                <p>🏋️‍♂️ معسكر التدريب والتطوير الصيفي (رفع الطاقة):</p>
-                <button onclick="trainPlayerSeason()" style="background-color: #e0a800; color: #000;">تطوير الطاقة (+2) 🚀</button>
+            <!-- شاشة نتيجة المباراة -->
+            <div id="match-screen" class="card" style="display:none;">
+              <h3>أجواء المباراة</h3>
+              <p id="match-log-text">جاري خوض اللقاء...</p>
+              <button onclick="returnToMain()">العودة للرئيسية</button>
             </div>
 
-            <div id="offers-list" style="max-height: 200px; overflow-y: auto;"></div>
-            <button id="next-season-btn" onclick="startNewSeason()" style="background-color: #6c757d; margin-top: 10px;">البقاء مع الفريق الحالي لـ موسم آخر</button>
+            <!-- شاشة الفرق -->
+            <div id="teams-screen" class="card" style="display:none;">
+              <h3>قائمة الأندية التونسية وتصنيفاتها</h3>
+              <ul class="teams-list">
+                <li>الترجي الرياضي: <strong>4.5 نجوم</strong></li>
+                <li>النادي الإفريقي: <strong>4 نجوم</strong></li>
+                <li>النجم الساحلي: <strong>4 نجوم</strong></li>
+                <li>النادي الصفاقسي: <strong>4 نجوم</strong></li>
+                <li>الاتحاد المنستيري: <strong>3.5 نجوم</strong></li>
+                <li>الملعب التونسي: <strong>3.5 نجوم</strong></li>
+                <li>بن قردان / الأولمبي الباجي / تطاوين: <strong>3 نجوم</strong></li>
+                <li>باقي أندية الرابطة الأولى (18 نادياً): <strong>2 إلى 2.5 نجوم</strong></li>
+              </ul>
+              <button onclick="returnToMain()">رجوع</button>
+            </div>
+
+            <!-- شاشة البطولات -->
+            <div id="competitions-screen" class="card" style="display:none;">
+              <h3>المسابقات الإفريقية والأوروبية</h3>
+              <p><strong>دوري أبطال إفريقيا:</strong> 4 مجموعات (الأهلي، الترجي، صن داونز، الزمالك)، يتأهل الأول والثاني لربع النهائي.</p>
+              <p><strong>دوري أبطال أوروبا:</strong> نظام مجموعات قوي يضم أقوى الأندية الأوروبية.</p>
+              <button onclick="returnToMain()">رجوع</button>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    const database = {
-        "الدوري التونسي": ["Club Africain", "Esperance Tunis", "CS Sfaxien", "Stade Tunisien", "Monastir", "Zarzis", "Etoile Sahel", "Metlaoui", "JS Omrane", "Ben Guerdane", "Marsa", "CA Bizertin", "Olympique Beja", "Kairouanaise", "Soliman", "AS Gabes"],
-        "الدوري المصري": ["Zamalek", "Pyramids", "Al Ahly", "Ceramica Cleopatra", "Al Masry", "Smouha", "Enppi", "Wadi Degla", "ZED", "El Gouna", "National Bank Egypt", "Petrojet", "Modern Sport", "El Gaish", "Al Ittihad", "Ghazl El Mahallah"],
-        "الدوري الجزائري": ["MC Alger", "Saoura", "Belouizdad", "Oran", "JS Kabylie", "Olympique Akbou", "Khenchela", "Ben Aknoun", "Constantine", "USM Alger", "Setif", "Rouisset", "Chlef", "Paradou", "Mostaganem", "El Bayadh"],
-        "الدوري المغربي": ["Maghreb Fez", "Berkane", "Raja Casablanca", "FAR Rabat", "Wydad AC", "Difaa El Jadidi", "Tanger", "FUS Rabat", "Kawkab Marrakech", "COD Meknes", "Renaissance Zemamra", "Agadir", "Union Touarga", "Dcheira", "Yacoub El Mansour", "Safi"],
-        "الدوري السعودي": ["الهلال", "النصر", "الاتحاد", "الأهلي", "الشباب", "التعاون", "الاتفاق", "الفتح", "الرياض", "الخليج", "ضمك", "الرائد", "الوحدة", "الأخدود", "الخلود", "العروبة", "نيوم", "الفيصلي"],
-        "الدوري اليوناني": ["أولمبياكوس", "باناثينايكوس", "أيك أثينا", "باوك تسالونيكي", "أريس تسالونيكي", "أتوميتوس", "أستيراس تريبوليس", "أولمبياكوس فولو"],
-        "الدوري التشيكي": ["سبارتا براغ", "سلافيا براغ", "فيكتوريا بلزن", "بانيك أوسترافا", "سلوفان ليبيريتس", "ملادا بوليسلاف", "بنك أولوموتس", "تبليتسه"],
-        "الدوري الكرواتي": ["دينامو زغرب", "هايدوك سبليت", "رييكا", "أوسييك", "لوكوموتيف زغرب", "سلافين بيلوبو", "فاراژدين", "إسترا 1961"],
-        "الدوري الفرنسي": ["باريس سان جيرمان", "مارسيليا", "موناكو", "ليون", "ليل", "نيس", "ستراسبورغ", "لانس", "رين", "تولوز", "بريست", "مونبلييه", "ستاد ريمس", "لوهافر", "نانت", "أنجيه", "سنت إتيان", "ميتز", "ستاد بريستوا", "أوكسير"],
-        "الدوري الألماني": ["بايرن ميونخ", "بوروسيا دورتموند", "باير ليفركوزن", "لايبزيغ", "آنتراخت فرانكفورت", "شتوتغارت", "فولفسبورغ", "فرايبورغ", "هوفنهايم", "أوغسبورغ", "فيردر بريمن", "ماينز 05", "بروسيا مونشنغلادباخ", "بوخوم", "هايدنهايم", "سانت باولي", "كولن", "يونيون برلين", "هيرتا برلين", "هامبورغ"],
-        "الدوري الإيطالي": ["إنتر ميلان", "يوفنتوس", "إيه سي ميلان", "نابولي", "أتالانتا", "لاتسيو", "روما", "فيورنتينا", "بولونيا", "تورينو", "مونزا", "جنوى", "ليتشي", "كالياري", "إمبولي", "هيلاس فيرونا", "بارما", "أودينيزي", "ساسولو", "كومو"],
-        "الدوري الإسباني": ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "أتلتيك بلباو", "ريال سوسيداد", "فياريال", "ريال بيتيس", "إشبيلية", "فالنسيا", "سيلتا فيغو", "أوساسونا", "جيرونا", "مايوركا", "رايو فايكانو", "خيتافي", "ألافيس", "لاس بالماس", "بلد الوليد", "إلتشي", "أساسونا"],
-        "الدوري الإنجليزي الممتاز": ["مانشستر سيتي", "ليفربول", "أرسنال", "تشيلسي", "مانشستر يونايتد", "توتنهام هوتسبير", "نيوكاسل يونايتد", "أستون فيلا", "برايتون", "وست هام يونايتد", "كريستال بالاس", "فولهام", "برينتفورد", "إيفرتون", "وولفرهامبتون", "بورنموث", "نوتنغهام فورست", "ليستر سيتي", "إبسويتش تاون", "ساوثهامبتون"]
-    };
+    <script>
+        let player = {
+            name: "",
+            club: "",
+            season: 1,
+            goals: 0,
+            matchesPlayed: 0
+        };
 
-    const continentalOpponentsData = {
-        "دوري أبطال أفريقيا 🏆🌍": ["Petro", "Esperance Tunis", "Nouadhibou", "Wiliete", "Zamalek", "Club Africain", "Young Africans", "MC Alger", "Orlando", "Simba", "Berkane", "Colombe", "Al-Hilal Omdurman", "Maghreb Fez", "Horoya", "Pyramids"],
-        "كأس الكونفدرالية الأفريقية 🏆🔶": ["Al Ahly", "Primeiro de Agosto", "Raja Casablanca", "Kara", "Durban City", "Al Ahly Tripoli", "FAR Rabat", "Azam", "Red Arrows", "Maniema", "Singida Black Stars", "CS Sfaxien", "USM Alger", "Real Bamako", "Black Bulls"],
-        "دوري أبطال آسيا 🏆🌏": ["الهلال السعودي", "النصر السعودي", "العين الإماراتي", "السد القطري", "الاستقلال الإيراني", "أولسان هيونداي الكوري", "كاواساكي فرونتال الياباني", "الاتحاد السعودي"],
-        "دوري أبطال أوروبا 🏆⭐": ["ريال مدريد الإسباني", "مانشستر سيتي الإنجليزي", "بايرن ميونخ الألماني", "باريس سان جيرمان الفرنسي", "إنتر ميلان الإيطالي", "برشلونة الإسباني", "أرسنال الإنجليزي", "بوروسيا دورتموند الألماني"]
-    };
-
-    const africanLeagues = ["الدوري التونسي", "الدوري المصري", "الدوري الجزائري", "الدوري المغربي"];
-    const asianLeagues = ["الدوري السعودي"];
-    const easternEuropeanLeagues = ["الدوري اليوناني", "الدوري التشيكي", "الدوري الكرواتي"];
-    const topEuropeanLeagues = ["الدوري الإنجليزي الممتاز", "الدوري الإسباني", "الدوري الإيطالي", "الدوري الألماني", "الدوري الفرنسي"];
-    let player = {
-        name: "",
-        pos: "",
-        difficulty: "متوسط",
-        league: "",
-        team: "",
-        season: 1,
-        phase: "league",
-        matchIndex: 0,
-        goals: 0,
-        overall: 65,
-        hasTrainedThisOffseason: false
-    };
-
-    let fixtures = [];
-    let leagueTable = {};
-    let continentalMatches = [];
-    let continentalMatchIndex = 0;
-    let continentalName = "";
-    const TOTAL_SEASONS = 22;
-
-    function getTeamTier(teamName, leagueName) {
-        let teams = database[leagueName];
-        if (!teams) return 2;
-        let index = teams.indexOf(teamName);
-        if (index <= 2) return 3;
-        if (index <= 10) return 2;
-        return 1;
-    }
-
-    function startGame() {
-        const nameInput = document.getElementById("player-name");
-        const posSelect = document.getElementById("player-pos");
-        const diffSelect = document.getElementById("difficulty-select");
-        const leagueSelect = document.getElementById("league-select");
-
-        if (!nameInput || !posSelect || !diffSelect || !leagueSelect) return;
-
-        const nameValue = nameInput.value.trim();
-        if (!nameValue) {
-            alert("الرجاء إدخال اسم اللاعب!");
-            nameInput.focus();
-            return;
-        }
-
-        player.name = nameValue;
-        player.pos = posSelect.value;
-        player.difficulty = diffSelect.value;
-        player.league = leagueSelect.value;
-
-        const teams = database[player.league];
-        player.team = teams[Math.floor(Math.random() * teams.length)];
-
-        document.getElementById("setup-screen").style.display = "none";
-        document.getElementById("game-screen").style.display = "block";
-
-        initSeason();
-        log(`مرحباً بك يا <strong>${player.name}</strong>! انطلقت مسيرتك على مستوى (<strong>${player.difficulty}</strong>) مع نادي <strong>${player.team}</strong> في <strong>${player.league}</strong>.`);
-    }
-
-    function initSeason() {
-        player.phase = "league";
-        player.matchIndex = 0;
-        player.hasTrainedThisOffseason = false;
-        const teams = database[player.league];
-        
-        leagueTable = {};
-        teams.forEach(t => {
-            leagueTable[t] = { points: 0, played: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0 };
-        });
-
-        fixtures = [];
-        let opponents = teams.filter(t => t !== player.team);
-        let totalMatches = (teams.length - 1) * 2;
-        
-        for (let m = 0; m < totalMatches; m++) {
-            let opponent = opponents[m % opponents.length];
-            if (m < teams.length - 1) {
-                fixtures.push({ home: player.team, away: opponent });
-            } else {
-                fixtures.push({ home: opponent, away: player.team });
-            }
-        }
-
-        updateUI();
-    }
-
-    function getSortedLeagueTeams() {
-        let teams = Object.keys(leagueTable);
-        return teams.sort((a, b) => {
-            let ptsA = leagueTable[a].points;
-            let ptsB = leagueTable[b].points;
-            if (ptsB !== ptsA) return ptsB - ptsA;
-            let diffA = leagueTable[a].gf - leagueTable[a].ga;
-            let diffB = leagueTable[b].gf - leagueTable[b].ga;
-            if (diffB !== diffA) return diffB - diffA;
-            return leagueTable[b].gf - leagueTable[a].gf;
-        });
-    }
-
-    function updateUI() {
-        let leagueTeams = database[player.league];
-        let totalMatches = leagueTeams ? (leagueTeams.length - 1) * 2 : 34;
-        document.getElementById("status-bar").innerText = `${player.name} | ${player.pos} | ${player.team} (${player.difficulty})`;
-        document.getElementById("stat-season").innerText = player.season;
-        document.getElementById("stat-overall").innerText = player.overall;
-        document.getElementById("stat-goals").innerText = player.goals;
-
-        if (player.phase === "league") {
-            document.getElementById("stat-phase").innerText = "الدوري المحلي";
-            document.getElementById("stat-match").innerText = `${player.matchIndex + 1}/${totalMatches}`;
-            let sortedTeams = getSortedLeagueTeams();
-            let rank = sortedTeams.indexOf(player.team) + 1;
-            document.getElementById("stat-rank").innerText = rank > 0 ? rank : 1;
-        } else if (player.phase === "continental") {
-            document.getElementById("stat-phase").innerText = continentalName;
-            document.getElementById("stat-match").innerText = `${continentalMatchIndex + 1}/${continentalMatches.length}`;
-            document.getElementById("stat-rank").innerText = "قاري";
-        }
-    }
-
-    function log(message) {
-        const logBox = document.getElementById("game-log");
-        logBox.innerHTML = `<p style="margin: 5px 0;">- ${message}</p>` + logBox.innerHTML;
-    }
-
-    function playMatch() {
-        if (player.phase === "league") {
-            playLeagueMatch();
-        } else if (player.phase === "continental") {
-            playContinentalMatch();
-        }
-    }
-
-    function getSuccessRateModifier() {
-        if (player.difficulty === "سهل") return 0.10;
-        if (player.difficulty === "صعب") return -0.10;
-        return 0;
-    }
-
-    function playLeagueMatch() {
-        let leagueTeams = database[player.league];
-        let totalMatches = leagueTeams ? (leagueTeams.length - 1) * 2 : 34;
-        if (player.matchIndex >= totalMatches) {
-            checkLeagueEnd();
-            return;
-        }
-
-        let match = fixtures[player.matchIndex];
-        let homeTeam = match.home;
-        let awayTeam = match.away;
-
-        let teams = database[player.league];
-        let processedTeams = new Set([homeTeam, awayTeam]);
-
-        teams.forEach(t => {
-            if (!processedTeams.has(t)) {
-                let availableOpponents = teams.filter(x => x !== t && !processedTeams.has(x));
-                if (availableOpponents.length > 0) {
-                    let opp = availableOpponents[Math.floor(Math.random() * availableOpponents.length)];
-                    processedTeams.add(t);
-                    processedTeams.add(opp);
-
-                    let tTier = getTeamTier(t, player.league);
-                    let oppTier = getTeamTier(opp, player.league);
-                    let tGoals = Math.floor(Math.random() * (tTier + 1));
-                    let oGoals = Math.floor(Math.random() * (oppTier + 1));
-
-                    leagueTable[t].played++;
-                    leagueTable[opp].played++;
-                    leagueTable[t].gf += tGoals;
-                    leagueTable[t].ga += oGoals;
-                    leagueTable[opp].gf += oGoals;
-                    leagueTable[opp].ga += tGoals;
-
-                    if (tGoals > oGoals) {
-                        leagueTable[t].points += 3;
-                        leagueTable[t].wins++;
-                        leagueTable[opp].losses++;
-                    } else if (oGoals > tGoals) {
-                        leagueTable[opp].points += 3;
-                        leagueTable[opp].wins++;
-                        leagueTable[t].losses++;
-                    } else {
-                        leagueTable[t].points += 1;
-                        leagueTable[opp].points += 1;
-                        leagueTable[t].draws++;
-                        leagueTable[opp].draws++;
-                    }
-                }
-            }
-        });
-
-        let homeTier = getTeamTier(homeTeam, player.league);
-        let awayTier = getTeamTier(awayTeam, player.league);
-        let teamTier = getTeamTier(player.team, player.league);
-
-        let homeGoals = Math.floor(Math.random() * (homeTier + 1));
-        let awayGoals = Math.floor(Math.random() * (awayTier + 1));
-
-        let scored = 0;
-        let isMyMatch = (homeTeam === player.team || awayTeam === player.team);
-
-        if (isMyMatch) {
-            let opponent = homeTeam === player.team ? awayTeam : homeTeam;
-            let oppTierVal = getTeamTier(opponent, player.league);
-            
-            // الربط الأساسي لقوة الفريق وتصنيف الخصم في التهديف (لا تسجل في كل مباراة)
-            let chance = Math.random();
-            let baseSuccessRate = 0.55 - (player.overall * 0.002) + (oppTierVal * 0.05) - (teamTier * 0.04);
-            let successRate = baseSuccessRate - getSuccessRateModifier();
-
-            if (chance > successRate) {
-                if (player.pos === "مهاجم") scored = Math.random() > 0.75 ? 2 : 1;
-                else if (player.pos === "وسط" && Math.random() > 0.65) scored = 1;
-                else if (player.pos === "دفاع" && Math.random() > 0.85) scored = 1;
-            }
-
-            player.goals += scored;
-
-            if (homeTeam === player.team) homeGoals += scored;
-            else awayGoals += scored;
-        }
-
-        leagueTable[homeTeam].played++;
-        leagueTable[awayTeam].played++;
-        leagueTable[homeTeam].gf += homeGoals;
-        leagueTable[homeTeam].ga += awayGoals;
-        leagueTable[awayTeam].gf += awayGoals;
-        leagueTable[awayTeam].ga += homeGoals;
-
-        if (homeGoals > awayGoals) {
-            leagueTable[homeTeam].points += 3;
-            leagueTable[homeTeam].wins++;
-            leagueTable[awayTeam].losses++;
-        } else if (awayGoals > homeGoals) {
-            leagueTable[awayTeam].points += 3;
-            leagueTable[awayTeam].wins++;
-            leagueTable[homeTeam].losses++;
-        } else {
-            leagueTable[homeTeam].points += 1;
-            leagueTable[awayTeam].points += 1;
-            leagueTable[homeTeam].draws++;
-            leagueTable[awayTeam].draws++;
-        }
-
-        if (isMyMatch) {
-            let opponent = homeTeam === player.team ? awayTeam : homeTeam;
-            let myGoals = homeTeam === player.team ? homeGoals : awayGoals;
-            let oppGoals = homeTeam === player.team ? awayGoals : homeGoals;
-            let resText = myGoals > oppGoals ? "فوز مستحق 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "هزيمة قاسية 💔");
-            let goalStatus = scored > 0 ? `⚽ سجلت ${scored} هدف` : `🛑 صيام تهديفي`;
-            
-            let sortedTeams = getSortedLeagueTeams();
-            let currentRank = sortedTeams.indexOf(player.team) + 1;
-
-            log(`الجولة ${player.matchIndex + 1}: ${player.team} ${myGoals} - ${oppGoals} ${opponent} (${resText}) | ${goalStatus} | الترتيب الحالي: #${currentRank}`);
-        }
-
-        player.matchIndex++;
-        updateUI();
-
-        if (player.matchIndex >= totalMatches) {
-            checkLeagueEnd();
-        }
-    }
-
-    function checkLeagueEnd() {
-        let sortedTeams = getSortedLeagueTeams();
-        let rank = sortedTeams.indexOf(player.team) + 1;
-
-        let isTopEuro = topEuropeanLeagues.includes(player.league);
-        let isAfrican = africanLeagues.includes(player.league);
-        let isAsian = asianLeagues.includes(player.league);
-
-        if (isTopEuro && rank <= 4) {
-            continentalName = "دوري أبطال أوروبا 🏆⭐";
-            setupContinentalTournament();
-        } else if (isAfrican) {
-            if (rank === 1 || rank === 2) {
-                continentalName = "دوري أبطال أفريقيا 🏆🌍";
-                setupContinentalTournament();
-            } else if (rank === 3 || rank === 4) {
-                continentalName = "كأس الكونفدرالية الأفريقية 🏆🔶";
-                setupContinentalTournament();
-            } else {
-                endSeason();
-            }
-        } else if (isAsian && rank <= 3) {
-            continentalName = "دوري أبطال آسيا 🏆🌏";
-            setupContinentalTournament();
-        } else {
-            endSeason();
-        }
-    }
-
-    function setupContinentalTournament() {
-        player.phase = "continental";
-        continentalMatchIndex = 0;
-        
-        let availableOpponents = [...continentalOpponentsData[continentalName]];
-        availableOpponents = availableOpponents.filter(t => !t.includes(player.team));
-        let shuffled = availableOpponents.sort(() => 0.5 - Math.random());
-
-        continentalMatches = [
-            { stage: "مرحلة المجموعات - الجولة 1 (ذهاب)", opponent: shuffled[0] },
-            { stage: "مرحلة المجموعات - الجولة 2 (ذهاب)", opponent: shuffled[1] },
-            { stage: "مرحلة المجموعات - الجولة 3 (ذهاب)", opponent: shuffled[2] },
-            { stage: "مرحلة المجموعات - الجولة 4 (إياب)", opponent: shuffled[0] },
-            { stage: "مرحلة المجموعات - الجولة 5 (إياب)", opponent: shuffled[1] },
-            { stage: "مرحلة المجموعات - الجولة 6 (إياب)", opponent: shuffled[2] },
-            { stage: "ربع النهائي - الذهاب", opponent: shuffled[3] },
-            { stage: "ربع النهائي - الإياب", opponent: shuffled[3] },
-            { stage: "نصف النهائي - الذهاب", opponent: shuffled[4] || shuffled[0] },
-            { stage: "نصف النهائي - الإياب", opponent: shuffled[4] || shuffled[0] },
-            { stage: "النهائي - الذهاب 🏆", opponent: shuffled[5] || shuffled[1] },
-            { stage: "النهائي - الإياب 🏆", opponent: shuffled[5] || shuffled[1] }
+        const tunisianTeamsList = [
+            "الترجي الرياضي التونسي",
+            "النادي الإفريقي",
+            "النجم الرياضي الساحلي",
+            "النادي الرياضي الصفاقسي",
+            "الاتحاد الرياضي المنستيري",
+            "الملعب التونسي",
+            "اتحاد بن قردان",
+            "الأولمبي الباجي",
+            "اتحاد تطاوين",
+            "مستقبل قابس",
+            "مستقبل سليمان",
+            "شبيبة العمران",
+            "نادي محيط قرقنة",
+            "اتحاد ڤفصة",
+            "الملعب الإفريقي لمنزل بورقيبة",
+            "الملعب السوسي",
+            "جمعية جربة",
+            "الأمل الرياضي حمام سوسة"
         ];
 
-        log(`🌟 <strong>تأهل قاري رسمي!</strong> بدأت منافسات ${continentalName}.`);
-        updateUI();
-    }
+        function startCareer() {
+            let inputName = document.getElementById('player-input-name').value.trim();
+            if(inputName === "") {
+                alert("الرجاء إدخال اسم صحيح للاعب!");
+                return;
+            }
+            
+            player.name = inputName;
+            
+            // اختيار نادي عشوائي من قائمة أندية الرابطة الأولى
+            let randomIndex = Math.floor(Math.random() * tunisianTeamsList.length);
+            player.club = tunisianTeamsList[randomIndex];
 
-    function playContinentalMatch() {
-        if (continentalMatchIndex >= continentalMatches.length) {
-            endSeason();
-            return;
+            // عرض البيانات في واجهة اللعبة
+            document.getElementById('p-name').innerText = player.name;
+            document.getElementById('p-club').innerText = player.club;
+            
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('game-main-interface').style.display = 'block';
         }
 
-        let currentMatch = continentalMatches[continentalMatchIndex];
-        let opponent = currentMatch.opponent;
-
-        let myGoals = Math.floor(Math.random() * 2);
-        let oppGoals = Math.floor(Math.random() * 3);
-
-        let scored = 0;
-        let chance = Math.random();
-        let baseSuccessRate = 0.58 - (player.overall * 0.0025);
-        let successRate = baseSuccessRate - getSuccessRateModifier();
-
-        if (chance > successRate) {
-            if (player.pos === "مهاجم") scored = Math.random() > 0.75 ? 2 : 1;
-            else if (player.pos === "وسط" && Math.random() > 0.65) scored = 1;
-            else if (player.pos === "دفاع" && Math.random() > 0.85) scored = 1;
+        function showSection(sectionId) {
+            document.getElementById('main-screen').style.display = 'none';
+            document.getElementById('teams-screen').style.display = 'none';
+            document.getElementById('competitions-screen').style.display = 'none';
+            document.getElementById('match-screen').style.display = 'none';
+            
+            document.getElementById(sectionId).style.display = 'block';
         }
 
-        player.goals += scored;
-        myGoals += scored;
-
-        let resText = myGoals > oppGoals ? "انتصار قاري 🎉" : (myGoals === oppGoals ? "تعادل 🤝" : "هزيمة صعبة 💔");
-        let goalStatus = scored > 0 ? `⚽ سجلت ${scored} هدف` : `🛑 صيام عن التهديف`;
-
-        log(`[${currentMatch.stage}] ضد ${opponent}: ${player.team} ${myGoals} - ${oppGoals} (${resText}) - ${goalStatus}`);
-
-        continentalMatchIndex++;
-        updateUI();
-
-        if (continentalMatchIndex >= continentalMatches.length) {
-            log(`🏆 اختتمت مشوار المنافسة في ${continentalName} بنجاح تام.`);
-            endSeason();
-        }
-    }
-
-    function trainPlayerSeason() {
-        if (!player.hasTrainedThisOffseason && player.overall < 99) {
-            player.overall += 2;
-            player.hasTrainedThisOffseason = true;
-            log(`🏋️‍♂️ خضت المعسكر التدريبي الصيفي بنجاح! ارتفعت طاقتك وأصبحت <strong>${player.overall}</strong>.`);
-            updateUI();
-            event.target.disabled = true;
-            event.target.innerText = "تم إتمام التدريب الصيفي ✔️";
-        }
-    }
-
-    function endSeason() {
-        player.phase = "ended";
-        document.getElementById("actions-area").style.display = "none";
-        document.getElementById("offers-area").style.display = "block";
-
-        let sortedTeams = getSortedLeagueTeams();
-        let rank = sortedTeams.indexOf(player.team) + 1;
-        let finalPts = leagueTable[player.team] ? leagueTable[player.team].points : 0;
-
-        if (player.season >= TOTAL_SEASONS) {
-            document.getElementById("season-summary").innerHTML = `
-                🏁 <strong>انتهت مسيرتك الاحترافية بنجاح بعد الوصول إلى الحد الأقصى (22 موسماً)!</strong><br>
-                أهلاً بك في اعتزال اللعب بسجل حافل من الأهداف والألقاب.
-            `;
-            document.getElementById("offers-list").innerHTML = "";
-            document.getElementById("next-season-btn").style.display = "none";
-            log(`🌟 <strong>اعتزال اللاعب:</strong> وصلت إلى نهاية مسيرتك الكروية بعد 22 موسماً رائعاً.`);
-            return;
+        function returnToMain() {
+            showSection('main-screen');
+            document.getElementById('p-season').innerText = player.season;
         }
 
-        document.getElementById("season-summary").innerHTML = `
-            إنهاء الموسم ${player.season} في الدوري المحلي بالمركز <strong>#${rank}</strong> برصيد ${finalPts} نقطة.<br>
-            وخوض منافسات البطولة القارية بنجاح.
-        `;
+        function playMatch() {
+            showSection('match-screen');
+            player.matchesPlayed++;
+            let matchGoals = Math.floor(Math.random() * 3);
+            player.goals += matchGoals;
 
-        log(`🏁 <strong>انتهاء الموسم ${player.season}!</strong> يمكنك الآن تطوير طاقتك واختيار نادٍ جديد.`);
-        generateOffers();
-    }
+            let text = `انتهت الجولة ${player.matchesPlayed}! قدمت أداءً مميزاً مع ناديك الحالي (${player.club}).\nسجلت في هذه المباراة: ${matchGoals} أهداف.\nمجموع أهدافك حتى الآن: ${player.goals} أهداف.`;
+            
+            if (player.matchesPlayed >= 5) {
+                text += "\n🌟 لقد لفت انتباه كشافي الأندية الأوروبية والإفريقية الكبرى بفضل تألقك المستمر!";
+            }
 
-    function generateOffers() {
-        const offersList = document.getElementById("offers-list");
-        offersList.innerHTML = "";
-
-        let availableLeagues = Object.keys(database);
-
-        // قاعدة عدم تلقي عروض من الـ Top 5 في أول موسمين، وتبدأ من أوروبا الشرقية والدوريات المحلية
-        if (player.season <= 2) {
-            availableLeagues = availableLeagues.filter(l => !topEuropeanLeagues.includes(l));
+            document.getElementById('match-log-text').innerText = text;
         }
-
-        for (let i = 0; i < 4; i++) {
-            let randomLeague = availableLeagues[Math.floor(Math.random() * availableLeagues.length)];
-            let teamList = database[randomLeague];
-            let randomTeam = teamList[Math.floor(Math.random() * teamList.length)];
-
-            let div = document.createElement("div");
-            div.className = "offer-card";
-            div.innerHTML = `
-                <strong>نادي: ${randomTeam}</strong> (${randomLeague})<br>
-                <button onclick="acceptOffer('${randomTeam}', '${randomLeague}')" style="margin-top:5px; padding:5px;">قبول العرض والانتقال ✈️</button>
-            `;
-            offersList.appendChild(div);
-        }
-    }
-
-    function acceptOffer(newTeam, newLeague) {
-        player.team = newTeam;
-        player.league = newLeague;
-        log(`✍️ وقعت رسمياً مع نادي <strong>${player.team}</strong> في <strong>${player.league}</strong>!`);
-        startNewSeason();
-    }
-
-    function startNewSeason() {
-        if (player.season >= TOTAL_SEASONS) return;
-        player.season++;
-        document.getElementById("offers-area").style.display = "none";
-        document.getElementById("actions-area").style.display = "block";
-        
-        const trainBtn = document.querySelector("button[onclick='trainPlayerSeason()']");
-        if(trainBtn) {
-            trainBtn.disabled = false;
-            trainBtn.innerText = "تطوير الطاقة (+2) 🚀";
-        }
-
-        initSeason();
-        log(`🚀 **بداية الموسم الجديد ${player.season}** مع فريق ${player.team}. بالتوفيق!`);
-    }
-</script>
-
+    </script>
 </body>
 </html>
