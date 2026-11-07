@@ -31,13 +31,10 @@
             border-radius: 8px;
             border: none;
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             font-size: 16px;
             margin-top: 10px;
-            transition: 0.1s;
-        }
-        button:active {
-            transform: scale(0.97);
+            -webkit-tap-highlight-color: transparent;
         }
         input {
             width: 90%;
@@ -210,37 +207,39 @@
 
         let availableOffers = [];
 
-        // تفعيل استجابة الأزرار بالضغط المباشر واللمس لحل المشكلة جذرياً
-        window.addEventListener('DOMContentLoaded', () => {
+        // تفعيل الاستجابة الفورية للمس والنقر المباشر (مخصص لـ WebView و APK)
+        function makeClickable(elementId, action) {
+            let el = document.getElementById(elementId);
+            if (!el) return;
+            
+            el.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                action();
+            }, {passive: false});
+            
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                action();
+            });
+        }
+
+        window.onload = function() {
             let savedGame = localStorage.getItem('football_career_save');
             if (savedGame) {
                 let loadBtn = document.getElementById('load-btn');
                 if (loadBtn) loadBtn.style.display = 'block';
             }
 
-            setupListener('start-btn', startCareer);
-            setupListener('load-btn', loadCareer);
-            setupListener('play-match-btn', playMatch);
-            setupListener('teams-btn', () => showSection('teams-screen'));
-            setupListener('comps-btn', () => showSection('competitions-screen'));
-            setupListener('back-from-teams', returnToMain);
-            setupListener('back-from-comps', returnToMain);
-            setupListener('reject-btn', rejectOffers);
-            setupListener('reset-game-btn', resetGame);
-        });
-
-        function setupListener(id, callback) {
-            let el = document.getElementById(id);
-            if (!el) return;
-            el.onclick = (e) => {
-                e.preventDefault();
-                callback();
-            };
-            el.ontouchend = (e) => {
-                e.preventDefault();
-                callback();
-            };
-        }
+            makeClickable('start-btn', startCareer);
+            makeClickable('load-btn', loadCareer);
+            makeClickable('play-match-btn', playMatch);
+            makeClickable('teams-btn', () => showSection('teams-screen'));
+            makeClickable('comps-btn', () => showSection('competitions-screen'));
+            makeClickable('back-from-teams', returnToMain);
+            makeClickable('back-from-comps', returnToMain);
+            makeClickable('reject-btn', rejectOffers);
+            makeClickable('reset-game-btn', resetGame);
+        };
 
         function saveGame() {
             let gameState = {
@@ -429,14 +428,8 @@
                 btn.style.color = "#fff";
                 btn.innerHTML = `✍️ انتقال إلى: <strong>${offer.name}</strong> (${offer.stars} ⭐)`;
                 
-                btn.onclick = (e) => {
-                    e.preventDefault();
-                    acceptOffer(index);
-                };
-                btn.ontouchend = (e) => {
-                    e.preventDefault();
-                    acceptOffer(index);
-                };
+                btn.addEventListener('touchstart', (e) => { e.preventDefault(); acceptOffer(index); }, {passive: false});
+                btn.addEventListener('click', (e) => { e.preventDefault(); acceptOffer(index); });
 
                 container.appendChild(btn);
             });
