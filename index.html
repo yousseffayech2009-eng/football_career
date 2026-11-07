@@ -2,67 +2,145 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚽ Football Career</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>⚽ Football Career - New Project</title>
     <style>
-        body { background-color: #0b132b; color: #fff; font-family: Tahoma, sans-serif; margin: 0; padding: 15px; direction: rtl; }
-        .card { background: #1c2541; border-radius: 12px; padding: 20px; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-align: center; }
-        button { cursor: pointer; font-weight: bold; border-radius: 8px; border: none; width: 100%; padding: 15px; font-size: 16px; margin-top: 10px; background-color: #5bc0be; color: #0b132b; }
-        .match-box-style { background: #0b132b; padding: 12px; border-radius: 8px; margin: 10px 0; border: 1px solid #5bc0be; text-align: right; }
-        .teams-list { list-style: none; padding: 0; max-height: 250px; overflow-y: auto; text-align: right; }
-        .teams-list li { padding: 6px 0; border-bottom: 1px solid #3a506b; font-size: 14px; }
+        body {
+            background-color: #0b132b;
+            color: #fff;
+            font-family: Tahoma, sans-serif;
+            margin: 0;
+            padding: 12px;
+            direction: rtl;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        #game-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #1c2541;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            text-align: right;
+        }
+        button {
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-size: 15px;
+            margin-top: 8px;
+            background-color: #5bc0be;
+            color: #0b132b;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:active {
+            transform: scale(0.97);
+        }
+        .match-box-style {
+            background: #0b132b;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #5bc0be;
+        }
+        .teams-list {
+            list-style: none;
+            padding: 0;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .teams-list li {
+            padding: 6px 0;
+            border-bottom: 1px solid #3a506b;
+            font-size: 14px;
+        }
+        .badge {
+            background: #1b263b;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
     </style>
 </head>
 <body>
 
-    <div id="game-container" style="max-width: 500px; margin: 0 auto;">
-        <!-- واجهة اللعب الرئيسية -->
-        <div id="game-main-interface" class="card" style="text-align: right;">
-            <h2 style="text-align: center; margin-top: 0;">⚽ Football Career</h2>
-            <h3>لوحة القيادة والمباريات</h3>
-            <p>اللاعب: <strong id="p-name">player</strong> | النادي العشوائي: <strong id="p-club">--</strong> (<span id="p-stars">3</span> ⭐)</p>
-            <p>📅 الجولة: <strong id="p-match-round">0</strong> من 30 | 🏆 النقاط: <strong id="p-points">0</strong> | 📊 الترتيب: <strong id="p-rank">-</strong> | ⚽ أهدافك: <strong id="p-goals">0</strong></p>
+    <div id="game-container">
+        <!-- الواجهة الرئيسية -->
+        <div id="main-screen" class="card">
+            <h2 style="text-align: center; margin: 0 0 10px 0;">⚽ Football Career</h2>
             
-            <div class="match-box-style">
-                <h4>🏟️ المواجهة القادمة</h4>
-                <p id="match-announcement">أهلاً بك يا player! تم اختيار ناديك العشوائي، اضغط على زر خوض الجولة للبدء.</p>
+            <div class="badge">
+                👤 اللاعب: <strong id="p-name">player</strong><br>
+                🛡️ النادي العشوائي: <strong id="p-club">--</strong> (<span id="p-stars">3</span> ⭐)<br>
+                📅 الموسم: <strong id="p-season">1</strong> (الجولة <strong id="p-match-round">0</strong> من 30)<br>
+                🏆 النقاط: <strong id="p-points">0</strong> | 📊 الترتيب: <strong id="p-rank">-</strong> | ⚽ الأهداف: <strong id="p-goals">0</strong>
+            </div>
+            
+            <!-- صندوق المواجهات -->
+            <div id="match-box" class="match-box-style">
+                <h4 style="margin: 0 0 5px 0;">🏟️ المواجهة القادمة</h4>
+                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك! تم اختيار ناديك عشوائياً. اضغط خوض الجولة للبدء.</p>
             </div>
 
-            <!-- شاشة الفرق -->
-            <div id="teams-screen" style="display:none; margin: 15px 0;">
-                <h4>قوة الأندية وتصنيفاتها (الدوري التونسي)</h4>
-                <ul class="teams-list">
-                    <li>Club Africain: <strong>4.5 نجوم ⭐</strong>[span_0](start_span)[span_0](end_span)</li>
-                    <li>Esperance Tunis: <strong>4.5 نجوم ⭐</strong>[span_1](start_span)[span_1](end_span)</li>
-                    <li>CS Sfaxien: <strong>4.0 نجوم ⭐</strong>[span_2](start_span)[span_2](end_span)</li>
-                    <li>Stade Tunisien: <strong>3.5 نجوم ⭐</strong>[span_3](start_span)[span_3](end_span)</li>
-                    <li>Monastir: <strong>3.5 نجوم ⭐</strong>[span_4](start_span)[span_4](end_span)</li>
-                    <li>Zarzis: <strong>3.0 نجوم ⭐</strong>[span_5](start_span)[span_5](end_span)</li>
-                    <li>Etoile Sahel: <strong>3.0 نجوم ⭐</strong>[span_6](start_span)[span_6](end_span)</li>
-                    <li>Metlaoui: <strong>3.0 نجوم ⭐</strong>[span_7](start_span)[span_7](end_span)</li>
-                    <li>JS Omrane: <strong>2.5 نجوم ⭐</strong>[span_8](start_span)[span_8](end_span)</li>
-                    <li>Ben Guerdane: <strong>2.5 نجوم ⭐</strong>[span_9](start_span)[span_9](end_span)</li>
-                    <li>Marsa: <strong>2.5 نجوم ⭐</strong>[span_10](start_span)[span_10](end_span)</li>
-                    <li>CA Bizertin: <strong>2.5 نجوم ⭐</strong>[span_11](start_span)[span_11](end_span)</li>
-                    <li>Olympique Beja: <strong>2.0 نجوم ⭐</strong>[span_12](start_span)[span_12](end_span)</li>
-                    <li>Kairouanaise: <strong>2.0 نجوم ⭐</strong>[span_13](start_span)[span_13](end_span)</li>
-                    <li>Soliman: <strong>2.0 نجوم ⭐</strong>[span_14](start_span)[span_14](end_span)</li>
-                    <li>AS Gabes: <strong>2.0 نجوم ⭐</strong>[span_15](start_span)[span_15](end_span)</li>
-                </ul>
-            </div>
-
-            <!-- صندوق عروض الانتقالات -->
-            <div id="transfer-offer-box" style="display:none; background: #3a1c0b; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #ffb703;">
-                <h4>🌟 سوق الانتقالات (نهاية الموسم)</h4>
-                <p id="offer-text">انتهى الموسم!</p>
-                <div id="continental-result-box" style="margin: 10px 0; font-weight: bold; color: #6fffe9;"></div>
+            <!-- سوق الانتقالات عند نهاية الموسم -->
+            <div id="transfer-offer-box" style="display:none; background: #3a1c0b; padding: 12px; border-radius: 8px; margin: 10px 0; border: 2px solid #ffb703;">
+                <h4 style="margin-top:0;">🌟 عروض نهاية الموسم</h4>
+                <div id="continental-result-box" style="margin-bottom: 8px; font-weight: bold; color: #6fffe9; font-size: 13px;"></div>
                 <div id="offers-list-container"></div>
-                <button onclick="rejectOffers()" style="background-color: #e76f51; color: #fff;">البقاء مع ناديك الحالي 🛡️</button>
+                <button id="reject-btn" style="background-color: #e76f51; color: #fff; margin-top: 8px;">البقاء مع ناديك الحالي 🛡️</button>
             </div>
 
-            <button id="play-match-btn" onclick="playMatch()">خوض الجولة الحالية ⚽</button>
-            <button onclick="toggleTeams()" style="background-color: #3a506b; color: #fff;">عرض/إخفاء ترتيب الأندية 📊</button>
-            <button onclick="resetGame()" style="background-color: #d90429; color: #fff; font-size: 12px; padding: 10px;">إعادة تعيين المسيرة وبدء جديدة 🔄</button>
+            <!-- أزرار التحكم -->
+            <div id="action-buttons">
+                <button id="play-match-btn">خوض الجولة الحالية ⚽</button>
+                <div style="display: flex; gap: 8px;">
+                    <button id="teams-btn" style="background-color: #3a506b; color: #fff; font-size: 13px; padding: 10px;">ترتيب الأندية 📊</button>
+                    <button id="comps-btn" style="background-color: #3a506b; color: #fff; font-size: 13px; padding: 10px;">نظام التأهل 🏆</button>
+                </div>
+                <button id="reset-btn" style="background-color: #d90429; color: #fff; font-size: 12px; padding: 8px;">إعادة تعيين وبدء مسيرة جديدة 🔄</button>
+            </div>
+        </div>
+
+        <!-- شاشة ترتيب الأندية -->
+        <div id="teams-screen" class="card" style="display:none;">
+            <h3>تصنيف أندية الدوري التونسي</h3>
+            <ul class="teams-list">
+                <li>Club Africain: <strong>4.5 نجوم ⭐</strong></li>
+                <li>Esperance Tunis: <strong>4.5 نجوم ⭐</strong></li>
+                <li>CS Sfaxien: <strong>4.0 نجوم ⭐</strong></li>
+                <li>Stade Tunisien: <strong>3.5 نجوم ⭐</strong></li>
+                <li>Monastir: <strong>3.5 نجوم ⭐</strong></li>
+                <li>Zarzis: <strong>3.0 نجوم ⭐</strong></li>
+                <li>Etoile Sahel: <strong>3.0 نجوم ⭐</strong></li>
+                <li>Metlaoui: <strong>3.0 نجوم ⭐</strong></li>
+                <li>JS Omrane: <strong>2.5 نجوم ⭐</strong></li>
+                <li>Ben Guerdane: <strong>2.5 نجوم ⭐</strong></li>
+                <li>Marsa: <strong>2.5 نجوم ⭐</strong></li>
+                <li>CA Bizertin: <strong>2.5 نجوم ⭐</strong></li>
+                <li>Olympique Beja: <strong>2.0 نجوم ⭐</strong></li>
+                <li>Kairouanaise: <strong>2.0 نجوم ⭐</strong></li>
+                <li>Soliman: <strong>2.0 نجوم ⭐</strong></li>
+                <li>AS Gabes: <strong>2.0 نجوم ⭐</strong></li>
+            </ul>
+            <button id="back-from-teams" style="background-color: #3a506b; color: #fff;">العودة للوحة القيادة</button>
+        </div>
+
+        <!-- شاشة نظام التأهل -->
+        <div id="comps-screen" class="card" style="display:none;">
+            <h3>نظام التأهل القاري</h3>
+            <p>🏆 <strong>دوري أبطال إفريقيا:</strong> المركز الأول والثاني.</p>
+            <p>🥈 <strong>كأس الكونفدرالية:</strong> المركز الثالث والرابع.</p>
+            <button id="back-from-comps" style="background-color: #3a506b; color: #fff;">العودة للوحة القيادة</button>
         </div>
     </div>
 
@@ -70,77 +148,107 @@
         let player = { name: "player", club: "", clubStars: 3, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10 };
 
         const tunisianTeamsData = [
-            { name: "Club Africain", stars: 4.5, points: 0 },[span_16](start_span)[span_16](end_span)
-            { name: "Esperance Tunis", stars: 4.5, points: 0 },[span_17](start_span)[span_17](end_span)
-            { name: "CS Sfaxien", stars: 4.0, points: 0 },[span_18](start_span)[span_18](end_span)
-            { name: "Stade Tunisien", stars: 3.5, points: 0 },[span_19](start_span)[span_19](end_span)
-            { name: "Monastir", stars: 3.5, points: 0 },[span_20](start_span)[span_20](end_span)
-            { name: "Zarzis", stars: 3.0, points: 0 },[span_21](start_span)[span_21](end_span)
-            { name: "Etoile Sahel", stars: 3.0, points: 0 },[span_22](start_span)[span_22](end_span)
-            { name: "Metlaoui", stars: 3.0, points: 0 },[span_23](start_span)[span_23](end_span)
-            { name: "JS Omrane", stars: 2.5, points: 0 },[span_24](start_span)[span_24](end_span)
-            { name: "Ben Guerdane", stars: 2.5, points: 0 },[span_25](start_span)[span_25](end_span)
-            { name: "Marsa", stars: 2.5, points: 0 },[span_26](start_span)[span_26](end_span)
-            { name: "CA Bizertin", stars: 2.5, points: 0 },[span_27](start_span)[span_27](end_span)
-            { name: "Olympique Beja", stars: 2.0, points: 0 },[span_28](start_span)[span_28](end_span)
-            { name: "Kairouanaise", stars: 2.0, points: 0 },[span_29](start_span)[span_29](end_span)
-            { name: "Soliman", stars: 2.0, points: 0 },[span_30](start_span)[span_30](end_span)
-            { name: "AS Gabes", stars: 2.0, points: 0 }[span_31](start_span)[span_31](end_span)
+            { name: "Club Africain", stars: 4.5, points: 0 },
+            { name: "Esperance Tunis", stars: 4.5, points: 0 },
+            { name: "CS Sfaxien", stars: 4.0, points: 0 },
+            { name: "Stade Tunisien", stars: 3.5, points: 0 },
+            { name: "Monastir", stars: 3.5, points: 0 },
+            { name: "Zarzis", stars: 3.0, points: 0 },
+            { name: "Etoile Sahel", stars: 3.0, points: 0 },
+            { name: "Metlaoui", stars: 3.0, points: 0 },
+            { name: "JS Omrane", stars: 2.5, points: 0 },
+            { name: "Ben Guerdane", stars: 2.5, points: 0 },
+            { name: "Marsa", stars: 2.5, points: 0 },
+            { name: "CA Bizertin", stars: 2.5, points: 0 },
+            { name: "Olympique Beja", stars: 2.0, points: 0 },
+            { name: "Kairouanaise", stars: 2.0, points: 0 },
+            { name: "Soliman", stars: 2.0, points: 0 },
+            { name: "AS Gabes", stars: 2.0, points: 0 }
         ];
 
-        const easternEuropeAndStrongLocalTeams = [
-            { name: "نادي فرينكفاروش المجري 🇭🇺", stars: 3.5 },
-            { name: "نادي دينامو زغرب الكرواتي 🇭🇷", stars: 4.0 },
-            { name: "نادي سلافا براغ التشيكي 🇨🇿", stars: 3.5 },
-            { name: "نادي لوكوموتيف موسكو الروسي 🇷🇺", stars: 4.0 },
-            { name: "Club Africain 🇹🇳", stars: 4.5 },[span_32](start_span)[span_32](end_span)
-            { name: "Esperance Tunis 🇹🇳", stars: 4.5 }[span_33](start_span)[span_33](end_span)
+        const transferOffersPool = [
+            { name: "فرينكفاروش المجري 🇭🇺", stars: 3.5 },
+            { name: "دينامو زغرب الكرواتي 🇭🇷", stars: 4.0 },
+            { name: "سلافا براغ التشيكي 🇨🇿", stars: 3.5 },
+            { name: "لوكوموتيف موسكو الروسي 🇷🇺", stars: 4.0 },
+            { name: "Club Africain 🇹🇳", stars: 4.5 },
+            { name: "Esperance Tunis 🇹🇳", stars: 4.5 }
         ];
 
         let availableOffers = [];
 
-        window.onload = function() {
-            let saved = localStorage.getItem('football_career_save');
-            if (saved) {
-                let data = JSON.parse(saved);
-                player = data.player;
-                player.name = "player";
-                if(data.teams) {
-                    data.teams.forEach(st => {
-                        let t = tunisianTeamsData.find(item => item.name === st.name);
-                        if(t) t.points = st.points;
-                    });
-                }
-            } else {
-                let randTeam = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)];
-                player.name = "player";
-                player.club = randTeam.name;
-                player.clubStars = randTeam.stars;
-                saveGame();
-            }
-            updateUI();
-        };
-
-        function saveGame() {
-            localStorage.setItem('football_career_save', JSON.stringify({ player, teams: tunisianTeamsData }));
+        // الربط المباشر لضمان استجابة الأزرار
+        function bindAction(id, fn) {
+            let el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('click', fn);
+            el.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                fn();
+            }, {passive: false});
         }
 
-        function resetGame() {
-            if(confirm("هل تريد مسح المسيرة الحالية والبدء من جديد بنادي عشوائي؟")) {
-                localStorage.removeItem('football_career_save');
+        window.addEventListener('DOMContentLoaded', function() {
+            let saved = localStorage.getItem('new_fc_save');
+            if (saved) {
+                try {
+                    let data = JSON.parse(saved);
+                    player = data.player;
+                    player.name = "player";
+                    if (data.teams) {
+                        data.teams.forEach(st => {
+                            let t = tunisianTeamsData.find(item => item.name === st.name);
+                            if(t) t.points = st.points;
+                        });
+                    }
+                } catch(e) {
+                    initNewCareer();
+                }
+            } else {
+                initNewCareer();
+            }
+
+            updateUI();
+
+            bindAction('play-match-btn', playMatch);
+            bindAction('teams-btn', function() { showView('teams-screen'); });
+            bindAction('comps-btn', function() { showView('comps-screen'); });
+            bindAction('back-from-teams', function() { showView('main-screen'); });
+            bindAction('back-from-comps', function() { showView('main-screen'); });
+            bindAction('reset-btn', resetCareer);
+            bindAction('reject-btn', rejectOffers);
+        });
+
+        function initNewCareer() {
+            let randTeam = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)];
+            player = { name: "player", club: randTeam.name, clubStars: randTeam.stars, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10 };
+            tunisianTeamsData.forEach(t => t.points = 0);
+            saveData();
+        }
+
+        function saveData() {
+            localStorage.setItem('new_fc_save', JSON.stringify({ player: player, teams: tunisianTeamsData }));
+        }
+
+        function resetCareer() {
+            if (confirm("هل تريد مسح المسيرة والبدء مع فريق عشوائي جديد؟")) {
+                localStorage.removeItem('new_fc_save');
                 location.reload();
             }
         }
 
-        function toggleTeams() {
-            let s = document.getElementById('teams-screen');
-            s.style.display = s.style.display === 'none' ? 'block' : 'none';
+        function showView(screenId) {
+            document.getElementById('main-screen').style.display = 'none';
+            document.getElementById('teams-screen').style.display = 'none';
+            document.getElementById('comps-screen').style.display = 'none';
+            document.getElementById(screenId).style.display = 'block';
         }
 
         function updateUI() {
             document.getElementById('p-name').innerText = player.name;
             document.getElementById('p-club').innerText = player.club;
             document.getElementById('p-stars').innerText = player.clubStars;
+            document.getElementById('p-season').innerText = player.season;
             document.getElementById('p-match-round').innerText = player.matchesPlayed;
             document.getElementById('p-points').innerText = player.points;
             document.getElementById('p-rank').innerText = player.rank;
@@ -153,28 +261,28 @@
 
             tunisianTeamsData.forEach(team => {
                 if (team.name === player.club) team.points = player.points;
-                else team.points += (Math.random() > 0.5 ? 3 : 1);
+                else team.points += (Math.random() > 0.5 ? 3 : (Math.random() > 0.3 ? 1 : 0));
             });
 
             let opp;
             do { opp = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)]; } while (opp.name === player.club);
 
             let diff = player.clubStars - opp.stars + ((Math.random() * 2) - 1);
-            let myG = 0, oppG = 0, text = "";
+            let myG = 0, oppG = 0, resText = "";
 
             if (diff > 0.5) {
                 myG = Math.floor(Math.random() * 3) + 1;
                 oppG = Math.floor(Math.random() * myG);
-                text = `انتصار على ${opp.name} (${myG}-${oppG})`;
+                resText = `🎉 انتصار على ${opp.name} (${myG}-${oppG})`;
                 player.points += 3;
             } else if (diff < -0.5) {
                 oppG = Math.floor(Math.random() * 3) + 1;
                 myG = Math.floor(Math.random() * oppG);
-                text = `هزيمة أمام ${opp.name} (${myG}-${oppG})`;
+                resText = `💔 هزيمة أمام ${opp.name} (${myG}-${oppG})`;
             } else {
                 myG = Math.floor(Math.random() * 2);
                 oppG = myG;
-                text = `تعادل مع ${opp.name} (${myG}-${oppG})`;
+                resText = `🤝 تعادل مع ${opp.name} (${myG}-${oppG})`;
                 player.points += 1;
             }
 
@@ -186,56 +294,73 @@
 
             if (myG > 0 && Math.random() > 0.4) {
                 player.goals++;
-                text += " [سجلت هدفاً!]";
+                resText += " ⚽ [سجلت هدفاً!]";
             }
 
-            document.getElementById('match-announcement').innerText = text;
+            document.getElementById('match-announcement').innerHTML = resText;
             updateUI();
-            saveGame();
+            saveData();
 
-            if (player.matchesPlayed >= 30) triggerEndOfSeasonOffers();
+            if (player.matchesPlayed >= 30) triggerEndOfSeason();
         }
 
-        function triggerEndOfSeasonOffers() {
-            document.getElementById('continental-result-box').innerText = `أنهيت الدوري في المركز ${player.rank}`;
+        function triggerEndOfSeason() {
+            let resMsg = player.rank <= 2 ? `🌟 الترتيب (${player.rank}): تأهلت لدوري أبطال إفريقيا!` :
+                         player.rank <= 4 ? `👏 الترتيب (${player.rank}): تأهلت لكأس الكونفدرالية!` :
+                         `⚠️ الترتيب (${player.rank}): لم تتأهل قاريًا.`;
+
+            document.getElementById('continental-result-box').innerText = resMsg;
             availableOffers = [];
-            let pool = [...easternEuropeAndStrongLocalTeams].sort(() => 0.5 - Math.random());
-            for(let t of pool) {
-                if(t.name !== player.club && availableOffers.length < 3) availableOffers.push(t);
+            let shuffled = [...transferOffersPool].sort(() => 0.5 - Math.random());
+            
+            for (let item of shuffled) {
+                if (item.name !== player.club && availableOffers.length < 3) availableOffers.push(item);
             }
 
             let container = document.getElementById('offers-list-container');
             container.innerHTML = "";
+            
             availableOffers.forEach((offer, idx) => {
-                let b = document.createElement('button');
-                b.style.backgroundColor = "#2a9d8f"; b.style.color = "#fff"; b.style.margin = "5px 0";
-                b.innerHTML = `انتقال إلى: ${offer.name} (${offer.stars} ⭐)`;
-                b.onclick = () => {
+                let btn = document.createElement('button');
+                btn.style.backgroundColor = "#2a9d8f";
+                btn.style.color = "#fff";
+                btn.style.marginTop = "6px";
+                btn.innerHTML = `✍️ انتقال إلى: ${offer.name} (${offer.stars} ⭐)`;
+                
+                let applyOffer = function() {
                     player.club = offer.name;
                     player.clubStars = offer.stars;
-                    finishSeason("تم الانتقال بنجاح!");
+                    finishSeasonTransition("وافقت على العرض وانتقلت للنادي الجديد!");
                 };
-                container.appendChild(b);
+
+                btn.addEventListener('click', applyOffer);
+                btn.addEventListener('touchend', function(e) { e.preventDefault(); applyOffer(); }, {passive: false});
+                container.appendChild(btn);
             });
 
             document.getElementById('transfer-offer-box').style.display = 'block';
             document.getElementById('play-match-btn').style.display = 'none';
-            saveGame();
+            saveData();
         }
 
-        function rejectOffers() { finishSeason("مواصلة المشوار مع النادي الحالي."); }
+        function rejectOffers() {
+            finishSeasonTransition("تجديد العقد والبقاء مع النادي الحالي.");
+        }
 
-        function finishSeason(msg) {
+        function finishSeasonTransition(msg) {
             player.season++;
-            player.matchesPlayed = 0; player.points = 0; player.goals = 0; player.rank = 10;
+            player.matchesPlayed = 0;
+            player.points = 0;
+            player.goals = 0;
+            player.rank = 10;
             tunisianTeamsData.forEach(t => t.points = 0);
+            
             updateUI();
-            document.getElementById('match-announcement').innerText = msg + ` انطلق الموسم رقم ${player.season}!`;
+            document.getElementById('match-announcement').innerHTML = `<strong>نهاية الموسم:</strong> ${msg}<br>🚀 انطلق الموسم رقم ${player.season}!`;
             document.getElementById('transfer-offer-box').style.display = 'none';
             document.getElementById('play-match-btn').style.display = 'block';
-            saveGame();
+            saveData();
         }
     </script>
 </body>
 </html>
-
