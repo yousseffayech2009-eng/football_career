@@ -32,7 +32,7 @@
             
             <div id="match-box" class="match-box-style">
                 <h4 style="margin: 0 0 5px 0;">🏟️ المواجهة القادمة</h4>
-                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك! تم فصل دوريات أوروبا الشرقية والعالمية. اضغط خوض الجولة للبدء.</p>
+                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك! تم تصحيح الأخطاء. اضغط خوض الجولة للبدء.</p>
             </div>
 
             <!-- سوق الانتقالات عند نهاية الموسم -->
@@ -59,7 +59,6 @@
     </div>
 
     <script>
-        // قواعد بيانات الدوريات مفصولة تماماً (كل دوري يحتوي على 16 فريقاً لضمان 30 جولة ذهاب وإياب)
         const leaguesData = {
             "الدوري التونسي 🇹🇳": [
                 { name: "Club Africain", stars: 4.5, points: 0 },
@@ -98,7 +97,7 @@
                 { name: "إنتر زابريشيتش", stars: 2.0, points: 0 }
             ],
             "الدوري الروسي 🇷🇺": [
-                قبة: "زينيت سانت بطرسبرغ", stars: 4.5, points: 0 },
+                { name: "زينيت سانت بطرسبرغ", stars: 4.5, points: 0 },
                 { name: "سبارتاك موسكو", stars: 4.5, points: 0 },
                 { name: "سيسكا موسكو", stars: 4.0, points: 0 },
                 { name: "لوكوموتيف موسكو", stars: 4.0, points: 0 },
@@ -120,7 +119,7 @@
                 { name: "كلوب بروج", stars: 4.5, points: 0 },
                 { name: "جينك", stars: 4.0, points: 0 },
                 { name: "رويال أنتويرب", stars: 4.0, points: 0 },
-                { name: "لاغونتواز (غينت)", stars: 4.0, points: 0 },
+                { name: "غينت", stars: 4.0, points: 0 },
                 { name: "ستاندارد لييج", stars: 3.5, points: 0 },
                 { name: "رويال يونيون سان خيلواز", stars: 4.0, points: 0 },
                 { name: "شارلرووا", stars: 3.0, points: 0 },
@@ -152,16 +151,16 @@
                 { name: "فورتونا سيتارد", stars: 2.5, points: 0 }
             ],
             "الدوري الصربي 🇷🇸": [
-                { name: "النجم الأحمر (ريد ستار)", stars: 4.5, points: 0 },
+                { name: "النجم الأحمر", stars: 4.5, points: 0 },
                 { name: "بارتيزان بلغراد", stars: 4.0, points: 0 },
                 { name: "تشوكاريتشكي", stars: 3.5, points: 0 },
-                { name: "تسكا نيص", stars: 3.5, points: 0 },
+                { name: "رادنيتشكي نيش", stars: 3.5, points: 0 },
                 { name: "فويفودينا", stars: 3.5, points: 0 },
-                { name: " TSC باتشكا توبولا", stars: 3.5, points: 0 },
+                { name: "باتشكا توبولا", stars: 3.5, points: 0 },
                 { name: "نوفي بازار", stars: 2.5, points: 0 },
                 { name: "ملادوست لوتشاني", stars: 2.5, points: 0 },
                 { name: "رادنيتشكي كراغوييفاتس", stars: 2.5, points: 0 },
-                { name: "يازفيل", stars: 2.0, points: 0 },
+                { name: "يافيل", stars: 2.0, points: 0 },
                 { name: "نبريداك كروشيفاتس", stars: 2.0, points: 0 },
                 { name: "إم إل إيتش", stars: 2.0, points: 0 },
                 { name: "يافور إيفانييتشا", stars: 2.0, points: 0 },
@@ -170,9 +169,6 @@
                 { name: "وفيلي", stars: 2.0, points: 0 }
             ]
         };
-
-        // إصلاح اسم زينيت في مصفوفة روسيا برمجياً للتأكد من خلوه من الأخطاء
-        leaguesData["الدوري الروسي 🇷🇺"][0].name = "زينيت سانت بطرسبرغ";
 
         let player = { name: "player", league: "", club: "", clubStars: 3, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10 };
         let currentLeagueTeams = [];
@@ -192,6 +188,9 @@
                     player = data.player;
                     player.name = "player";
                     currentLeagueTeams = data.teams;
+                    if (!player.club || !currentLeagueTeams || currentLeagueTeams.length === 0) {
+                        initNewCareer();
+                    }
                 } catch(e) {
                     initNewCareer();
                 }
@@ -239,8 +238,8 @@
 
         function updateUI() {
             document.getElementById('p-name').innerText = player.name;
-            document.getElementById('p-club').innerText = player.club;
-            document.getElementById('p-league').innerText = player.league;
+            document.getElementById('p-club').innerText = player.club || "غير محدد";
+            document.getElementById('p-league').innerText = player.league || "غير محدد";
             document.getElementById('p-stars').innerText = player.clubStars;
             document.getElementById('p-season').innerText = player.season;
             document.getElementById('p-match-round').innerText = player.matchesPlayed;
@@ -266,7 +265,6 @@
             if (player.matchesPlayed >= 30) return;
             player.matchesPlayed++;
 
-            // محاكاة مباريات باقي الفرق داخل نفس الدوري تماماً
             currentLeagueTeams.forEach(team => {
                 if (team.name === player.club) team.points = player.points;
                 else team.points += (Math.random() > 0.5 ? 3 : (Math.random() > 0.4 ? 1 : 0));
@@ -315,7 +313,6 @@
         function triggerEndOfSeason() {
             document.getElementById('continental-result-box').innerText = `أنهيت موسمك في ${player.league} بالمركز ${player.rank}!`;
             
-            // جمع عروض الانتقالات المتاحة من مختلف الدوريات
             let allTeamsFlat = [];
             Object.keys(leaguesData).forEach(lg => {
                 leaguesData[lg].forEach(tm => {
