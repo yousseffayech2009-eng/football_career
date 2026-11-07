@@ -12,7 +12,7 @@
         <!-- شاشة البداية وإنشاء اللاعب -->
         <div id="setup-screen" class="card">
             <h1>⭐ Football Career ⭐</h1>
-            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (34 جولة):</p>
+            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (34 جولة وصراع المقاعد القارية):</p>
             <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف">
             <button onclick="startCareer()">انطلق نحو النجومية 🚀</button>
         </div>
@@ -40,18 +40,19 @@
                 <p id="match-announcement">اضغط على زر خوض المباراة للبدء ضد الخصم القادم.</p>
               </div>
 
-              <!-- صندوق عروض الانتقالات نهاية الموسم -->
+              <!-- صندوق نتائج نهاية الموسم والمقاعد القارية -->
               <div id="transfer-offer-box" style="display:none; background: #3a1c0b; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #ffb703;">
-                <h3>🌟 سوق الانتقالات الكبرى (نهاية الموسم)</h3>
-                <p id="offer-text">تلقيت عروضاً من أندية كبرى!</p>
-                <button onclick="acceptOffer()" class="btn-primary" style="background-color: #2a9d8f;">قبول الانتقال القاري/الأوروبي ✍️</button>
-                <button onclick="rejectOffer()" class="btn-secondary" style="background-color: #e76f51;">الاستمرار وتجديد العقد 🛡️</button>
+                <h3>🌟 حصاد الموسم والمقاعد القارية (نهاية الدوري)</h3>
+                <p id="offer-text">انتهى الموسم!</p>
+                <div id="continental-result-box" style="margin: 10px 0; font-weight: bold; color: #6fffe9;"></div>
+                <button onclick="acceptOffer()" class="btn-primary" style="background-color: #2a9d8f;">قبول الانتقال لعرض قاري/أوروبي كبرى ✍️</button>
+                <button onclick="rejectOffer()" class="btn-secondary" style="background-color: #e76f51;">البقاء ومشاركة ناديك قارياً 🛡️</button>
               </div>
 
               <div class="menu-buttons" id="action-buttons-div">
                 <button onclick="playMatch()" id="play-btn" class="btn-primary">خوض الجولة الحالية ⚽</button>
                 <button onclick="showSection('teams-screen')" class="btn-secondary">ترتيب الأندية والنجوم 📊</button>
-                <button onclick="showSection('competitions-screen')" class="btn-secondary">البطولات الإفريقية والأوروبية 🏆</button>
+                <button onclick="showSection('competitions-screen')" class="btn-secondary">نظام التأهل القاري 🏆</button>
               </div>
             </main>
 
@@ -71,11 +72,12 @@
               <button onclick="returnToMain()" class="btn-secondary">العودة للملعب</button>
             </div>
 
-            <!-- شاشة البطولات -->
+            <!-- شاشة البطولات والتأهل -->
             <div id="competitions-screen" class="card" style="display:none;">
-              <h3>طريقك نحو المجد العالمي</h3>
-              <p><strong>دوري أبطال إفريقيا:</strong> مجموعات نارية تضم كبار القارة (الأهلي، صن داونز، الزمالك، الوداد).</p>
-              <p><strong>دوري أبطال أوروبا:</strong> تتأهل لها بعد التألق في أوروبا لتلعب ضد عمالقة العالم.</p>
+              <h3>نظام التأهل القاري والمجموعات</h3>
+              <p><strong>دوري أبطال إفريقيا:</strong> يتأهل إليه أصحاب المركزين <strong>الأول والثاني</strong> في الدوري للمشاركة في المجموعات (مع الأهلي، صن داونز، الزمالك، الوداد).</p>
+              <p><strong>كأس الكونفيدرالية:</strong> يتأهل إليه صاحبا المركزين <strong>الثالث والرابع</strong>.</p>
+              <p><strong>دوري أبطال أوروبا:</strong> متاح لاحقاً عبر الانتقالات الكبرى للاحتراف في أوروبا.</p>
               <button onclick="returnToMain()" class="btn-secondary">العودة للملعب</button>
             </div>
         </div>
@@ -114,13 +116,13 @@
         ];
 
         const europeanAndAfricanBigTeams = [
-            { name: "النادي الأهلي المصري 🦅", stars: 4.5 },
-            { name: "الزمالك المصري 🏹", stars: 4.0 },
-            { name: "ماميلودي صن داونز 💛", stars: 4.5 },
-            { name: "الرجاء الرياضي 💚", stars: 4.0 },
-            { name: "ريال مدريد الإسباني 👑", stars: 5.0 },
-            { name: "برشلونة الإسباني 🔵🔴", stars: 5.0 },
-            { name: "مانشستر سيتي الإنجليزي 💙", stars: 5.0 }
+            { name: "النادي الأهلي المصري 🦅 (دوري الأبطال)", stars: 4.5 },
+            { name: "الزمالك المصري 🏹 (الكونفدرالية)", stars: 4.0 },
+            { name: "ماميلودي صن داونز 💛 (دوري الأبطال)", stars: 4.5 },
+            { name: "الرجاء الرياضي 💚 (دوري الأبطال)", stars: 4.0 },
+            { name: "ريال مدريد الإسباني 👑 (أبطال أوروبا)", stars: 5.0 },
+            { name: "برشلونة الإسباني 🔵🔴 (أبطال أوروبا)", stars: 5.0 },
+            { name: "مانشستر سيتي الإنجليزي 💙 (أبطال أوروبا)", stars: 5.0 }
         ];
 
         let pendingNewTeamObj = null;
@@ -162,10 +164,7 @@
         }
 
         function playMatch() {
-            // منع اللعب إذا تجاوزت الجولات 34
-            if (player.matchesPlayed >= 34) {
-                return;
-            }
+            if (player.matchesPlayed >= 34) return;
 
             player.matchesPlayed++;
             document.getElementById('p-match-round').innerText = player.matchesPlayed;
@@ -186,12 +185,12 @@
             if (performanceScore > 0.8) {
                 myGoals = Math.floor(Math.random() * 3) + 1;
                 oppGoals = Math.floor(Math.random() * myGoals);
-                matchResultText = `🎉 <strong>انتصار رائع!</strong> تفوق فريقك وهزم <em>${opponentObj.name} (${opponentObj.stars} ⭐)</em> بنتيجة (${myGoals}-${oppGoals}).`;
+                matchResultText = `🎉 <strong>انتصار رائع!</strong> فاز فريقك على <em>${opponentObj.name} (${opponentObj.stars} ⭐)</em> بنتيجة (${myGoals}-${oppGoals}).`;
                 player.points += 3;
             } else if (performanceScore < -0.8) {
                 oppGoals = Math.floor(Math.random() * 3) + 1;
                 myGoals = Math.floor(Math.random() * oppGoals);
-                matchResultText = `💔 <strong>هزيمة صعبة أمام ${opponentObj.name} (${opponentObj.stars} ⭐)</strong> بنتيجة (${myGoals}-${oppGoals}). القادم أفضل!`;
+                matchResultText = `💔 <strong>هزيمة صعبة أمام ${opponentObj.name} (${opponentObj.stars} ⭐)</strong> بنتيجة (${myGoals}-${oppGoals}).`;
             } else {
                 myGoals = Math.floor(Math.random() * 2);
                 oppGoals = myGoals;
@@ -202,22 +201,38 @@
             let playerGoalsInMatch = (myGoals > 0 && Math.random() > 0.4) ? 1 : 0;
             player.goals += playerGoalsInMatch;
             if(playerGoalsInMatch > 0) {
-                matchResultText += `<br>⚽ <em>بصماتك:</em> لقد سجلت هدفاً رائعاً في هذا اللقاء! (أهدافك الموسمية: ${player.goals})`;
+                matchResultText += `<br>⚽ <em>بصماتك:</em> سجلت هدفاً في اللقاء! (أهدافك الموسمية: ${player.goals})`;
             }
 
             document.getElementById('match-announcement').innerHTML = matchResultText;
             document.getElementById('p-points').innerText = player.points;
 
-            // التحقق بدقة من نهاية الـ 34 جولة لعرض سوق الانتقالات
             if (player.matchesPlayed >= 34) {
                 triggerEndOfSeasonOffers();
             }
         }
 
         function triggerEndOfSeasonOffers() {
+            // محاكاة مركز الفريق في الدوري بناءً على النقاط (كلما زادت النقاط زاد احتمال الترتيب المتقدم)
+            let estimatedRank = 1;
+            if (player.points < 40) estimatedRank = 8;
+            else if (player.points < 55) estimatedRank = 5;
+            else if (player.points < 65) estimatedRank = 3; // مؤهل للكونفدرالية
+            else estimatedRank = (Math.random() > 0.5 ? 1 : 2); // مؤهل لدوري الأبطال
+
+            let qualificationText = "";
+            if (estimatedRank <= 2) {
+                qualificationText = `🌟 مبروك! أنهى ناديك (${player.club}) الدوري في المركز <strong>(${estimatedRank})</strong> وتأهل رسمياً إلى 🏆 <strong>دوري أبطال إفريقيا</strong>!`;
+            } else if (estimatedRank <= 4) {
+                qualificationText = `👏 ممتاز! أنهى ناديك (${player.club}) الدوري في المركز <strong>(${estimatedRank})</strong> وتأهل رسمياً إلى 🥈 <strong>كأس الكونفدرالية الإفريقية</strong>!`;
+            } else {
+                qualificationText = `⚠️ أنهى ناديك (${player.club}) الدوري في المركز <strong>(${estimatedRank})</strong> ولم يتأهل للمسابقات القارية هذا الموسم.`;
+            }
+
             pendingNewTeamObj = europeanAndAfricanBigTeams[Math.floor(Math.random() * europeanAndAfricanBigTeams.length)];
 
-            document.getElementById('offer-text').innerHTML = `انقضى موسم الدوري بنجاح (34 جولة)! برصيد ${player.points} نقطة و ${player.goals} هدفاً. تلقيت عرضاً نارياً من: <strong>${pendingNewTeamObj.name} (${pendingNewTeamObj.stars} نجوم)</strong>!`;
+            document.getElementById('continental-result-boxinnerHTML').innerHTML = qualificationText;
+            document.getElementById('offer-text').innerHTML = `برصيد ${player.points} نقطة و ${player.goals} هدفاً، تلقيت عرضاً نارياً من النادي العميل: <strong>${pendingNewTeamObj.name}</strong>!`;
             
             document.getElementById('transfer-offer-box').style.display = 'block';
             document.getElementById('play-btn').style.display = 'none';
@@ -227,11 +242,11 @@
             player.club = pendingNewTeamObj.name;
             player.clubStars = pendingNewTeamObj.stars;
             updateClubUIAfterTransfer();
-            finishSeasonTransition("خطوة تاريخية! وافقت على الانتقال وخوض التحديات الكبرى.");
+            finishSeasonTransition("خطوة تاريخية! وافقت على الانتقال وخوض غمار البطولات الكبرى.");
         }
 
         function rejectOffer() {
-            finishSeasonTransition("اخترت الوفاء ورفض العروض لتطوير ناديك الحالي لموسم إضافي.");
+            finishSeasonTransition("اخترت البقاء ومواصلة المغامرة مع ناديك الحالي.");
         }
 
         function finishSeasonTransition(msg) {
