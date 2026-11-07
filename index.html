@@ -4,29 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚽ Football Career - مسيرة الاحتراف</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #0b132b;
+            color: #fff;
+            font-family: Tahoma, sans-serif;
+            margin: 0;
+            padding: 10px;
+            direction: rtl;
+        }
+        #game-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #1c2541;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        button {
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            transition: 0.2s;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .match-box-style {
+            background: #0b132b;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #5bc0be;
+        }
+        .teams-list {
+            list-style: none;
+            padding: 0;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .teams-list li {
+            padding: 6px 0;
+            border-bottom: 1px solid #3a506b;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 
     <div id="game-container">
         <!-- شاشة البداية وإنشاء اللاعب -->
-        <div id="setup-screen" class="card" style="display: block; text-align: center; padding: 40px 20px;">
+        <div id="setup-screen" class="card" style="display: block; text-align: center; z-index: 999; position: relative;">
             <h1>⭐ Football Career ⭐</h1>
-            <p style="margin: 20px 0; font-size: 15px;">أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (30 جولة ذهاب وإياب):</p>
+            <p style="margin: 15px 0; font-size: 14px;">أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (30 جولة ذهاب وإياب):</p>
             <div style="margin-bottom: 20px;">
-                <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف" style="width: 80%; padding: 12px; text-align: center; border-radius: 8px; border: 1px solid #5bc0be; background: #0b132b; color: #fff; font-size: 16px;">
+                <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف" style="width: 90%; padding: 12px; text-align: center; border-radius: 8px; border: 1px solid #5bc0be; background: #0b132b; color: #fff; font-size: 16px; outline: none;">
             </div>
             <div>
-                <!-- ربط مباشر ودقيق لدالة البدء لمنع أي مشكلة في الاستجابة -->
-                <button onclick="startCareer()" style="width: 80%; padding: 12px; background-color: #5bc0be; color: #0b132b; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; font-size: 16px;">انطلق نحو النجومية 🚀</button>
+                <button onclick="startCareer()" style="width: 95%; padding: 14px; background-color: #5bc0be; color: #0b132b; font-size: 16px;">انطلق نحو النجومية 🚀</button>
             </div>
         </div>
 
         <!-- واجهة اللعب الرئيسية -->
         <div id="game-main-interface" style="display:none;">
             <header>
-              <h1>⚽ Football Career</h1>
-              <div id="player-stats-bar">
+              <h2 style="text-align: center; margin: 10px 0;">⚽ Football Career</h2>
+              <div id="player-stats-bar" style="display: flex; justify-content: space-between; font-size: 12px; background: #1c2541; padding: 8px; border-radius: 6px; margin-bottom: 10px;">
                 <span>اللاعب: <strong id="p-name">--</strong></span>
                 <span>النادي: <strong id="p-club">--</strong> (<span id="p-stars">3</span> ⭐)</span>
                 <span>الموسم: <strong id="p-season">1</strong></span>
@@ -34,7 +81,7 @@
             </header>
 
             <main id="main-screen" class="card">
-              <h2>لوحة القيادة والمباريات</h2>
+              <h3>لوحة القيادة والمباريات</h3>
               <div class="league-info-badge" style="background: #1b263b; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; line-height: 1.8;">
                 📅 الجولة: <strong id="p-match-round">0</strong> من 30 | 🏆 النقاط: <strong id="p-points">0</strong><br>
                 📊 الترتيب: <strong id="p-rank">-</strong> | ⚽ أهدافك: <strong id="p-goals">0</strong>
@@ -42,27 +89,27 @@
               
               <!-- صندوق المباراة والحماس -->
               <div id="match-box" class="match-box-style">
-                <h3>🏟️ المواجهة القادمة</h3>
-                <p id="match-announcement">اضغط على زر خوض المباراة للبدء ضد الخصم القادم.</p>
+                <h4 style="margin: 0 0 5px 0;">🏟️ المواجهة القادمة</h4>
+                <p id="match-announcement" style="margin: 0; font-size: 14px;">اضغط على زر خوض المباراة للبدء ضد الخصم القادم.</p>
               </div>
 
               <!-- صندوق عروض الانتقالات -->
               <div id="transfer-offer-box" style="display:none; background: #3a1c0b; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #ffb703;">
-                <h3>🌟 سوق الانتقالات واختيار العروض (نهاية الموسم)</h3>
-                <p id="offer-text">انتهى الموسم! لقد لفتّ الأنظار، وتلقت عدة عروض:</p>
-                <div id="continental-result-box" style="margin: 10px 0; font-weight: bold; color: #6fffe9;"></div>
+                <h4 style="margin-top:0;">🌟 سوق الانتقالات واختيار العروض (نهاية الموسم)</h4>
+                <p id="offer-text" style="font-size: 13px;">انتهى الموسم! لقد لفتّ الأنظار، وتلقت عدة عروض:</p>
+                <div id="continental-result-box" style="margin: 10px 0; font-weight: bold; color: #6fffe9; font-size: 13px;"></div>
                 
                 <!-- قائمة العروض المتعددة -->
                 <div id="offers-list-container" style="display: flex; flex-direction: column; gap: 8px; margin: 12px 0;"></div>
 
-                <button onclick="rejectOffers()" style="background-color: #e76f51; width: 100%; padding: 10px; border-radius: 6px; border: none; color: #fff; cursor: pointer; font-weight: bold;">البقاء وتجديد العقد مع ناديك الحالي 🛡️</button>
+                <button onclick="rejectOffers()" style="background-color: #e76f51; color: #fff; width: 100%; padding: 10px;">البقاء وتجديد العقد مع ناديك الحالي 🛡️</button>
               </div>
 
               <div class="menu-buttons" id="action-buttons-div">
-                <button onclick="playMatch()" style="background-color: #5bc0be; color: #0b132b; padding: 12px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; width: 100%; margin-bottom: 8px;">خوض الجولة الحالية ⚽</button>
+                <button onclick="playMatch()" style="background-color: #5bc0be; color: #0b132b; width: 100%; padding: 12px; margin-bottom: 8px; font-size: 15px;">خوض الجولة الحالية ⚽</button>
                 <div style="display: flex; gap: 8px;">
-                    <button onclick="showSection('teams-screen')" style="background-color: #3a506b; color: #fff; padding: 10px; border-radius: 8px; border: none; cursor: pointer; flex: 1;">ترتيب الأندية والنجوم 📊</button>
-                    <button onclick="showSection('competitions-screen')" style="background-color: #3a506b; color: #fff; padding: 10px; border-radius: 8px; border: none; cursor: pointer; flex: 1;">نظام التأهل القاري 🏆</button>
+                    <button onclick="showSection('teams-screen')" style="background-color: #3a506b; color: #fff; padding: 10px; flex: 1; font-size: 12px;">ترتيب الأندية 📊</button>
+                    <button onclick="showSection('competitions-screen')" style="background-color: #3a506b; color: #fff; padding: 10px; flex: 1; font-size: 12px;">نظام التأهل 🏆</button>
                 </div>
               </div>
             </main>
@@ -88,7 +135,7 @@
                 <li>Soliman: <strong>2.0 نجوم ⭐</strong>[span_14](start_span)[span_14](end_span)</li>
                 <li>AS Gabes: <strong>2.0 نجوم ⭐</strong>[span_15](start_span)[span_15](end_span)</li>
               </ul>
-              <button onclick="returnToMain()" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; border: none; border-radius: 6px; cursor: pointer; width: 100%;">العودة للملعب</button>
+              <button onclick="returnToMain()" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; width: 100%;">العودة للملعب</button>
             </div>
 
             <!-- شاشة البطولات والتأهل -->
@@ -96,7 +143,7 @@
               <h3>نظام التأهل القاري (30 جولة)</h3>
               <p><strong>دوري أبطال إفريقيا:</strong> يتأهل إليه صاحبا المركزين <strong>الأول والثاني</strong>[span_16](start_span)[span_16](end_span).</p>
               <p><strong>كأس الكونفيدرالية:</strong> يتأهل إليه صاحبا المركزين <strong>الثالث والرابع</strong>[span_17](start_span)[span_17](end_span).</p>
-              <button onclick="returnToMain()" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; border: none; border-radius: 6px; cursor: pointer; width: 100%;">العودة للملعب</button>
+              <button onclick="returnToMain()" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; width: 100%;">العودة للملعب</button>
             </div>
         </div>
     </div>
@@ -147,10 +194,7 @@
 
         function startCareer() {
             let inputElement = document.getElementById('player-input-name');
-            if (!inputElement) {
-                alert("خطأ في عنصر الإدخال!");
-                return;
-            }
+            if (!inputElement) return;
             
             let inputName = inputElement.value.trim();
             if(inputName === "") {
