@@ -60,12 +60,13 @@
         <!-- شاشة البداية وإنشاء اللاعب -->
         <div id="setup-screen" class="card" style="display: block; text-align: center; z-index: 999; position: relative;">
             <h1>⭐ Football Career ⭐</h1>
-            <p style="margin: 15px 0; font-size: 14px;">أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (30 جولة ذهاب وإياب):</p>
+            <p style="margin: 15px 0; font-size: 14px;">أدخل اسمك الشجاع للبدء أو استكمال مغامرة الرابطة التونسية (30 جولة):</p>
             <div style="margin-bottom: 20px;">
                 <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف" style="width: 90%; padding: 12px; text-align: center; border-radius: 8px; border: 1px solid #5bc0be; background: #0b132b; color: #fff; font-size: 16px; outline: none;">
             </div>
             <div>
-                <button onclick="startCareer()" style="width: 95%; padding: 14px; background-color: #5bc0be; color: #0b132b; font-size: 16px;">انطلق نحو النجومية 🚀</button>
+                <button id="start-btn" style="width: 95%; padding: 14px; background-color: #5bc0be; color: #0b132b; font-size: 16px; margin-bottom: 10px;">انطلق نحو النجومية 🚀</button>
+                <button id="load-btn" style="width: 95%; padding: 12px; background-color: #f77f00; color: #fff; font-size: 15px; display: none;">استكمال المسيرة المحفوظة 📂</button>
             </div>
         </div>
 
@@ -102,15 +103,16 @@
                 <!-- قائمة العروض المتعددة -->
                 <div id="offers-list-container" style="display: flex; flex-direction: column; gap: 8px; margin: 12px 0;"></div>
 
-                <button onclick="rejectOffers()" style="background-color: #e76f51; color: #fff; width: 100%; padding: 10px;">البقاء وتجديد العقد مع ناديك الحالي 🛡️</button>
+                <button id="reject-btn" style="background-color: #e76f51; color: #fff; width: 100%; padding: 10px;">البقاء وتجديد العقد مع ناديك الحالي 🛡️</button>
               </div>
 
               <div class="menu-buttons" id="action-buttons-div">
-                <button onclick="playMatch()" style="background-color: #5bc0be; color: #0b132b; width: 100%; padding: 12px; margin-bottom: 8px; font-size: 15px;">خوض الجولة الحالية ⚽</button>
+                <button id="play-match-btn" style="background-color: #5bc0be; color: #0b132b; width: 100%; padding: 12px; margin-bottom: 8px; font-size: 15px;">خوض الجولة الحالية ⚽</button>
                 <div style="display: flex; gap: 8px;">
-                    <button onclick="showSection('teams-screen')" style="background-color: #3a506b; color: #fff; padding: 10px; flex: 1; font-size: 12px;">ترتيب الأندية 📊</button>
-                    <button onclick="showSection('competitions-screen')" style="background-color: #3a506b; color: #fff; padding: 10px; flex: 1; font-size: 12px;">نظام التأهل 🏆</button>
+                    <button id="teams-btn" style="background-color: #3a506b; color: #fff; padding: 10px; flex: 1; font-size: 12px;">ترتيب الأندية 📊</button>
+                    <button id="comps-btn" style="background-color: #3a506b; color: #fff; padding: 10px; flex: 1; font-size: 12px;">نظام التأهل 🏆</button>
                 </div>
+                <button id="reset-game-btn" style="background-color: #d90429; color: #fff; width: 100%; padding: 8px; margin-top: 10px; font-size: 12px;">إعادة تعيين وبدء مسيرة جديدة 🔄</button>
               </div>
             </main>
 
@@ -135,7 +137,7 @@
                 <li>Soliman: <strong>2.0 نجوم ⭐</strong>[span_14](start_span)[span_14](end_span)</li>
                 <li>AS Gabes: <strong>2.0 نجوم ⭐</strong>[span_15](start_span)[span_15](end_span)</li>
               </ul>
-              <button onclick="returnToMain()" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; width: 100%;">العودة للملعب</button>
+              <button id="back-from-teams" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; width: 100%;">العودة للملعب</button>
             </div>
 
             <!-- شاشة البطولات والتأهل -->
@@ -143,7 +145,7 @@
               <h3>نظام التأهل القاري (30 جولة)</h3>
               <p><strong>دوري أبطال إفريقيا:</strong> يتأهل إليه صاحبا المركزين <strong>الأول والثاني</strong>[span_16](start_span)[span_16](end_span).</p>
               <p><strong>كأس الكونفيدرالية:</strong> يتأهل إليه صاحبا المركزين <strong>الثالث والرابع</strong>[span_17](start_span)[span_17](end_span).</p>
-              <button onclick="returnToMain()" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; width: 100%;">العودة للملعب</button>
+              <button id="back-from-comps" style="margin-top: 15px; padding: 10px; background: #3a506b; color: #fff; width: 100%;">العودة للملعب</button>
             </div>
         </div>
     </div>
@@ -192,6 +194,34 @@
 
         let availableOffers = [];
 
+        // عند فتح اللعبة، فحص وجود مسيرة محفوظة مسبقاً
+        document.addEventListener("DOMContentLoaded", function() {
+            let savedGame = localStorage.getItem('football_career_save');
+            if (savedGame) {
+                document.getElementById('load-btn').style.display = 'block';
+            }
+
+            document.getElementById('start-btn').addEventListener('click', startCareer);
+            document.getElementById('load-btn').addEventListener('click', loadCareer);
+            document.getElementById('play-match-btn').addEventListener('click', playMatch);
+            document.getElementById('teams-btn').addEventListener('click', function() { showSection('teams-screen'); });
+            document.getElementById('comps-btn').addEventListener('click', function() { showSection('competitions-screen'); });
+            document.getElementById('back-from-teams').addEventListener('click', returnToMain);
+            document.getElementById('back-from-comps').addEventListener('click', returnToMain);
+            document.getElementById('reject-btn').addEventListener('click', rejectOffers);
+            document.getElementById('reset-game-btn').addEventListener('click', resetGame);
+        });
+
+        // دالة حفظ اللعبة تلقائياً في ذاكرة المتصفح
+        function saveGame() {
+            let gameState = {
+                player: player,
+                teams: tunisianTeamsData
+            };
+            localStorage.setItem('football_career_save', JSON.stringify(gameState));
+        }
+
+        // بدء مسيرة جديدة
         function startCareer() {
             let inputElement = document.getElementById('player-input-name');
             if (!inputElement) return;
@@ -203,16 +233,53 @@
             }
             
             player.name = inputName;
-            
             let randomTeamObj = tunisianTeamsData[Math.floor(Math.random() * tunisianTeamsData.length)];
             player.club = randomTeamObj.name;
             player.clubStars = randomTeamObj.stars;
+            player.season = 1;
+            player.goals = 0;
+            player.matchesPlayed = 0;
+            player.points = 0;
+            player.rank = 10;
 
             tunisianTeamsData.forEach(t => t.points = 0);
+
+            saveGame();
+            updateUI();
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('game-main-interface').style.display = 'block';
+        }
+
+        // استكمال المسيرة المحفوظة
+        function loadCareer() {
+            let savedGame = localStorage.getItem('football_career_save');
+            if (!savedGame) {
+                alert("لا توجد مسيرة محفوظة!");
+                return;
+            }
+
+            let gameState = JSON.parse(savedGame);
+            player = gameState.player;
+            
+            // استعادة نقاط الفرق
+            if (gameState.teams) {
+                gameState.teams.forEach(savedTeam => {
+                    let t = tunisianTeamsData.find(item => item.name === savedTeam.name);
+                    if (t) t.points = savedTeam.points;
+                });
+            }
 
             updateUI();
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('game-main-interface').style.display = 'block';
+        }
+
+        // إعادة التعيين ومسح الحفظ
+        function resetGame() {
+            if (confirm("هل أنت متأكد من رغبتك في مسح المسيرة الحالية والبدء من جديد؟")) {
+                localStorage.removeItem('football_career_save');
+                location.reload();
+            }
         }
 
         function updateUI() {
@@ -298,6 +365,7 @@
 
             document.getElementById('match-announcement').innerHTML = matchResultText;
             updateUI();
+            saveGame(); // حفظ تلقائي بعد كل مباراة
 
             if (player.matchesPlayed >= 30) {
                 triggerEndOfSeasonOffers();
@@ -342,13 +410,16 @@
                 btn.style.cursor = "pointer";
                 btn.style.fontWeight = "bold";
                 btn.innerHTML = `✍️ انتقال إلى: <strong>${offer.name}</strong> (${offer.stars} ⭐)`;
-                btn.onclick = function() { acceptOffer(index); };
+                btn.addEventListener('click', function() {
+                    acceptOffer(index);
+                });
                 container.appendChild(btn);
             });
 
             document.getElementById('offer-text').innerHTML = `برصيد ${player.points} نقطة و ${player.goals} هدفاً، تلقيت 3 عروض رسمية متاحة الآن:`;
             document.getElementById('transfer-offer-box').style.display = 'block';
-            document.getElementById('play-btn').style.display = 'none';
+            document.getElementById('play-match-btn').style.display = 'none';
+            saveGame();
         }
 
         function acceptOffer(index) {
@@ -375,7 +446,8 @@
             document.getElementById('match-announcement').innerHTML = `<strong>نهاية الموسم:</strong> ${msg}<br>انطلق موسم جديد كلياً رقم ${player.season}!`;
             
             document.getElementById('transfer-offer-box').style.display = 'none';
-            document.getElementById('play-btn').style.display = 'block';
+            document.getElementById('play-match-btn').style.display = 'block';
+            saveGame();
         }
     </script>
 </body>
