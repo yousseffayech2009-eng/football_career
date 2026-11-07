@@ -12,7 +12,7 @@
         <!-- شاشة البداية وإنشاء اللاعب -->
         <div id="setup-screen" class="card">
             <h1>⭐ Football Career ⭐</h1>
-            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (34 جولة وصراع الانتقالات):</p>
+            <p>أدخل اسمك الشجاع للبدء في مغامرة الرابطة التونسية (30 جولة ذهاب وإياب):</p>
             <input type="text" id="player-input-name" placeholder="اكتب اسمك هنا..." value="يوسف">
             <button onclick="startCareer()">انطلق نحو النجومية 🚀</button>
         </div>
@@ -31,7 +31,7 @@
             <main id="main-screen" class="card">
               <h2>لوحة القيادة والمباريات</h2>
               <div class="league-info-badge" style="background: #1b263b; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; line-height: 1.8;">
-                📅 الجولة: <strong id="p-match-round">0</strong> من 34 | 🏆 النقاط: <strong id="p-points">0</strong><br>
+                📅 الجولة: <strong id="p-match-round">0</strong> من 30 | 🏆 النقاط: <strong id="p-points">0</strong><br>
                 📊 الترتيب: <strong id="p-rank">-</strong> | ⚽ أهدافك: <strong id="p-goals">0</strong>
               </div>
               
@@ -41,7 +41,7 @@
                 <p id="match-announcement">اضغط على زر خوض المباراة للبدء ضد الخصم القادم.</p>
               </div>
 
-              <!-- صندوق عروض الانتقالات (أكثر من عرض من أندية تونسية قوية أو أوروبا الشرقية) -->
+              <!-- صندوق عروض الانتقالات -->
               <div id="transfer-offer-box" style="display:none; background: #3a1c0b; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #ffb703;">
                 <h3>🌟 سوق الانتقالات واختيار العروض (نهاية الموسم)</h3>
                 <p id="offer-text">انتهى الموسم! لقد لفتّ الأنظار، وتلقت عدة عروض:</p>
@@ -62,25 +62,33 @@
 
             <!-- شاشة الفرق -->
             <div id="teams-screen" class="card" style="display:none;">
-              <h3>قوة الأندية وتصنيفاتها</h3>
+              <h3>قوة الأندية وتصنيفاتها (الدوري التونسي)</h3>
               <ul class="teams-list">
-                <li>الترجي الرياضي: <strong>4.5 نجوم ⭐</strong></li>
-                <li>النادي الإفريقي: <strong>4 نجوم ⭐</strong></li>
-                <li>النجم الساحلي: <strong>4 نجوم ⭐</strong></li>
-                <li>النادي الصفاقسي: <strong>4 نجوم ⭐</strong></li>
-                <li>الاتحاد المنستيري: <strong>3.5 نجوم ⭐</strong></li>
-                <li>الملعب التونسي: <strong>3.5 نجوم ⭐</strong></li>
-                <li>بن قردان / الباجي / تطاوين: <strong>3 نجوم ⭐</strong></li>
-                <li>باقي أندية الرابطة الأولى (18 فريقاً): <strong>2 إلى 2.5 نجوم ⭐</strong></li>
+                <li>Club Africain: <strong>4.5 نجوم ⭐</strong>[span_0](start_span)[span_0](end_span)</li>
+                <li>Esperance Tunis: <strong>4.5 نجوم ⭐</strong>[span_1](start_span)[span_1](end_span)</li>
+                <li>CS Sfaxien: <strong>4.0 نجوم ⭐</strong>[span_2](start_span)[span_2](end_span)</li>
+                <li>Stade Tunisien: <strong>3.5 نجوم ⭐</strong>[span_3](start_span)[span_3](end_span)</li>
+                <li>Monastir: <strong>3.5 نجوم ⭐</strong>[span_4](start_span)[span_4](end_span)</li>
+                <li>Zarzis: <strong>3.0 نجوم ⭐</strong>[span_5](start_span)[span_5](end_span)</li>
+                <li>Etoile Sahel: <strong>3.0 نجوم ⭐</strong>[span_6](start_span)[span_6](end_span)</li>
+                <li>Metlaoui: <strong>3.0 نجوم ⭐</strong>[span_7](start_span)[span_7](end_span)</li>
+                <li>JS Omrane: <strong>2.5 نجوم ⭐</strong>[span_8](start_span)[span_8](end_span)</li>
+                <li>Ben Guerdane: <strong>2.5 نجوم ⭐</strong>[span_9](start_span)[span_9](end_span)</li>
+                <li>Marsa: <strong>2.5 نجوم ⭐</strong>[span_10](start_span)[span_10](end_span)</li>
+                <li>CA Bizertin: <strong>2.5 نجوم ⭐</strong>[span_11](start_span)[span_11](end_span)</li>
+                <li>Olympique Beja: <strong>2.0 نجوم ⭐</strong>[span_12](start_span)[span_12](end_span)</li>
+                <li>Kairouanaise: <strong>2.0 نجوم ⭐</strong>[span_13](start_span)[span_13](end_span)</li>
+                <li>Soliman: <strong>2.0 نجوم ⭐</strong>[span_14](start_span)[span_14](end_span)</li>
+                <li>AS Gabes: <strong>2.0 نجوم ⭐</strong>[span_15](start_span)[span_15](end_span)</li>
               </ul>
               <button onclick="returnToMain()" class="btn-secondary">العودة للملعب</button>
             </div>
 
             <!-- شاشة البطولات والتأهل -->
             <div id="competitions-screen" class="card" style="display:none;">
-              <h3>نظام التأهل القاري والمجموعات</h3>
-              <p><strong>دوري أبطال إفريقيا:</strong> يتأهل إليه أصحاب المركزين <strong>الأول والثاني</strong>.</p>
-              <p><strong>كأس الكونفيدرالية:</strong> يتأهل إليه صاحبا المركزين <strong>الثالث والرابع</strong>.</p>
+              <h3>نظام التأهل القاري (30 جولة)</h3>
+              <p><strong>دوري أبطال إفريقيا:</strong> يتأهل إليه صاحبا المركزين <strong>الأول والثاني</strong>[span_16](start_span)[span_16](end_span).</p>
+              <p><strong>كأس الكونفيدرالية:</strong> يتأهل إليه صاحبا المركزين <strong>الثالث والرابع</strong>[span_17](start_span)[span_17](end_span).</p>
               <button onclick="returnToMain()" class="btn-secondary">العودة للملعب</button>
             </div>
         </div>
@@ -99,36 +107,33 @@
         };
 
         const tunisianTeamsData = [
-            { name: "الترجي الرياضي التونسي", stars: 4.5, points: 0 },
-            { name: "النادي الإفريقي", stars: 4.0, points: 0 },
-            { name: "النجم الرياضي الساحلي", stars: 4.0, points: 0 },
-            { name: "النادي الرياضي الصفاقسي", stars: 4.0, points: 0 },
-            { name: "الاتحاد الرياضي المنستيري", stars: 3.5, points: 0 },
-            { name: "الملعب التونسي", stars: 3.5, points: 0 },
-            { name: "اتحاد بن قردان", stars: 3.0, points: 0 },
-            { name: "الأولمبي الباجي", stars: 3.0, points: 0 },
-            { name: "اتحاد تطاوين", stars: 3.0, points: 0 },
-            { name: "مستقبل قابس", stars: 2.5, points: 0 },
-            { name: "مستقبل سليمان", stars: 2.5, points: 0 },
-            { name: "شبيبة العمران", stars: 2.5, points: 0 },
-            { name: "نادي محيط قرقنة", stars: 2.0, points: 0 },
-            { name: "اتحاد ڤفصة", stars: 2.0, points: 0 },
-            { name: "الملعب الإفريقي لمنزل بورقيبة", stars: 2.0, points: 0 },
-            { name: "الملعب السوسي", stars: 2.0, points: 0 },
-            { name: "جمعية جربة", stars: 2.0, points: 0 },
-            { name: "الأمل الرياضي حمام سوسة", stars: 2.0, points: 0 }
+            { name: "Club Africain", stars: 4.5, points: 0 },[span_18](start_span)[span_18](end_span)
+            { name: "Esperance Tunis", stars: 4.5, points: 0 },[span_19](start_span)[span_19](end_span)
+            { name: "CS Sfaxien", stars: 4.0, points: 0 },[span_20](start_span)[span_20](end_span)
+            { name: "Stade Tunisien", stars: 3.5, points: 0 },[span_21](start_span)[span_21](end_span)
+            { name: "Monastir", stars: 3.5, points: 0 },[span_22](start_span)[span_22](end_span)
+            { name: "Zarzis", stars: 3.0, points: 0 },[span_23](start_span)[span_23](end_span)
+            { name: "Etoile Sahel", stars: 3.0, points: 0 },[span_24](start_span)[span_24](end_span)
+            { name: "Metlaoui", stars: 3.0, points: 0 },[span_25](start_span)[span_25](end_span)
+            { name: "JS Omrane", stars: 2.5, points: 0 },[span_26](start_span)[span_26](end_span)
+            { name: "Ben Guerdane", stars: 2.5, points: 0 },[span_27](start_span)[span_27](end_span)
+            { name: "Marsa", stars: 2.5, points: 0 },[span_28](start_span)[span_28](end_span)
+            { name: "CA Bizertin", stars: 2.5, points: 0 },[span_29](start_span)[span_29](end_span)
+            { name: "Olympique Beja", stars: 2.0, points: 0 },[span_30](start_span)[span_30](end_span)
+            { name: "Kairouanaise", stars: 2.0, points: 0 },[span_31](start_span)[span_31](end_span)
+            { name: "Soliman", stars: 2.0, points: 0 },[span_32](start_span)[span_32](end_span)
+            { name: "AS Gabes", stars: 2.0, points: 0 }[span_33](start_span)[span_33](end_span)
         ];
 
-        // أندية أوروبا الشرقية وأندية تونسية كبرى بديلة للعروض الواقعية
         const easternEuropeAndStrongLocalTeams = [
             { name: "نادي فرينكفاروش المجري 🇭🇺 (أوروبا الشرقية)", stars: 3.5 },
             { name: "نادي دينامو زغرب الكرواتي 🇭🇷 (أوروبا الشرقية)", stars: 4.0 },
-            { name: "نادي سلافا براغ التشيكي 🇨🇿 (أوروبا الشرقية)", stars:.35 },
+            { name: "نادي سلافا براغ التشيكي 🇨🇿 (أوروبا الشرقية)", stars: 3.5 },
             { name: "نادي لوكوموتيف موسكو الروسي 🇷🇺 (أوروبا الشرقية)", stars: 4.0 },
             { name: "نادي ستيوا بوخارست الروماني 🇷🇴 (أوروبا الشرقية)", stars: 3.5 },
-            { name: "الترجي الرياضي التونسي 🇹🇳 (عرض محلي قوي)", stars: 4.5 },
-            { name: "النجم الرياضي الساحلي 🇹🇳 (عرض محلي قوي)", stars: 4.0 },
-            { name: "النادي الرياضي الصفاقسي 🇹🇳 (عرض محلي قوي)", stars: 4.0 }
+            { name: "Club Africain 🇹🇳 (عرض محلي قوي)", stars: 4.5 },[span_34](start_span)[span_34](end_span)
+            { name: "Esperance Tunis 🇹🇳 (عرض محلي قوي)", stars: 4.5 },[span_35](start_span)[span_35](end_span)
+            { name: "CS Sfaxien 🇹🇳 (عرض محلي قوي)", stars: 4.0 }[span_36](start_span)[span_36](end_span)
         ];
 
         let availableOffers = [];
@@ -177,7 +182,7 @@
         }
 
         function playMatch() {
-            if (player.matchesPlayed >= 34) return;
+            if (player.matchesPlayed >= 30) return; // الدوري يتكون من 30 جولة (ذهاب وإياب ضد 15 فريقاً)
 
             player.matchesPlayed++;
 
@@ -236,7 +241,7 @@
             document.getElementById('match-announcement').innerHTML = matchResultText;
             updateUI();
 
-            if (player.matchesPlayed >= 34) {
+            if (player.matchesPlayed >= 30) {
                 triggerEndOfSeasonOffers();
             }
         }
@@ -255,18 +260,15 @@
 
             document.getElementById('continental-result-box').innerHTML = qualificationText;
 
-            // توليد 3 عروض عشوائية مختلفة (ليست من الـ Top 5، بل من أندية أوروبا الشرقية أو أندية محلية أقوى)
             availableOffers = [];
             let shuffledPool = [...easternEuropeAndStrongLocalTeams].sort(() => 0.5 - Math.random());
             
-            // اختيار 3 عروض مختلفة ولا تساوي النادي الحالي
             for (let team of shuffledPool) {
                 if (team.name !== player.club && availableOffers.length < 3) {
                     availableOffers.push(team);
                 }
             }
 
-            // عرض الأندية في واجهة الأزرار داخل صندوق الانتقالات
             let container = document.getElementById('offers-list-container');
             container.innerHTML = "";
 
@@ -293,7 +295,7 @@
         }
 
         function rejectOffers() {
-            finishSeasonTransition("اخترت رفض كل العروض ورفض الرحيل، ومواصلة المشوار مع ناديك الحالي.");
+            finishSeasonTransition("اخترت رفض كل العروض ومواصلة المشوار مع ناديك الحالي.");
         }
 
         function finishSeasonTransition(msg) {
