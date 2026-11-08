@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚽ Football Career - Tunisian League</title>
+    <title>⚽ Football Career - Tunisian League (Unique Matchups)</title>
     <style>
         body { background-color: #0b132b; color: #fff; font-family: Tahoma, sans-serif; margin: 0; padding: 12px; direction: rtl; }
         #game-container { max-width: 500px; margin: 0 auto; }
@@ -31,7 +31,7 @@
             
             <div id="match-box" class="match-box-style">
                 <h4 style="margin: 0 0 5px 0;">🏟️ المواجهة القادمة</h4>
-                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك يا player! الدوري التونسي (ذهاب فقط - 15 جولة). اضغط خوض الجولة للبدء.</p>
+                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك يا player! مواجهات فريدة بدون تكرار (15 جولة). اضغط خوض الجولة للبدء.</p>
             </div>
 
             <!-- سوق الانتقالات وعروض نهاية الموسم -->
@@ -77,7 +77,7 @@
             { name: "AS Gabes", stars: 2.0, points: 0 }
         ];
 
-        let player = { name: "player", club: "", clubStars: 3, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10 };
+        let player = { name: "player", club: "", clubStars: 3, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10, playedOpponents: [] };
         let currentTeams = [];
 
         function bindAction(id, fn) {
@@ -88,12 +88,13 @@
         }
 
         window.addEventListener('DOMContentLoaded', function() {
-            let saved = localStorage.getItem('tunisian_clean_fc_save');
+            let saved = localStorage.getItem('tunisian_unique_fc_save');
             if (saved) {
                 try {
                     let data = JSON.parse(saved);
                     player = data.player;
                     player.name = "player";
+                    if(!player.playedOpponents) player.playedOpponents = [];
                     currentTeams = data.teams;
                     if (!player.club || !currentTeams || currentTeams.length === 0) {
                         initNewCareer();
@@ -117,18 +118,18 @@
         function initNewCareer() {
             let randTeam = tunisianTeams[Math.floor(Math.random() * tunisianTeams.length)];
             currentTeams = JSON.parse(JSON.stringify(tunisianTeams));
-            player = { name: "player", club: randTeam.name, clubStars: randTeam.stars, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10 };
+            player = { name: "player", club: randTeam.name, clubStars: randTeam.stars, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10, playedOpponents: [] };
             currentTeams.forEach(t => t.points = 0);
             saveData();
         }
 
         function saveData() {
-            localStorage.setItem('tunisian_clean_fc_save', JSON.stringify({ player: player, teams: currentTeams }));
+            localStorage.setItem('tunisian_unique_fc_save', JSON.stringify({ player: player, teams: currentTeams }));
         }
 
         function resetCareer() {
             if (confirm("هل تريد مسح المسيرة والبدء بنادي عشوائي جديد في الدوري التونسي؟")) {
-                localStorage.removeItem('tunisian_clean_fc_save');
+                localStorage.removeItem('tunisian_unique_fc_save');
                 location.reload();
             }
         }
@@ -167,13 +168,18 @@
             if (player.matchesPlayed >= 15) return;
             player.matchesPlayed++;
 
+            // محاكاة نقاط باقي فرق الدوري
             currentTeams.forEach(team => {
                 if (team.name === player.club) team.points = player.points;
                 else team.points += (Math.random() > 0.5 ? 3 : (Math.random() > 0.4 ? 1 : 0));
             });
 
-            let opp;
-            do { opp = currentTeams[Math.floor(Math.random() * currentTeams.length)]; } while (opp.name === player.club);
+            // اختيار خصم لم يتم مواجهته من قبل في هذا الموسم
+            let availableOpponents = currentTeams.filter(t => t.name !== player.club && !player.playedOpponents.includes(t.name));
+            if (availableOpponents.length === 0) return;
+
+            let opp = availableOpponents[Math.floor(Math.random() * availableOpponents.length)];
+            player.playedOpponents.push(opp.name);
 
             let diff = player.clubStars - opp.stars + ((Math.random() * 2) - 1);
             let myG = 0, oppG = 0, resText = "";
@@ -264,6 +270,7 @@
             player.points = 0;
             player.goals = 0;
             player.rank = 10;
+            player.playedOpponents = []; // إعادة تعيين سجل الخصوم للموسم الجديد
             currentTeams.forEach(t => t.points = 0);
             
             updateUI();
