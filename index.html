@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚽ Football Career - Tunisian League (Unique Matchups)</title>
+    <title>⚽ Football Career - Tunisian League & CAF Cups</title>
     <style>
         body { background-color: #0b132b; color: #fff; font-family: Tahoma, sans-serif; margin: 0; padding: 12px; direction: rtl; }
         #game-container { max-width: 500px; margin: 0 auto; }
@@ -13,6 +13,7 @@
         .teams-list { list-style: none; padding: 0; max-height: 250px; overflow-y: auto; }
         .teams-list li { padding: 6px 0; border-bottom: 1px solid #3a506b; font-size: 14px; display: flex; justify-content: space-between; }
         .badge { background: #1b263b; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; line-height: 1.8; }
+        .caf-tag { background: #ffb703; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; margin-bottom: 4px; }
     </style>
 </head>
 <body>
@@ -25,13 +26,16 @@
             <div class="badge">
                 👤 اللاعب: <strong id="p-name">player</strong><br>
                 🛡️ النادي: <strong id="p-club">--</strong> (<span id="p-stars">3</span> ⭐)<br>
-                📅 الموسم: <strong id="p-season">1</strong> (الجولة <strong id="p-match-round">0</strong> من 15)<br>
-                🏆 النقاط: <strong id="p-points">0</strong> | 📊 الترتيب الحالي: <strong id="p-rank">-</strong> | ⚽ الأهداف: <strong id="p-goals">0</strong>
+                📅 الموسم: <strong id="p-season">1</strong> | 🎮 المباريات الملعوبة: <strong id="p-matches">0</strong><br>
+                🏆 نقاط الدوري: <strong id="p-points">0</strong> (الجولة <span id="p-league-round">0</span> من 30)<br>
+                📊 الترتيب الحالي: <strong id="p-rank">-</strong> | ⚽ الأهداف: <strong id="p-goals">0</strong><br>
+                🌍 البطولة القارية: <strong id="p-caf-status" style="color:#6fffe9;">غير متأهل</strong>
             </div>
             
             <div id="match-box" class="match-box-style">
+                <div id="match-type-tag"></div>
                 <h4 style="margin: 0 0 5px 0;">🏟️ المواجهة القادمة</h4>
-                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك يا player! مواجهات فريدة بدون تكرار (15 جولة). اضغط خوض الجولة للبدء.</p>
+                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك يا player! موسم كامل 30 جولة (ذهاب وإياب) + مسابقات إفريقية عند التأهل. اضغط للبدء.</p>
             </div>
 
             <!-- سوق الانتقالات وعروض نهاية الموسم -->
@@ -43,7 +47,7 @@
             </div>
 
             <div id="action-buttons">
-                <button id="play-match-btn">خوض الجولة الحالية ⚽</button>
+                <button id="play-match-btn">خوض المباراة التالية ⚽</button>
                 <button id="teams-btn" style="background-color: #3a506b; color: #fff; font-size: 13px; padding: 10px;">ترتيب الدوري التونسي 📊</button>
                 <button id="reset-btn" style="background-color: #d90429; color: #fff; font-size: 12px; padding: 8px;">إعادة تعيين وبدء مسيرة جديدة 🔄</button>
             </div>
@@ -77,7 +81,28 @@
             { name: "AS Gabes", stars: 2.0, points: 0 }
         ];
 
-        let player = { name: "player", club: "", clubStars: 3, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10, playedOpponents: [] };
+        const africanGiantTeams = [
+            { name: "الأهلي المصري 🇪🇬", stars: 5.0 },
+            { name: "الزمالك 🇪🇬", stars: 4.5 },
+            { name: "صنداونز 🇿🇦", stars: 4.5 },
+            { name: "الوداد البيضاوي 🇲🇦", stars: 4.5 },
+            { name: "الرجاء البيضاوي 🇲🇦", stars: 4.5 },
+            { name: "نهضة بركان 🇲🇦", stars: 4.0 },
+            { name: "بيراميدز 🇪🇬", stars: 4.0 },
+            { name: "مازيمبي 🇨🇩", stars: 4.0 }
+        ];
+
+        let player = {
+            name: "player", club: "", clubStars: 3, season: 1, goals: 0,
+            matchesPlayed: 0, leagueRoundsPlayed: 0, points: 0, rank: 10,
+            firstLegOpponents: [], secondLegOpponents: [],
+            cafQualified: null, // 'CL' أو 'CC' أو null
+            cafStage: 0, // 0: لم يبدأ, 1: ربع النهائي ذهاب, 2: ربع النهائي إياب, 3: نصف النهائي ذهاب, 4: نصف النهائي إياب, 5: النهائي ذهاب, 6: النهائي إياب, 7: انتهت
+            cafOpponents: {},
+            cafScores: {},
+            cafEliminated: false
+        };
+
         let currentTeams = [];
 
         function bindAction(id, fn) {
@@ -88,13 +113,12 @@
         }
 
         window.addEventListener('DOMContentLoaded', function() {
-            let saved = localStorage.getItem('tunisian_unique_fc_save');
+            let saved = localStorage.getItem('tunisian_caf_fc_save');
             if (saved) {
                 try {
                     let data = JSON.parse(saved);
                     player = data.player;
                     player.name = "player";
-                    if(!player.playedOpponents) player.playedOpponents = [];
                     currentTeams = data.teams;
                     if (!player.club || !currentTeams || currentTeams.length === 0) {
                         initNewCareer();
@@ -108,7 +132,7 @@
 
             updateUI();
 
-            bindAction('play-match-btn', playMatch);
+            bindAction('play-match-btn', playNextMatch);
             bindAction('teams-btn', function() { renderTeamsTable(); showView('teams-screen'); });
             bindAction('back-from-teams', function() { showView('main-screen'); });
             bindAction('reset-btn', resetCareer);
@@ -118,18 +142,23 @@
         function initNewCareer() {
             let randTeam = tunisianTeams[Math.floor(Math.random() * tunisianTeams.length)];
             currentTeams = JSON.parse(JSON.stringify(tunisianTeams));
-            player = { name: "player", club: randTeam.name, clubStars: randTeam.stars, season: 1, goals: 0, matchesPlayed: 0, points: 0, rank: 10, playedOpponents: [] };
+            player = {
+                name: "player", club: randTeam.name, clubStars: randTeam.stars, season: 1, goals: 0,
+                matchesPlayed: 0, leagueRoundsPlayed: 0, points: 0, rank: 10,
+                firstLegOpponents: [], secondLegOpponents: [],
+                cafQualified: null, cafStage: 0, cafOpponents: {}, cafScores: {}, cafEliminated: false
+            };
             currentTeams.forEach(t => t.points = 0);
             saveData();
         }
 
         function saveData() {
-            localStorage.setItem('tunisian_unique_fc_save', JSON.stringify({ player: player, teams: currentTeams }));
+            localStorage.setItem('tunisian_caf_fc_save', JSON.stringify({ player: player, teams: currentTeams }));
         }
 
         function resetCareer() {
-            if (confirm("هل تريد مسح المسيرة والبدء بنادي عشوائي جديد في الدوري التونسي؟")) {
-                localStorage.removeItem('tunisian_unique_fc_save');
+            if (confirm("هل تريد مسح المسيرة والبدء بنادي عشوائي جديد؟")) {
+                localStorage.removeItem('tunisian_caf_fc_save');
                 location.reload();
             }
         }
@@ -145,10 +174,17 @@
             document.getElementById('p-club').innerText = player.club || "غير محدد";
             document.getElementById('p-stars').innerText = player.clubStars;
             document.getElementById('p-season').innerText = player.season;
-            document.getElementById('p-match-round').innerText = player.matchesPlayed;
+            document.getElementById('p-matches').innerText = player.matchesPlayed;
+            document.getElementById('p-league-round').innerText = player.leagueRoundsPlayed;
             document.getElementById('p-points').innerText = player.points;
             document.getElementById('p-rank').innerText = player.rank;
             document.getElementById('p-goals').innerText = player.goals;
+
+            let cafTxt = "غير متأهل قارية";
+            if (player.cafQualified === 'CL') cafTxt = "🏆 دوري أبطال إفريقيا";
+            else if (player.cafQualified === 'CC') cafTxt = "🏅 كأس الكونفدرالية";
+            if (player.cafEliminated) cafTxt += " (مُقادَر)";
+            document.getElementById('p-caf-status').innerText = cafTxt;
         }
 
         function renderTeamsTable() {
@@ -164,22 +200,49 @@
             });
         }
 
-        function playMatch() {
-            if (player.matchesPlayed >= 15) return;
+        function playNextMatch() {
+            // التحقق هل هناك مباراة قارية مبرمجة في هذا التوقيت
+            let shouldPlayCAF = false;
+            if (player.cafQualified && !player.cafEliminated && player.cafStage < 7) {
+                // تداخل المسابقة القارية كل عدة جولات في الدوري
+                if ((player.leagueRoundsPlayed === 5 && player.cafStage === 0) ||
+                    (player.leagueRoundsPlayed === 6 && player.cafStage === 1) ||
+                    (player.leagueRoundsPlayed === 12 && player.cafStage === 2) ||
+                    (player.leagueRoundsPlayed === 13 && player.cafStage === 3) ||
+                    (player.leagueRoundsPlayed === 22 && player.cafStage === 4) ||
+                    (player.leagueRoundsPlayed === 23 && player.cafStage === 5)) {
+                    shouldPlayCAF = true;
+                }
+            }
+
+            if (shouldPlayCAF) {
+                playCAFMatch();
+            } else if (player.leagueRoundsPlayed < 30) {
+                playLeagueMatch();
+            } else if (player.cafQualified && !player.cafEliminated && player.cafStage < 6) {
+                playCAFMatch(); // استكمال القارية إن انتهى الدوري
+            } else {
+                triggerEndOfSeason();
+            }
+        }
+
+        function playLeagueMatch() {
+            player.leagueRoundsPlayed++;
             player.matchesPlayed++;
 
-            // محاكاة نقاط باقي فرق الدوري
             currentTeams.forEach(team => {
                 if (team.name === player.club) team.points = player.points;
                 else team.points += (Math.random() > 0.5 ? 3 : (Math.random() > 0.4 ? 1 : 0));
             });
 
-            // اختيار خصم لم يتم مواجهته من قبل في هذا الموسم
-            let availableOpponents = currentTeams.filter(t => t.name !== player.club && !player.playedOpponents.includes(t.name));
-            if (availableOpponents.length === 0) return;
+            let isFirstLeg = player.leagueRoundsPlayed <= 15;
+            let pool = isFirstLeg ? player.firstLegOpponents : player.secondLegOpponents;
+
+            let availableOpponents = currentTeams.filter(t => t.name !== player.club && !pool.includes(t.name));
+            if (availableOpponents.length === 0) availableOpponents = currentTeams.filter(t => t.name !== player.club);
 
             let opp = availableOpponents[Math.floor(Math.random() * availableOpponents.length)];
-            player.playedOpponents.push(opp.name);
+            pool.push(opp.name);
 
             let diff = player.clubStars - opp.stars + ((Math.random() * 2) - 1);
             let myG = 0, oppG = 0, resText = "";
@@ -187,16 +250,16 @@
             if (diff > 0.5) {
                 myG = Math.floor(Math.random() * 3) + 1;
                 oppG = Math.floor(Math.random() * myG);
-                resText = `🎉 انتصار على ${opp.name} (${myG}-${oppG})`;
+                resText = `🎉 [الدوري 🇹🇳] انتصار على ${opp.name} (${myG}-${oppG})`;
                 player.points += 3;
             } else if (diff < -0.5) {
                 oppG = Math.floor(Math.random() * 3) + 1;
                 myG = Math.floor(Math.random() * oppG);
-                resText = `💔 هزيمة أمام ${opp.name} (${myG}-${oppG})`;
+                resText = `💔 [الدوري 🇹🇳] هزيمة أمام ${opp.name} (${myG}-${oppG})`;
             } else {
                 myG = Math.floor(Math.random() * 2);
                 oppG = myG;
-                resText = `🤝 تعادل مع ${opp.name} (${myG}-${oppG})`;
+                resText = `🤝 [الدوري 🇹🇳] تعادل مع ${opp.name} (${myG}-${oppG})`;
                 player.points += 1;
             }
 
@@ -211,24 +274,100 @@
                 resText += " ⚽ [سجلت هدفاً!]";
             }
 
+            document.getElementById('match-type-tag').innerHTML = '<span class="caf-tag" style="background:#5bc0be;">الدوري التونسي</span>';
             document.getElementById('match-announcement').innerHTML = resText;
             updateUI();
             saveData();
 
-            if (player.matchesPlayed >= 15) triggerEndOfSeason();
+            if (player.leagueRoundsPlayed >= 30 && (!player.cafQualified || player.cafEliminated || player.cafStage >= 6)) {
+                triggerEndOfSeason();
+            }
+        }
+
+        function playCAFMatch() {
+            player.matchesPlayed++;
+            let tourneyName = player.cafQualified === 'CL' ? 'دوري أبطال إفريقيا 🏆' : 'كأس الكونفدرالية 🏅';
+            let stageNames = ["ربع النهائي (ذهاب)", "ربع النهائي (إياب)", "نصف النهائي (ذهاب)", "نصف النهائي (إياب)", "النهائي (ذهاب)", "النهائي (إياب)"];
+            
+            let stageIndex = player.cafStage;
+            let isLeg1 = stageIndex % 2 === 0;
+
+            // تحديد الخصم القاري
+            let roundKey = Math.floor(stageIndex / 2);
+            if (!player.cafOpponents[roundKey]) {
+                let randOpp = africanGiantTeams[Math.floor(Math.random() * africanGiantTeams.length)];
+                player.cafOpponents[roundKey] = randOpp;
+            }
+            let opp = player.cafOpponents[roundKey];
+
+            let diff = player.clubStars - opp.stars + ((Math.random() * 2) - 1);
+            let myG = 0, oppG = 0;
+
+            if (diff > 0.3) {
+                myG = Math.floor(Math.random() * 3) + 1;
+                oppG = Math.floor(Math.random() * myG);
+            } else if (diff < -0.3) {
+                oppG = Math.floor(Math.random() * 3) + 1;
+                myG = Math.floor(Math.random() * oppG);
+            } else {
+                myG = Math.floor(Math.random() * 2);
+                oppG = myG;
+            }
+
+            if (myG > 0 && Math.random() > 0.4) player.goals++;
+
+            let announcement = "";
+            if (isLeg1) {
+                player.cafScores[roundKey] = { myLeg1: myG, oppLeg1: oppG };
+                announcement = `🌍 [${tourneyName} - ${stageNames[stageIndex]}]: نتيجة المباراة: ${player.club} ${myG} - ${oppG} ${opp.name}`;
+            } else {
+                let leg1 = player.cafScores[roundKey];
+                let totalMy = leg1.myLeg1 + myG;
+                let totalOpp = leg1.oppLeg1 + oppG;
+                
+                announcement = `🌍 [${tourneyName} - ${stageNames[stageIndex]}]: الإياب: ${myG}-${oppG} | **مجموع المواجهتين:** (${totalMy}-${totalOpp})`;
+
+                if (totalMy >= totalOpp) {
+                    if (stageIndex === 5) {
+                        announcement += `<br>🎉🎉 **مبارك! توجت بلقب ${tourneyName}!** 🏆🥇`;
+                    } else {
+                        announcement += `<br>✅ **تأهلت رسمياً إلى الدور القادم!**`;
+                    }
+                } else {
+                    announcement += `<br>❌ **للأسف غادرت البطولة القارية.**`;
+                    player.cafEliminated = true;
+                }
+            }
+
+            player.cafStage++;
+
+            document.getElementById('match-type-tag').innerHTML = `<span class="caf-tag">${tourneyName}</span>`;
+            document.getElementById('match-announcement').innerHTML = announcement;
+            updateUI();
+            saveData();
+
+            if (player.leagueRoundsPlayed >= 30 && (player.cafEliminated || player.cafStage >= 6)) {
+                triggerEndOfSeason();
+            }
         }
 
         function triggerEndOfSeason() {
             let qualificationMsg = "";
+            let nextCaf = null;
+
             if (player.rank === 1 || player.rank === 2) {
-                qualificationMsg = `🌟 المركز ${player.rank}: تأهلت رسمياً إلى دوري أبطال إفريقيا! 🏆`;
+                qualificationMsg = `🌟 المركز ${player.rank}: تأهلت رسمياً إلى دوري أبطال إفريقيا للموسم القادم! 🏆`;
+                nextCaf = 'CL';
             } else if (player.rank === 3 || player.rank === 4) {
                 qualificationMsg = `🥈 المركز ${player.rank}: تأهلت رسمياً إلى كأس الكونفدرالية الإفريقية! 🏅`;
+                nextCaf = 'CC';
             } else if (player.rank === 5) {
                 qualificationMsg = `⭐ المركز ${player.rank}: ضمنت التواجد في الـ Top 5!`;
             } else {
-                qualificationMsg = `⚠️ المركز ${player.rank}: لم تتأهل للمسابقات القارية هذا الموسم.`;
+                qualificationMsg = `⚠️ المركز ${player.rank}: لم تتأهل للمسابقات القارية.`;
             }
+
+            player.nextSeasonCaf = nextCaf;
 
             document.getElementById('continental-result-box').innerText = qualificationMsg;
             
@@ -267,10 +406,20 @@
         function finishSeasonTransition(msg) {
             player.season++;
             player.matchesPlayed = 0;
+            player.leagueRoundsPlayed = 0;
             player.points = 0;
             player.goals = 0;
             player.rank = 10;
-            player.playedOpponents = []; // إعادة تعيين سجل الخصوم للموسم الجديد
+            player.firstLegOpponents = [];
+            player.secondLegOpponents = [];
+            
+            // ضبط التأهل القاري للموسم الجديد
+            player.cafQualified = player.nextSeasonCaf || null;
+            player.cafStage = 0;
+            player.cafOpponents = {};
+            player.cafScores = {};
+            player.cafEliminated = false;
+
             currentTeams.forEach(t => t.points = 0);
             
             updateUI();
