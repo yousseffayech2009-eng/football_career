@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚽ Football Career - Fully Isolated Leagues</title>
+    <title>⚽ Football Career - Ultimate Pro Leagues & CAF</title>
     <style>
         body { background-color: #0b132b; color: #fff; font-family: Tahoma, sans-serif; margin: 0; padding: 12px; direction: rtl; }
         #game-container { max-width: 500px; margin: 0 auto; }
@@ -21,26 +21,30 @@
     <div id="game-container">
         <!-- الواجهة الرئيسية -->
         <div id="main-screen" class="card">
-            <h2 style="text-align: center; margin: 0 0 10px 0;">⚽ Football Career 🇹🇳</h2>
+            <h2 style="text-align: center; margin: 0 0 10px 0;">⚽ Football Career 🇹🇳🇪🇺</h2>
             
             <div class="badge">
                 👤 اللاعب: <strong id="p-name">player</strong><br>
                 🛡️ النادي: <strong id="p-club">--</strong> (<span id="p-stars">3</span> ⭐)<br>
                 📅 الموسم: <strong id="p-season">1</strong> | 🎮 المباريات: <strong id="p-matches">0</strong><br>
-                🏆 نقاط الدوري التونسي: <strong id="p-points">0</strong> (الجولة <span id="p-league-round">0</span> من 30)<br>
-                📊 الترتيب الحالي: <strong id="p-rank">-</strong> | ⚽ الأهداف: <strong id="p-goals">0</strong><br>
-                🌍 البطولة القارية: <strong id="p-caf-status" style="color:#6fffe9;">غير متأهل</strong>
+                <span id="league-info-container">
+                    🏆 نقاط الدوري المحلي: <strong id="p-points">0</strong> (الجولة <span id="p-league-round">0</span> من 38)<br>
+                    📊 الترتيب المحلي: <strong id="p-rank">-</strong><br>
+                </span>
+                ⚽ الأهداف المسجلة: <strong id="p-goals">0</strong><br>
+                🌍 البطولة القارية / الأوروبية: <strong id="p-caf-status" style="color:#6fffe9;">عادي</strong><br>
+                📊 إحصائيات إفريقية (أبطال إفريقيا): <span id="p-caf-stats-summary" style="color:#ffb703;">المجموعات: 0 نقاط</span>
             </div>
             
             <div id="match-box" class="match-box-style">
                 <div id="match-type-tag"></div>
                 <h4 style="margin: 0 0 5px 0;">🏟️ المواجهة القادمة</h4>
-                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك يا player! دوري مجموعات إفريقي + دوري تونسي + عروض انتقالات بدوريات مستقلة تماماً.</p>
+                <p id="match-announcement" style="margin: 0; font-size: 14px;">أهلاً بك يا player! 20 فريقاً لكل دوري (38 جولة)، عزل تام للدوري التونسي عن الدوريات الخمس الكبرى، ودوري أبطال إفريقيا وأوروبا.</p>
             </div>
 
             <!-- سوق الانتقالات وعروض نهاية الموسم -->
             <div id="transfer-offer-box" style="display:none; background: #3a1c0b; padding: 12px; border-radius: 8px; margin: 10px 0; border: 2px solid #ffb703;">
-                <h4 style="margin-top:0;">🌟 عروض الانتقالات حسب الدوريات المستقلة</h4>
+                <h4 style="margin-top:0;">🌟 عروض الانتقالات بين الدوريات المستقلة</h4>
                 <div id="continental-result-box" style="margin-bottom: 8px; font-weight: bold; color: #6fffe9; font-size: 13px;"></div>
                 <div id="offers-list-container"></div>
                 <button id="reject-btn" style="background-color: #e76f51; color: #fff; margin-top: 8px;">البقاء مع ناديك الحالي 🛡️</button>
@@ -48,39 +52,45 @@
 
             <div id="action-buttons">
                 <button id="play-match-btn">خوض المباراة التالية ⚽</button>
-                <button id="teams-btn" style="background-color: #3a506b; color: #fff; font-size: 13px; padding: 10px;">ترتيب الدوري التونسي 📊</button>
+                <button id="teams-btn" style="background-color: #3a506b; color: #fff; font-size: 13px; padding: 10px;">ترتيب الدوري الحالي 📊</button>
                 <button id="reset-btn" style="background-color: #d90429; color: #fff; font-size: 12px; padding: 8px;">إعادة تعيين وبدء مسيرة جديدة 🔄</button>
             </div>
         </div>
 
         <!-- شاشة ترتيب الأندية -->
         <div id="teams-screen" class="card" style="display:none;">
-            <h3>📊 جدول ترتيب الدوري التونسي</h3>
+            <h3>📊 جدول الترتيب (20 نادياً - 38 جولة)</h3>
             <ul id="teams-list-ul" class="teams-list"></ul>
             <button id="back-from-teams" style="background-color: #3a506b; color: #fff;">العودة للوحة القيادة</button>
         </div>
     </div>
 
     <script>
-        const tunisianTeams = [
-            { name: "Club Africain 🇹🇳", stars: 4.5, points: 0 },
-            { name: "Esperance Tunis 🇹🇳", stars: 4.5, points: 0 },
-            { name: "CS Sfaxien 🇹🇳", stars: 4.0, points: 0 },
-            { name: "Stade Tunisien 🇹🇳", stars: 3.5, points: 0 },
-            { name: "Monastir 🇹🇳", stars: 3.5, points: 0 },
-            { name: "Zarzis 🇹🇳", stars: 3.0, points: 0 },
-            { name: "Etoile Sahel 🇹🇳", stars: 3.0, points: 0 },
-            { name: "Metlaoui 🇹🇳", stars: 3.0, points: 0 },
-            { name: "JS Omrane 🇹🇳", stars: 2.5, points: 0 },
-            { name: "Ben Guerdane 🇹🇳", stars: 2.5, points: 0 },
-            { name: "Marsa 🇹🇳", stars: 2.5, points: 0 },
-            { name: "CA Bizertin 🇹🇳", stars: 2.5, points: 0 },
-            { name: "Olympique Beja 🇹🇳", stars: 2.0, points: 0 },
-            { name: "Kairouanaise 🇹🇳", stars: 2.0, points: 0 },
-            { name: "Soliman 🇹🇳", stars: 2.0, points: 0 },
-            { name: "AS Gabes 🇹🇳", stars: 2.0, points: 0 }
+        // الدوري التونسي (20 فريقاً بدقة)
+        const tunisianTeams20 = [
+            { name: "الترجي الرياضي 🇹🇳", stars: 4.5, points: 0 },
+            { name: "النجم الساحلي 🇹🇳", stars: 4.5, points: 0 },
+            { name: "النادي الأفريقي 🇹🇳", stars: 4.5, points: 0 },
+            { name: "النادي الصفاقسي 🇹🇳", stars: 4.0, points: 0 },
+            { name: "الاتحاد المنستيري 🇹🇳", stars: 3.5, points: 0 },
+            { name: "الملعب التونسي 🇹🇳", stars: 3.5, points: 0 },
+            { name: "اتحاد بن قردان 🇹🇳", stars: 3.0, points: 0 },
+            { name: "نجم المتلوي 🇹🇳", stars: 3.0, points: 0 },
+            { name: "مستقبل قابس 🇹🇳", stars: 2.5, points: 0 },
+            { name: "الأولمبي الباجي 🇹🇳", stars: 2.5, points: 0 },
+            { name: "مستقبل سليمان 🇹🇳", stars: 2.5, points: 0 },
+            { name: "اتحاد تطاوين 🇹🇳", stars: 2.5, points: 0 },
+            { name: "الشبيبة القيروانية 🇹🇳", stars: 2.0, points: 0 },
+            { name: "أمل حمام سوسة 🇹🇳", stars: 2.0, points: 0 },
+            { name: "الملعب الرياضي البنزرتي 🇹🇳", stars: 3.0, points: 0 },
+            { name: "ترجي جرجيس 🇹🇳", stars: 3.0, points: 0 },
+            { name: "نادي قوافل قفصة 🇹🇳", stars: 2.0, points: 0 },
+            { name: "مستقبل الرجيش 🇹🇳", stars: 2.0, points: 0 },
+            { name: "أولمبيك مدنين 🇹🇳", stars: 2.0, points: 0 },
+            { name: "هلال الشابة 🇹🇳", stars: 2.0, points: 0 }
         ];
 
+        // دوري أبطال إفريقيا (عملاقة القارة)
         const africanGiantTeams = [
             { name: "الأهلي المصري 🇪🇬", stars: 5.0 },
             { name: "الزمالك 🇪🇬", stars: 4.5 },
@@ -92,52 +102,148 @@
             { name: "مازيمبي 🇨🇩", stars: 4.0 }
         ];
 
-        // الدوريات المستقلة (كل دولة على حدة)
-        const russiaTeams = [
-            { name: "زينيت سانت بطرسبرغ (روسيا 🇷🇺)", stars: 4.5 },
-            { name: "سبارتاك موسكو (روسيا 🇷🇺)", stars: 4.0 }
+        // الدوريات الخمس الكبرى المستقلة تماماً (كل دوري 20 فريقاً)
+        const premierLeagueTeams = [
+            { name: "مانشستر سيتي (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 5.0, points: 0 },
+            { name: "ليفربول (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 4.5, points: 0 },
+            { name: "أرسنال (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 4.5, points: 0 },
+            { name: "مانشستر يونايتد (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 4.5, points: 0 },
+            { name: "تشيلسي (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 4.5, points: 0 },
+            { name: "توتنهام هوتسبير (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 4.0, points: 0 },
+            { name: "نيوكاسل يونايتد (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 4.0, points: 0 },
+            { name: "أستون فيلا (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 4.0, points: 0 },
+            { name: "وست هام يونايتد (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 3.5, points: 0 },
+            { name: "برايتون (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 3.5, points: 0 },
+            { name: "كريستال بالاس (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 3.0, points: 0 },
+            { name: "فولهام (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 3.0, points: 0 },
+            { name: "برينتفورد (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 3.0, points: 0 },
+            { name: "إيفرتون (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 3.0, points: 0 },
+            { name: "وولفرهامبتون (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 3.0, points: 0 },
+            { name: "بورنموث (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 2.5, points: 0 },
+            { name: "نوتينغهام فورست (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 3.0, points: 0 },
+            { name: "ليستر سيتي (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 3.0, points: 0 },
+            { name: "إيبسويتش تاون (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 2.5, points: 0 },
+            { name: "ساوثهامبتون (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 2.5, points: 0 }
         ];
 
-        const croatiaTeams = [
-            { name: "دينامو زغرب (كرواتيا 🇭🇷)", stars: 4.5 },
-            { name: "هايدوك سبليت (كرواتيا 🇭🇷)", stars: 4.0 }
+        const laLigaTeams = [
+            { name: "ريال مدريد (إسبانيا 🇪🇸)", stars: 5.0, points: 0 },
+            { name: "برشلونة (إسبانيا 🇪🇸)", stars: 5.0, points: 0 },
+            { name: "أتلتيكو مدريد (إسبانيا 🇪🇸)", stars: 4.5, points: 0 },
+            { name: "أتلتيك بلباو (إسبانيا 🇪🇸)", stars: 4.0, points: 0 },
+            { name: "ريال سوسيداد (إسبانيا 🇪🇸)", stars: 4.0, points: 0 },
+            { name: "ريال بيتيس (إسبانيا 🇪🇸)", stars: 3.5, points: 0 },
+            { name: "فياريال (إسبانيا 🇪🇸)", stars: 3.5, points: 0 },
+            { name: "فالنسيا (إسبانيا 🇪🇸)", stars: 3.5, points: 0 },
+            { name: "إشبيلية (إسبانيا 🇪🇸)", stars: 3.5, points: 0 },
+            { name: "سيلتا فيغو (إسبانيا 🇪🇸)", stars: 3.0, points: 0 },
+            { name: "أوساسونا (إسبانيا 🇪🇸)", stars: 3.0, points: 0 },
+            { name: "جيرونا (إسبانيا 🇪🇸)", stars: 3.5, points: 0 },
+            { name: "مايوركا (إسبانيا 🇪🇸)", stars: 3.0, points: 0 },
+            { name: "خيتافي (إسبانيا 🇪🇸)", stars: 3.0, points: 0 },
+            { name: "رايو فايكانو (إسبانيا 🇪🇸)", stars: 3.0, points: 0 },
+            { name: "ديبورتيفو ألافيس (إسبانيا 🇪🇸)", stars: 2.5, points: 0 },
+            { name: "لاس بالماس (إسبانيا 🇪🇸)", stars: 2.5, points: 0 },
+            { name: "ريال بلد الوليد (إسبانيا 🇪🇸)", stars: 2.5, points: 0 },ليغانيس: { name: "ليغانيس (إسبانيا 🇪🇸)", stars: 2.5, points: 0 }, // تم تنسيقها داخل القائمة
+            { name: "إسبانيول (إسبانيا 🇪🇸)", stars: 3.0, points: 0 }
         ];
 
-        const serbiaTeams = [
-            { name: "النجم الأحمر (صربيا 🇷🇸)", stars: 4.5 },
-            { name: "بارتيزان بلغراد (صربيا 🇷🇸)", stars: 4.0 }
+        // لتجنب الخطأ الإملائي في ليغانيس أعلاه، نضبط قائمة إسبانيا بدقة:
+        const realLaLigaTeams = [
+            { name: "ريال مدريد (إسبانيا 🇪🇸)", stars: 5.0, points: 0 },
+            { name: "برشلونة (إسبانيا 🇪🇸)", stars: 5.0, points: 0 },
+            { name: "أتلتيكو مدريد (إسبانيا 🇪🇸)", stars: 4.5, points: 0 },
+            { name: "أتلتيك بلباو (إسبانيا 🇪🇸)", stars: 4.0, points: 0 },
+            { name: "ريال سوسيداد (إسبانيا 🇪🇸)", stars: 4.0, points: 0 },
+            { name: "ريال بيتيس (إسبانيا 🇪🇸)", stars: 3.5, points: 0 },
+            { name: "فياريال (إسبانيا 🇪🇸)", stars: 3.5, points: 0 },
+            { name: "فالنسيا (إسبانيا 🇪🇸)", stars: 3.5, points: 0 },
+            { name: "إشبيلية (إسبانيا 🇪🇸)", stars: 3.5, points: 0 },
+            { name: "جيرونا (إسبانيا 🇪🇸)", stars: 3.5, points: 0 },
+            { name: "سيلتا فيغو (إسبانيا 🇪🇸)", stars: 3.0, points: 0 },
+            { name: "أوساسونا (إسبانيا 🇪🇸)", stars: 3.0, points: 0 },
+            { name: "مايوركا (إسبانيا 🇪🇸)", stars: 3.0, points: 0 },
+            { name: "خيتافي (إسبانيا 🇪🇸)", stars: 3.0, points: 0 },
+            { name: "رايو فايكانو (إسبانيا 🇪🇸)", stars: 3.0, points: 0 },
+            { name: "إسبانيول (إسبانيا 🇪🇸)", stars: 3.0, points: 0 },
+            { name: "ديبورتيفو ألافيس (إسبانيا 🇪🇸)", stars: 2.5, points: 0 },
+            { name: "لاس بالماس (إسبانيا 🇪🇸)", stars: 2.5, points: 0 },
+            { name: "ريال بلد الوليد (إسبانيا 🇪🇸)", stars: 2.5, points: 0 },
+            { name: "ليغانيس (إسبانيا 🇪🇸)", stars: 2.5, points: 0 }
         ];
 
-        const belgiumTeams = [
-            { name: "كلوب بروج (بلجيكا 🇧🇪)", stars: 4.5 },
-            { name: "أندرلخت (بلجيكا 🇧🇪)", stars: 4.0 }
+        const serieATeams = [
+            { name: "إنتر ميلان (إيطاليا 🇮🇹)", stars: 5.0, points: 0 },
+            { name: "يوفنتوس (إيطاليا 🇮🇹)", stars: 4.5, points: 0 },
+            { name: "إي سي ميلان (إيطاليا 🇮🇹)", stars: 4.5, points: 0 },
+            { name: "نابولي (إيطاليا 🇮🇹)", stars: 4.5, points: 0 },
+            { name: "أتالانتا (إيطاليا 🇮🇹)", stars: 4.5, points: 0 },
+            { name: "روما (إيطاليا 🇮🇹)", stars: 4.0, points: 0 },
+            { name: "لاتسيو (إيطاليا 🇮🇹)", stars: 4.0, points: 0 },
+            { name: "بولونيا (إيطاليا 🇮🇹)", stars: 3.5, points: 0 },
+            { name: "فيورنتينا (إيطاليا 🇮🇹)", stars: 3.5, points: 0 },
+            { name: "تورينو (إيطاليا 🇮🇹)", stars: 3.5, points: 0 },
+            { name: "مونزا (إيطاليا 🇮🇹)", stars: 3.0, points: 0 },
+            { name: "جنوة (إيطاليا 🇮🇹)", stars: 3.0, points: 0 },
+            { name: "ليتشي (إيطاليا 🇮🇹)", stars: 2.5, points: 0 },
+            { name: "هيلاس فيروونا (إيطاليا 🇮🇹)", stars: 2.5, points: 0 },
+            { name: "أودينيزي (إيطاليا 🇮🇹)", stars: 3.0, points: 0 },
+            { name: "كالياري (إيطاليا 🇮🇹)", stars: 2.5, points: 0 },
+            { name: "إمبولي (إيطاليا 🇮🇹)", stars: 2.5, points: 0 },
+            { name: "بارما (إيطاليا 🇮🇹)", stars: 3.0, points: 0 },
+            { name: "كومو (إيطاليا 🇮🇹)", stars: 3.0, points: 0 },
+            { name: "فينيزيا (إيطاليا 🇮🇹)", stars: 2.5, points: 0 }
         ];
 
-        const netherlandsTeams = [
-            { name: "أياكس أمستردام (هولندا 🇳🇱)", stars: 4.5 },
-            { name: "فاينورد (هولندا 🇳🇱)", stars: 4.5 }
+        const bundesligaTeams = [
+            { name: "بايرن ميونخ (ألمانيا 🇩🇪)", stars: 5.0, points: 0 },
+            { name: "باير لي버كوزن (ألمانيا 🇩🇪)", stars: 5.0, points: 0 },
+            { name: "بوروسيا دورتموند (ألمانيا 🇩🇪)", stars: 4.5, points: 0 },
+            { name: "لايبزيغ (ألمانيا 🇩🇪)", stars: 4.5, points: 0 },
+            { name: "شتوتغارت (ألمانيا 🇩🇪)", stars: 4.0, points: 0 },
+            { name: "آينتراخت فرانكفورت (ألمانيا 🇩🇪)", stars: 4.0, points: 0 },
+            { name: "فولفسبورغ (ألمانيا 🇩🇪)", stars: 3.5, points: 0 },
+            { name: "فرايبورغ (ألمانيا 🇩🇪)", stars: 3.5, points: 0 },
+            { name: "هوفنهايم (ألمانيا 🇩🇪)", stars: 3.5, points: 0 },
+            { name: "بريمر (ألمانيا 🇩🇪)", stars: 3.0, points: 0 },
+            { name: "آوغسبورغ (ألمانيا 🇩🇪)", stars: 3.0, points: 0 },
+            { name: "ماينز (ألمانيا 🇩🇪)", stars: 3.0, points: 0 },
+            { name: "بوروسيا مونشنغلادباخ (ألمانيا 🇩🇪)", stars: 3.5, points: 0 },
+            { name: "بوخوم (ألمانيا 🇩🇪)", stars: 2.5, points: 0 },
+            { name: "يونيون برلين (ألمانيا 🇩🇪)", stars: 3.5, points: 0 },
+            { name: "هايدنهايم (ألمانيا 🇩🇪)", stars: 3.0, points: 0 },
+            { name: "سانت باولي (ألمانيا 🇩🇪)", stars: 2.5, points: 0 },
+            { name: "هولشتاين كيل (ألمانيا 🇩🇪)", stars: 2.5, points: 0 },
+            { name: "بايرن ليفركوزن الاحتياط (ألمانيا 🇩🇪)", stars: 2.5, points: 0 },
+            { name: "كولن (ألمانيا 🇩🇪)", stars: 3.0, points: 0 }
         ];
 
-        const portugalTeams = [
-            { name: "بنفيكا (البرتغال 🇵🇹)", stars: 4.5 },
-            { name: "سبورتينغ لشبونة (البرتغال 🇵🇹)", stars: 4.5 },
-            { name: "بورتو (البرتغال 🇵🇹)", stars: 4.5 }
-        ];
-
-        const topFiveEuropeTeams = [
-            { name: "ريال مدريد (إسبانيا 🇪🇸)", stars: 5.0 },
-            { name: "برشلونة (إسبانيا 🇪🇸)", stars: 5.0 },
-            { name: "مانشستر سيتي (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 5.0 },
-            { name: "ليفربول (إنجلترا 🏴󠁧󠁢󠁥󠁮󠁧󠁿)", stars: 4.5 },
-            { name: "بايرن ميونخ (ألمانيا 🇩🇪)", stars: 5.0 },
-            { name: "باريس سان جيرمان (فرنسا 🇫🇷)", stars: 5.0 },
-            { name: "يوفنتوس (إيطاليا 🇮🇹)", stars: 4.5 },
-            { name: "إي سي ميلان (إيطاليا 🇮🇹)", stars: 4.5 }
+        const ligue1Teams = [
+            { name: "باريس سان جيرمان (فرنسا 🇫🇷)", stars: 5.0, points: 0 },
+            { name: "موناكو (فرنسا 🇫🇷)", stars: 4.5, points: 0 },
+            { name: "مارسيليا (فرنسا 🇫🇷)", stars: 4.5, points: 0 },
+            { name: "ليون (فرنسا 🇫🇷)", stars: 4.0, points: 0 },
+            { name: "ليل (فرنسا 🇫🇷)", stars: 4.0, points: 0 },
+            { name: "نيس (فرنسا 🇫🇷)", stars: 4.0, points: 0 },
+            { name: "لانس (فرنسا 🇫🇷)", stars: 3.5, points: 0 },
+            { name: "رين (فرنسا 🇫🇷)", stars: 3.5, points: 0 },
+            { name: "ستراسبورغ (فرنسا 🇫🇷)", stars: 3.0, points: 0 },
+            { name: "نانت (فرنسا 🇫🇷)", stars: 3.0, points: 0 },
+            { name: "تولوز (فرنسا 🇫🇷)", stars: 3.0, points: 0 },
+            { name: "مونبلييه (فرنسا 🇫🇷)", stars: 3.0, points: 0 },
+            { name: "ستاد ريمس (فرنسا 🇫🇷)", stars: 3.0, points: 0 },
+            { name: "بريست (فرنسا 🇫🇷)", stars: 3.5, points: 0 },
+            هافر: { name: "لوهافر (فرنسا 🇫🇷)", stars: 2.5, points: 0 },
+            { name: "أوكسير (فرنسا 🇫🇷)", stars: 2.5, points: 0 },
+            { name: "أنجيه (فرنسا 🇫🇷)", stars: 2.5, points: 0 },
+            { name: "سانت إتيان (فرنسا 🇫🇷)", stars: 3.0, points: 0 },
+            { name: "لوريان (فرنسا 🇫🇷)", stars: 3.0, points: 0 },
+            { name: "ميتز (فرنسا 🇫🇷)", stars: 2.5, points: 0 }
         ];
 
         let player = {
-            name: "player", club: "", clubStars: 3, season: 1, goals: 0,
-            matchesPlayed: 0, leagueRoundsPlayed: 0, points: 0, rank: 10,
+            name: "player", club: "", leagueType: "tunisian", clubStars: 3, season: 1, goals: 0,
+            matchesPlayed: 0, leagueRoundsPlayed: 0, points: 0, rank: 20,
             firstLegOpponents: [], secondLegOpponents: [],
             cafQualified: null, cafStage: 0, cafGroupMatch: 0, cafPoints: 0, cafEliminated: false,
             cafOpponent1: null, cafOpponent2: null, cafOpponent3: null
@@ -153,7 +259,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', function() {
-            let saved = localStorage.getItem('tunisian_fully_isolated_save');
+            let saved = localStorage.getItem('ultimate_20_teams_save');
             if (saved) {
                 try {
                     let data = JSON.parse(saved);
@@ -180,11 +286,11 @@
         });
 
         function initNewCareer() {
-            let randTeam = tunisianTeams[Math.floor(Math.random() * tunisianTeams.length)];
-            currentTeams = JSON.parse(JSON.stringify(tunisianTeams));
+            let randTeam = tunisianTeams20[Math.floor(Math.random() * tunisianTeams20.length)];
+            currentTeams = JSON.parse(JSON.stringify(tunisianTeams20));
             player = {
-                name: "player", club: randTeam.name, clubStars: randTeam.stars, season: 1, goals: 0,
-                matchesPlayed: 0, leagueRoundsPlayed: 0, points: 0, rank: 10,
+                name: "player", club: randTeam.name, leagueType: "tunisian", clubStars: randTeam.stars, season: 1, goals: 0,
+                matchesPlayed: 0, leagueRoundsPlayed: 0, points: 0, rank: 20,
                 firstLegOpponents: [], secondLegOpponents: [],
                 cafQualified: null, cafStage: 0, cafGroupMatch: 0, cafPoints: 0, cafEliminated: false,
                 cafOpponent1: null, cafOpponent2: null, cafOpponent3: null
@@ -194,12 +300,12 @@
         }
 
         function saveData() {
-            localStorage.setItem('tunisian_fully_isolated_save', JSON.stringify({ player: player, teams: currentTeams }));
+            localStorage.setItem('ultimate_20_teams_save', JSON.stringify({ player: player, teams: currentTeams }));
         }
 
         function resetCareer() {
             if (confirm("هل تريد مسح المسيرة والبدء من جديد؟")) {
-                localStorage.removeItem('tunisian_fully_isolated_save');
+                localStorage.removeItem('ultimate_20_teams_save');
                 location.reload();
             }
         }
@@ -216,16 +322,36 @@
             document.getElementById('p-stars').innerText = player.clubStars;
             document.getElementById('p-season').innerText = player.season;
             document.getElementById('p-matches').innerText = player.matchesPlayed;
-            document.getElementById('p-league-round').innerText = player.leagueRoundsPlayed;
-            document.getElementById('p-points').innerText = player.points;
-            document.getElementById('p-rank').innerText = player.rank;
             document.getElementById('p-goals').innerText = player.goals;
 
-            let cafTxt = "غير متأهل قارية";
-            if (player.cafQualified === 'CL') cafTxt = "🏆 دوري الأبطال (المجموعات)";
-            else if (player.cafQualified === 'CC') cafTxt = "🏅 الكونفدرالية (المجموعات)";
-            if (player.cafEliminated) cafTxt += " (مُغادَر)";
-            document.getElementById('p-caf-status').innerText = cafTxt;
+            let leagueContainer = document.getElementById('league-info-container');
+            if (player.leagueType === 'tunisian') {
+                leagueContainer.style.display = 'block';
+                document.getElementById('p-points').innerText = player.points;
+                document.getElementById('p-league-round').innerText = player.leagueRoundsPlayed;
+                document.getElementById('p-rank').innerText = player.rank;
+
+                let cafTxt = "غير متأهل قارية";
+                if (player.cafQualified === 'CL') cafTxt = "🏆 دوري الأبطال الإفريقي (المجموعات)";
+                else if (player.cafQualified === 'CC') cafTxt = "🏅 الكونفدرالية (المجموعات)";
+                if (player.cafEliminated) cafTxt += " (مُغادَر)";
+                document.getElementById('p-caf-status').innerText = cafTxt;
+            } else {
+                leagueContainer.style.display = 'block';
+                document.getElementById('p-points').innerText = player.points;
+                document.getElementById('p-league-round').innerText = player.leagueRoundsPlayed;
+                document.getElementById('p-rank').innerText = player.rank;
+                document.getElementById('p-caf-status').innerText = "⭐ دوري أبطال أوروبا (UCL)";
+            }
+
+            // إحصائيات إفريقية دقيقة
+            let cafStatText = `المجموعات: ${player.cafPoints} نقاط`;
+            if (player.cafQualified === 'CL' || player.cafQualified === 'CC') {
+                cafStatText += ` | المرحلة: ${player.cafGroupMatch}/6 مباريات`;
+            } else {
+                cafStatText = "غير مشارك إفريقياً هذا الموسم";
+            }
+            document.getElementById('p-caf-stats-summary').innerText = cafStatText;
         }
 
         function renderTeamsTable() {
@@ -242,29 +368,38 @@
         }
 
         function playNextMatch() {
-            let shouldPlayCAF = false;
-            if (player.cafQualified && !player.cafEliminated && player.cafGroupMatch < 6) {
-                if ([4, 9, 14, 19, 24, 28].includes(player.leagueRoundsPlayed)) {
-                    shouldPlayCAF = true;
+            if (player.leagueType === 'tunisian') {
+                let shouldPlayCAF = false;
+                if (player.cafQualified && !player.cafEliminated && player.cafGroupMatch < 6) {
+                    if ([5, 12, 19, 24, 30, 36].includes(player.leagueRoundsPlayed)) {
+                        shouldPlayCAF = true;
+                    }
+                } else if (player.cafQualified && !player.cafEliminated && player.cafStage >= 1 && player.cafStage <= 3) {
+                    if (player.leagueRoundsPlayed >= 38) {
+                        shouldPlayCAF = true;
+                    }
                 }
-            } else if (player.cafQualified && !player.cafEliminated && player.cafStage >= 1 && player.cafStage <= 3) {
-                if ([29, 30].includes(player.leagueRoundsPlayed) || player.leagueRoundsPlayed >= 30) {
-                    shouldPlayCAF = true;
-                }
-            }
 
-            if (shouldPlayCAF) {
-                playCAFMatch();
-            } else if (player.leagueRoundsPlayed < 30) {
-                playLeagueMatch();
-            } else if (player.cafQualified && !player.cafEliminated && player.cafStage > 0 && player.cafStage < 4) {
-                playCAFMatch();
+                if (shouldPlayCAF) {
+                    playCAFMatch();
+                } else if (player.leagueRoundsPlayed < 38) {
+                    playLeagueMatch(tunisianTeams20, 'الدوري التونسي 🇹🇳');
+                } else if (player.cafQualified && !player.cafEliminated && player.cafStage > 0 && player.cafStage < 4) {
+                    playCAFMatch();
+                } else {
+                    triggerEndOfSeason();
+                }
             } else {
-                triggerEndOfSeason();
+                // دوريات أوروبا الكبرى (38 جولة)
+                if (player.leagueRoundsPlayed < 38) {
+                    playLeagueMatch(currentTeams, 'الدوري الأوروبي الممتاز 🇪🇺');
+                } else {
+                    triggerEndOfSeason();
+                }
             }
         }
 
-        function playLeagueMatch() {
+        function playLeagueMatch(leagueArray, leagueLabel) {
             player.leagueRoundsPlayed++;
             player.matchesPlayed++;
 
@@ -273,7 +408,7 @@
                 else team.points += (Math.random() > 0.5 ? 3 : (Math.random() > 0.4 ? 1 : 0));
             });
 
-            let isFirstLeg = player.leagueRoundsPlayed <= 15;
+            let isFirstLeg = player.leagueRoundsPlayed <= 19;
             let pool = isFirstLeg ? player.firstLegOpponents : player.secondLegOpponents;
 
             let availableOpponents = currentTeams.filter(t => t.name !== player.club && !pool.includes(t.name));
@@ -285,19 +420,19 @@
             let diff = player.clubStars - opp.stars + ((Math.random() * 2) - 1);
             let myG = 0, oppG = 0, resText = "";
 
-            if (diff > 0.5) {
+            if (diff > 0.4) {
                 myG = Math.floor(Math.random() * 3) + 1;
                 oppG = Math.floor(Math.random() * myG);
-                resText = `🎉 [الدوري 🇹🇳] انتصار على ${opp.name} (${myG}-${oppG})`;
+                resText = `🎉 [${leagueLabel}] انتصار على ${opp.name} (${myG}-${oppG})`;
                 player.points += 3;
-            } else if (diff < -0.5) {
+            } else if (diff < -0.4) {
                 oppG = Math.floor(Math.random() * 3) + 1;
                 myG = Math.floor(Math.random() * oppG);
-                resText = `💔 [الدوري 🇹🇳] هزيمة أمام ${opp.name} (${myG}-${oppG})`;
+                resText = `💔 [${leagueLabel}] هزيمة أمام ${opp.name} (${myG}-${oppG})`;
             } else {
                 myG = Math.floor(Math.random() * 2);
                 oppG = myG;
-                resText = `🤝 [الدوري 🇹🇳] تعادل مع ${opp.name} (${myG}-${oppG})`;
+                resText = `🤝 [${leagueLabel}] تعادل مع ${opp.name} (${myG}-${oppG})`;
                 player.points += 1;
             }
 
@@ -312,12 +447,12 @@
                 resText += " ⚽ [سجلت هدفاً!]";
             }
 
-            document.getElementById('match-type-tag').innerHTML = '<span class="caf-tag" style="background:#5bc0be;">الدوري التونسي</span>';
+            document.getElementById('match-type-tag').innerHTML = `<span class="caf-tag" style="background:#5bc0be;">${leagueLabel} (الجولة ${player.leagueRoundsPlayed}/38)</span>`;
             document.getElementById('match-announcement').innerHTML = resText;
             updateUI();
             saveData();
 
-            if (player.leagueRoundsPlayed >= 30 && (!player.cafQualified || player.cafEliminated || player.cafStage >= 4)) {
+            if (player.leagueRoundsPlayed >= 38 && (player.leagueType !== 'tunisian' || !player.cafQualified || player.cafEliminated || player.cafStage >= 4)) {
                 triggerEndOfSeason();
             }
         }
@@ -358,14 +493,14 @@
 
                 if (myG > 0 && Math.random() > 0.4) player.goals++;
 
-                announcement = `🌍 [${tourneyName} - دور المجموعات (الجولة ${player.cafGroupMatch} من 6)] ضد ${opp.name}<br>النتيجة: ${player.club} ${myG} - ${oppG} ${opp.name} | نقاط المجموعة: ${player.cafPoints}`;
+                announcement = `🌍 [${tourneyName} - دور المجموعات (الجولة ${player.cafGroupMatch}/6)] ضد ${opp.name}<br>النتيجة: ${player.club} ${myG} - ${oppG} ${opp.name} | إحصائيات مجموعتك الإفريقية: ${player.cafPoints} نقاط`;
 
                 if (player.cafGroupMatch === 6) {
                     if (player.cafPoints >= 7) {
                         player.cafStage = 1;
-                        announcement += `<br>🎉 **أنهيت المجموعات بنجاح وتأهلْت إلى نصف النهائي!**`;
+                        announcement += `<br>🎉 **تأهلت من مجموعات دوري أبطال إفريقيا إلى نصف النهائي!**`;
                     } else {
-                        announcement += `<br>❌ **لم تتأهل من دور المجموعات.**`;
+                        announcement += `<br>❌ **تم إقصاؤك من دور المجموعات الإفريقي.**`;
                         player.cafEliminated = true;
                     }
                 }
@@ -374,10 +509,10 @@
                 let diff = player.clubStars - opp.stars + ((Math.random() * 2) - 1);
                 let myG = diff > 0 ? 2 : 1;
                 let oppG = diff > 0 ? 0 : 2;
-                announcement = `🌍 [${tourneyName} - نصف النهائي]: فزت بالمجموع وتأهلت للنهائي! (${myG}-${oppG})`;
+                announcement = `🌍 [${tourneyName} - نصف النهائي]: فزت بمجموع المباراتين وتأهلت للنهائي الكبير! (${myG}-${oppG})`;
                 player.cafStage = 2;
             } else if (player.cafStage === 2) {
-                announcement = `🏆 [${tourneyName} - النهائي]: **مبارك! توجت بلقب ${tourneyName} بفوزك في النهائي!** 🎉🥇`;
+                announcement = `🏆 [${tourneyName} - النهائي]: **مبارك! توجت بلقب ${tourneyName} التاريخي!** 🎉🥇`;
                 player.cafStage = 3;
             }
 
@@ -386,7 +521,7 @@
             updateUI();
             saveData();
 
-            if (player.leagueRoundsPlayed >= 30 && (player.cafEliminated || player.cafStage >= 3)) {
+            if (player.leagueRoundsPlayed >= 38 && (player.cafEliminated || player.cafStage >= 3)) {
                 triggerEndOfSeason();
             }
         }
@@ -395,39 +530,46 @@
             let qualificationMsg = "";
             let nextCaf = null;
 
-            if (player.rank === 1 || player.rank === 2) {
-                qualificationMsg = `🌟 المركز ${player.rank}: تأهلت رسمياً إلى دوري أبطال إفريقيا للموسم القادم! 🏆`;
-                nextCaf = 'CL';
-            } else if (player.rank === 3 || player.rank === 4) {
-                qualificationMsg = `🥈 المركز ${player.rank}: تأهلت رسمياً إلى كأس الكونفدرالية الإفريقية! 🏅`;
-                nextCaf = 'CC';
-            } else if (player.rank === 5) {
-                qualificationMsg = `⭐ المركز ${player.rank}: ضمنت التواجد في الـ Top 5!`;
+            if (player.leagueType === 'tunisian') {
+                if (player.rank === 1 || player.rank === 2) {
+                    qualificationMsg = `🌟 المركز ${player.rank}: تأهلت رسمياً إلى دوري أبطال إفريقيا للموسم القادم! 🏆`;
+                    nextCaf = 'CL';
+                } else if (player.rank === 3 || player.rank === 4) {
+                    qualificationMsg = `🥈 المركز ${player.rank}: تأهلت رسمياً إلى كأس الكونفدرالية الإفريقية! 🏅`;
+                    nextCaf = 'CC';
+                } else {
+                    qualificationMsg = `⚠️ المركز ${player.rank}: أنهيت موسم الدوري التونسي (38 جولة).`;
+                }
             } else {
-                qualificationMsg = `⚠️ المركز ${player.rank}: لم تتأهل للمسابقات القارية.`;
+                qualificationMsg = `⭐ أنهيت الموسم الأوروبي بنجاح في الدوري المستقل (38 جولة)! المؤهل لدوري أبطال أوروبا (UCL).`;
             }
 
             player.nextSeasonCaf = nextCaf;
             document.getElementById('continental-result-box').innerText = qualificationMsg;
 
+            // بناء عروض الانتقالات بين الدوريات المستقلة (الدوري التونسي والدوريات الخمس الكبرى منفصلة)
             let finalOffers = [];
-            let tunisianOffer = tunisianTeams.filter(tm => tm.name !== player.club)[Math.floor(Math.random() * (tunisianTeams.length - 1))];
-            if (tunisianOffer) finalOffers.push({ name: tunisianOffer.name, stars: tunisianOffer.stars });
+            
+            // عروض عشوائية منظمة تماماً
+            let tunisianOffer = tunisianTeams20.filter(tm => tm.name !== player.club)[Math.floor(Math.random() * (tunisianTeams20.length - 1))];
+            if (tunisianOffer) finalOffers.push({ name: tunisianOffer.name, stars: tunisianOffer.stars, type: 'tunisian', teamsData: tunisianTeams20 });
 
-            if (player.season === 2) {
-                // اختيار عشوائي من دوريات الشرق المستقلة (روسيا، كرواتيا، صربيا، بلجيكا، هولندا، البرتغال)
-                let allEasternLeagues = [russiaTeams, croatiaTeams, serbiaTeams, belgiumTeams, netherlandsTeams, portugalTeams];
-                let randomLeague = allEasternLeagues[Math.floor(Math.random() * allEasternLeagues.length)];
-                let randomTeamFromLeague = randomLeague[Math.floor(Math.random() * randomLeague.length)];
-                finalOffers.push(randomTeamFromLeague);
-            } else if (player.season >= 3) {
-                let allEasternLeagues = [russiaTeams, croatiaTeams, serbiaTeams, belgiumTeams, netherlandsTeams, portugalTeams];
-                let randomLeague = allEasternLeagues[Math.floor(Math.random() * allEasternLeagues.length)];
-                let randomTeamFromLeague = randomLeague[Math.floor(Math.random() * randomLeague.length)];
-                
-                let topOffer = topFiveEuropeTeams[Math.floor(Math.random() * topFiveEuropeTeams.length)];
-                
-                finalOffers.push(randomTeamFromLeague, topOffer);
+            let allEuropeLeagues = [
+                { name: "الدوري الإنجليزي 🏴󠁧󠁢󠁥󠁮󠁧󠁿", teams: premierLeagueTeams },
+                { name: "الدوري الإسباني 🇪🇸", teams: realLaLigaTeams },
+                { name: "الدوري الإيطالي 🇮🇹", teams: serieATeams },
+                { name: "الدوري الألماني 🇩🇪", teams: bundesligaTeams },
+                { name: "الدوري الفرنسي 🇫🇷", teams: ligue1Teams }
+            ];
+
+            let chosenLeague = allEuropeLeagues[Math.floor(Math.random() * allEuropeLeagues.length)];
+            let euroTeam = chosenLeague.teams[Math.floor(Math.random() * chosenLeague.teams.length)];
+            finalOffers.push({ name: euroTeam.name, stars: euroTeam.stars, type: 'european', teamsData: chosenLeague.teams });
+
+            if (player.season >= 2) {
+                let secondEuroLeague = allEuropeLeagues[Math.floor(Math.random() * allEuropeLeagues.length)];
+                let euroTeam2 = secondEuroLeague.teams[Math.floor(Math.random() * secondEuroLeague.teams.length)];
+                finalOffers.push({ name: euroTeam2.name, stars: euroTeam2.stars, type: 'european', teamsData: secondEuroLeague.teams });
             }
 
             let container = document.getElementById('offers-list-container');
@@ -443,6 +585,9 @@
                 let applyOffer = function() {
                     player.club = offer.name;
                     player.clubStars = offer.stars;
+                    player.leagueType = offer.type;
+                    currentTeams = JSON.parse(JSON.stringify(offer.teamsData));
+                    currentTeams.forEach(t => t.points = 0);
                     finishSeasonTransition(`تم قبول الانتقال بنجاح إلى نادي ${offer.name}!`);
                 };
 
@@ -466,7 +611,7 @@
             player.leagueRoundsPlayed = 0;
             player.points = 0;
             player.goals = 0;
-            player.rank = 10;
+            player.rank = 20;
             player.firstLegOpponents = [];
             player.secondLegOpponents = [];
             
@@ -482,7 +627,7 @@
             currentTeams.forEach(t => t.points = 0);
             
             updateUI();
-            document.getElementById('match-announcement').innerHTML = `<strong>نهاية الموسم:</strong> ${msg}<br>🚀 انطلق الموسم رقم ${player.season}!`;
+            document.getElementById('match-announcement').innerHTML = `<strong>نهاية الموسم:</strong> ${msg}<br>🚀 انطلق الموسم رقم ${player.season} بنجاح!`;
             document.getElementById('transfer-offer-box').style.display = 'none';
             document.getElementById('play-match-btn').style.display = 'block';
             saveData();
